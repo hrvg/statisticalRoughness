@@ -1,0 +1,279 @@
+---
+title: "Computing Fractal Dimension"
+subtitle: "But at which Scales?"
+author:
+- name: Hervé Guillon
+  affiliation: University of California, Davis
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    code_folding: hide
+    theme: readable
+---
+
+```{r warning = FALSE, message = FALSE, include = TRUE, echo = TRUE}
+### LIBRARIES ###
+library("ggplot2")
+library("cowplot")
+library("viridis")
+library("viridisLite")
+library("knitr")
+library("kableExtra")
+library("dplyr")
+library("statisticalRoughness")
+```
+
+# Self-Affine Scaling of Surfaces
+
+The width of a surface $S$ of vertical dimension $z$ and lateral dimension $(x,y)$ is defined as:
+
+\[\left\langle w \right\rangle_R = \sqrt{\left\langle  \left\langle u^2(x,y) \right\rangle_R \right\rangle_s} \]
+with $u_R$ the deviation function:
+\[u_R(x,y) = z(x,y) - \left\langle z(x,y) \right\rangle_R \]
+
+Notice that $\left\langle w \right\rangle_R$ is an average over all regions the surface $S$ with lateral dimensions $R$ and corresponds to the average over $S$ of the standard deviations over $R$.
+
+\[\left\langle w \right\rangle_R \sim R^H\]
+
+$H$ depends on the size $L_S$ of the surface $S$ and the lateral dimensions $R$.
+In the following, I drop the subscript and equate $L_s$ with $L$.
+
+When dealing with data on a grid, it is obviously convenient if the lateral dimensions $R$ corresponds to factors of $L$.
+A factor $b\in\mathbb{N}$ of $a\in\mathbb{N}$ is such that the remainder of $a/b$ is zero and $b \notin \left\{1;a\right\}$.
+
+# Original Approach
+
+The original set of scales was defined from 5 seeds $s = \left\{ 2;3;5;7;9 \right\}$ (the primes between 2 and 10) and used as multiplier for the power of 2 from 0 to 13:
+
+\[ \left\{R_i\right\} = \left\{s_i \cdot 2^{k}\right\}_{i = 1, k = 0}^{i = 5, k = 13}\]
+
+
+```{warning = FALSE, message = FALSE, include = TRUE, echo = TRUE}
+colnames(.Rs) <- seeds
+rownames(.Rs) <- 2**(0:13)
+.Rs %>% 
+kable("html") %>% 
+add_header_above(header = c("power of two" = 1, "seed" = 5))  %>%
+kable_styling(bootstrap_options = c("striped", "hover"),
+	position = "center",
+	full_width = FALSE)
+```
+
+As some of the scale failed to compute, they were filtered to be lower than $10^4$ (or $10^5$ m in map units):
+```{r warning = FALSE, message = FALSE, include = TRUE, echo = TRUE}
+seeds <- c(2,3,5,7,9)
+Rs <- lapply(seeds, function(seed) 2**(0:13) * seed)
+.Rs <- do.call(cbind, Rs) %>% as.data.frame()
+Lmax <- 8192
+.Rs <- .Rs %>%
+mutate_all(~ ifelse(. > Lmax, NA, .))
+colnames(.Rs) <- seeds
+rownames(.Rs) <- 2**(0:13)
+.Rs %>%
+kable("html") %>% 
+add_header_above(header = c("power of two" = 1, "seed" = 5))  %>%
+kable_styling(bootstrap_options = c("striped", "hover"),
+	position = "center",
+	full_width = FALSE) %>%
+row_spec(1:5, color = "white", background = "steelblue")
+# Rs <- lapply(Rs, function(R) R[R < Lmax])
+# print(Rs)
+```
+
+The size of the surfaces $L$ over which the scaling is computed were defined as having at least 5 factors:
+```{r warning = FALSE, message = FALSE, include = TRUE, echo = TRUE}
+Ls <- lapply(Rs, function(R) tail(R, -5))
+print(Ls)
+
+```
+The run with the largest scale ($L = 9216$) failed such that the final set of surface sizes $L$ is:
+```{r warning = FALSE, message = FALSE, include = TRUE, echo = TRUE}
+Ls <- head(sort(unlist(Ls)), -1)
+print(Ls)
+```
+
+The following table displays the set of 32 surface size $\left\{L_i\right\}_{i = 1}^{n_S}$ and the associated set of lateral dimensions $\left\{R_i\right\}_{i = 1}^{n_R}$ with $n_L = 32$ and $n_R = 5$ and where $R_i$ are the largest $n_R$ factors for a given $S$.
+```{r warning = FALSE, message = FALSE, include = TRUE, echo = TRUE}
+Ls_factors <- t(sapply(Ls, function(L) tail(get_factors(L), 6)))
+df2017 <- data.frame(Ls_factors)
+colnames(df2017) <- c(paste0("R.", 1:5), "L")
+print(df2017)
+```
+
+# New Approach
+
+However, there are $5369$ numbers that satisfy the conditions I used to select $\left\{L_i\right\}_{i = 1}^{n_S}$ and $\left\{R_i\right\}_{i = 1}^{n_R}$ with $n_R = 5$ and 6 of them are smaller than the minimum surface size. This is important as it potentially leverages information at a finer spatial scale.
+```{r warning = FALSE, message = FALSE, include = TRUE, echo = TRUE}
+nR <- 5
+RL <- get_all_R_L(Lmax, nR, logfilter = FALSE)
+print(length(RL$allL))
+print(head(RL$allL[RL$allL < min(Ls)]))
+```
+
+# Comparison of Factor Distributions
+
+So why use the 32 surface sizes defined in 2017? What is so peculiar about them?
+They have been initially defined as:
+\[ \left\{R_i\right\} = \left\{s_i \cdot 2^{k}\right\}_{i = 1, k = 0}^{i = 5, k = 13}\]
+
+Because of the $2^{k}$ part of this definition, the factors $R$ are perfectly logarithmically distributed on the number line for $s = 2$ and well-behaved for the other seeds.
+Is this true for the new approach?
+
+## Factor Distribution (Original)
+
+The following plots identify the number $L$ and its 5 largest factors on the number line.
+```{r warning = FALSE, message = FALSE, include = TRUE, echo = TRUE}
+numberline <- 1:Lmax
+par(mfrow = c(1,1))
+for (k in seq_along(Ls)){
+	par(pty = "s")
+	plot(numberline, log = "xy", lty = 1, ylab = "Numbers", type = "l", main = paste(nR, "largest Factors for", Ls[k]))
+	grid()
+	points(numberline[numberline %in% df2017[k, 1:5]], numberline[numberline %in% df2017[k, 1:5]], col = "blue")
+	points(numberline[numberline %in% df2017[k, 6]], numberline[numberline %in% df2017[k, 6]], col = "blue", pch=19)
+}
+```
+
+## Factor Distribution (New)
+The following plots identify the number $L$ and all its factors on the number line.
+**The factors appears similarly well-behaved for the original and new approaches.**
+```{r warning = FALSE, message = FALSE, include = TRUE, echo = TRUE}
+numberline <- 1:Lmax
+RL$allL[RL$allL < min(Ls)]
+par(mfrow = c(1,1))
+for (k in seq_along(RL$allL[RL$allL < min(Ls)])){
+	par(pty = "s")
+	plot(numberline, log = "xy", lty = 1, ylab = "Numbers", type = "l", main = paste("All factors for", RL$allL[[k]]))
+	grid()
+	points(numberline[numberline %in% RL$allR[[k]]], numberline[numberline %in% RL$allR[[k]]], col = "red")
+	points(numberline[numberline %in% RL$allL[[k]]], numberline[numberline %in% RL$allL[[k]]], col = "red", pch=19)
+}
+```
+
+
+# Distribution of Surface Sizes $L$
+
+Here I compare the distribution of the surface sizes $L$ on the number line.
+When indicated, the new approach is filtered so that $L$ are distributed logarithmically along the number line.
+
+```{r warning = FALSE, message = FALSE, include = TRUE, echo = TRUE}
+numberline <- 1:Lmax
+par(pty = "s")
+plot(numberline, log = "xy", lty = 1, ylab = "Numbers", type = "l", main = "Original")
+grid()
+points(numberline[numberline %in% df2017[, 6]], numberline[numberline %in% df2017[, 6]], col = "blue")
+
+plot(numberline, log = "xy", lty = 1, ylab = "Numbers", type = "l", main = "New")
+grid()
+points(numberline[numberline %in% unlist(RL$allL)], numberline[numberline %in% unlist(RL$allL)], col = "red")
+
+RL <- get_all_R_L(Lmax, nR, logfilter = TRUE, len = nrow(df2017))
+plot(numberline, log = "xy", lty = 1, ylab = "Numbers", type = "l", main = "New (filtered)")
+grid()
+points(numberline[numberline %in% unlist(RL$allL)], numberline[numberline %in% unlist(RL$allL)], col = "red")
+
+par(mfrow = c(1, 2))
+plot(numberline, log = "xy", lty = 1, ylab = "Numbers", type = "l", main = "Original")
+grid()
+points(numberline[numberline %in% df2017[, 6]], numberline[numberline %in% df2017[, 6]], col = "blue")
+plot(numberline, log = "xy", lty = 1, ylab = "Numbers", type = "l", main = "New (filtered)")
+grid()
+points(numberline[numberline %in% unlist(RL$allL)], numberline[numberline %in% unlist(RL$allL)], col = "red")
+abline(v = numberline[numberline %in% df2017[1, 6]], col = "blue", pch = 19)
+```
+
+# Choosing $n_R$
+
+## All Numbers
+
+This graph displays the number of factors for numbers between 2 and $L_\textrm{max}$.
+```{r warning = FALSE, message = FALSE, include = TRUE, echo = TRUE}
+numbers <- 2:Lmax
+facts <- sapply(numbers, function(i) length(get_factors(i)) - 2)
+df <- data.frame(Numbers = numbers, Factors = facts)
+p_fact <- ggplot(df) +
+	geom_point(aes(x = Factors, y = Numbers, color = Factors)) +
+	geom_segment(aes(x = 0, xend = Factors, y = Numbers, yend = Numbers, color = Factors)) +
+	scale_colour_viridis(alpha = 1, begin = 0, end = .8,  direction = -1, option = "magma", aesthetics = "colour") +
+	theme_minimal()
+p_fact 	
+``` 
+
+This graph displays the number of factors for numbers between 2 and 64. 24 is the first number with more than 5 factors but there are several numbers smaller than 24 that have 4 factors.
+```{r warning = FALSE, message = FALSE, include = TRUE, echo = TRUE}
+p_fact + ylim(c(2,64)) + xlim(c(0 , 20))
+```
+
+## Multiples of 6 and 10
+
+Of the numbers between 2 and 10, 6 and 10 have the greatest number of factors. 
+In consequence, all multiple of these numbers also have a higher number of factors.
+In the following, I display factors such that $a \in \left\{6;10\right\}$.
+
+
+This graph displays the number of factors for numbers between 2 and $L_\textrm{max}$.
+```{r warning = FALSE, message = FALSE, include = TRUE, echo = TRUE}
+numbers <- 2:Lmax
+facts <- sapply(numbers, function(i) length(get_factors(i)) - 2)
+df <- data.frame(Numbers = numbers, Factors = facts)
+df <- df[which(df$Numbers %% 6 == 0 | df$Numbers %% 10 == 0), ]
+p_fact <- ggplot(df) +
+	geom_point(aes(x = Factors, y = Numbers, color = Factors)) +
+	geom_segment(aes(x = 0, xend = Factors, y = Numbers, yend = Numbers, color = Factors)) +
+	scale_colour_viridis(alpha = 1, begin = 0, end = .8,  direction = -1, option = "magma", aesthetics = "colour") +
+	theme_minimal()
+p_fact 	
+``` 
+
+This graph displays the number of factors for numbers between 2 and 64.
+```{r warning = FALSE, message = FALSE, include = TRUE, echo = TRUE}
+p_fact + ylim(c(2,64)) + xlim(c(0 , 20))
+```
+
+## Multiples of 12
+Interestingly as 12 is the first number with at least 4 factors, all subsequent multiples of 12 have at least 4 factors.
+In the following, I display factors such that: $a \in \left\{6;10;12\right\}$.
+```{r warning = FALSE, message = FALSE, include = TRUE, echo = TRUE}
+numbers <- 2:Lmax
+facts <- sapply(numbers, function(i) length(get_factors(i)) - 2)
+df <- data.frame(Numbers = numbers, Factors = facts)
+df <- df[which(df$Numbers %% 6 == 0 | df$Numbers %% 10 == 0), ]
+df$multiple <- as.factor(ifelse(df$Numbers %% 6 == 0, ifelse(df$Numbers %% 12 == 0, "Twelve", "Six"), "Ten"))
+p_fact <- ggplot(df) +
+	geom_point(aes(x = Factors, y = Numbers, color = multiple)) +
+	geom_segment(aes(x = 0, xend = Factors, y = Numbers, yend = Numbers, color = multiple)) +
+	theme_minimal()
+p_fact + ylim(c(2,64)) + xlim(c(0 , 20))
+``` 
+
+In the following, I display factors such that: $a = 12$.
+```{r warning = FALSE, message = FALSE, include = TRUE, echo = TRUE}
+numberline <- 1:Lmax
+RL <- get_all_R_L(Lmax, 4, only = 12, logfilter = TRUE, len = 32)
+par(mfrow = c(1,1))
+for (k in seq_along(RL$allL[RL$allL < min(Ls)])){
+	par(pty = "s")
+	plot(numberline, log = "xy", lty = 1, ylab = "Numbers", type = "l", main = paste("All factors for", RL$allL[[k]]))
+	grid()
+	points(numberline[numberline %in% RL$allR[[k]]], numberline[numberline %in% RL$allR[[k]]], col = "red")
+	points(numberline[numberline %in% RL$allL[[k]]], numberline[numberline %in% RL$allL[[k]]], col = "red", pch=19)
+}
+
+par(mfrow = c(1, 2))
+plot(numberline, log = "xy", lty = 1, ylab = "Numbers", type = "l", main = "Original")
+grid()
+points(numberline[numberline %in% df2017[, 6]], numberline[numberline %in% df2017[, 6]], col = "blue")
+plot(numberline, log = "xy", lty = 1, ylab = "Numbers", type = "l", main = "New (filtered, multiples of 12)")
+grid()
+points(numberline[numberline %in% unlist(RL$allL)], numberline[numberline %in% unlist(RL$allL)], col = "red")
+abline(v = numberline[numberline %in% df2017[1, 6]], col = "blue", pch = 19)
+```
+
+```{r warning = FALSE, message = FALSE, include = TRUE, echo = TRUE}
+print(RL$allL)
+print(RL$allL[which(RL$allL %in% df2017[, 6])])
+```
+Of these surface sizes, two appeared in the original version: 192 and 1536.
+**Quite drastically, using this new approach would divide by 5.3 the smaller scale at which fractal dimension is computed (120-m vs 640-m).**

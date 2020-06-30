@@ -1,0 +1,27 @@
+Package: statisticalRoughness
+Title: Estimation of roughness exponents across scale for large areas
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Hervé",
+           family = "Guillon",
+           role = c("aut", "cre"),
+           email = "herve@guillon.xyz",
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: This package estimates the roughness exponent of the topography over a range of predefined spatial scales. It implements an efficient way of exploring the scaling of the topography for large areas by leveraging a tiling process. The spatial scales are defined using some factorization. 
+License: `use_mit_license()`, `use_gpl3_license()` or friends to
+    pick a license
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Imports: 
+    terra,
+    raster,
+    dplyr,
+    magrittr,
+   	gdalUtils,
+	rgdal
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

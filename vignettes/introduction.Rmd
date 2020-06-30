@@ -1,0 +1,63 @@
+---
+title: "introduction"
+author:
+- name: Hervé Guillon
+  affiliation: University of California, Davis
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{introduction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(statisticalRoughness)
+```
+
+```{example use}
+# init
+terra::terraOptions(tempdir = "F:/tmp/")
+crs_ref <- terra::crs("+proj=aea +lat_1=34 +lat_2=40.5 +lat_0=0 +lon_0=-120 +x_0=0 +y_0=-4000000 +ellps=GRS80 + +towgs84=0,0,0,0,0,0,0 +units=m +no_defs ")
+
+Lmax <- 1E4
+allLR <- get_all_R_L(Lmax, 5, only = 12, len = 32)
+maxL <- max(allLR$allL)
+
+dem.dir <- 'data/california-rivers/gis-files/NED'
+fname <- "CA_DEM.grd"
+fname_sans_ext <- tools::file_path_sans_ext(fname)
+out.dir <- file.path(root.dir, dem.dir, paste0(fname_sans_ext, "_tiles"))
+
+for (n in seq(80)){
+	print(n)
+	dem <- terra::rast(file.path(out.dir, paste0(fname_sans_ext, "_tile_", n, ".tif")))
+	iters <- floor(seq(from = 1, to = 32))
+	for (l in iters){
+		tstart <- Sys.time()
+		print(l)
+		R <- allLR$allRs[[l]] %>% tail(5)
+		L <- allLR$allL[[l]]
+		fpath <- file.path(out.dir, paste0("Hurst_raster_", n, "_",l , ".tif"))
+		if (!file.exists(fpath)){
+			Hurst_rasters <- compute_Hurst_rasters(dem, L, R)
+			# du <- append(du, pryr::object_size(Hurst_rasters))
+			terra::writeRaster(Hurst_rasters, fpath)
+		} else {
+			Hurst_rasters <- terra::rast(fpath)
+			# du <- append(du, pryr::object_size(Hurst_rasters))
+		}
+		# toc(log = TRUE, quiet = TRUE)
+		plot(Hurst_rasters)
+		print(Sys.time() - tstart)
+	}
+	gc()
+}
+```
