@@ -1,0 +1,1 @@
+`statisticalRoughness` is an `R` package designed to efficiently compute roughness exponents for large areas and over a range of specified scales.
