@@ -1,3 +1,5 @@
+https://travis-ci.com/hrvg/statisticalRoughness.svg?token=Dx1gYTrTiuxgW9Sq3s3q&branch=master
+
 # `statisticalRoughness`
 
 ## Purpose

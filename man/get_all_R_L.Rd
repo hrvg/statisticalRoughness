@@ -15,7 +15,7 @@ get_all_R_L(Lmax, factor_limit, only = NULL, logfilter = TRUE, len = 32)
 
 \item{logfilter}{logical, default to \code{TRUE}, if \code{TRUE} the returned scale are logaritmically spaced}
 
-\item{len}{integer, number of scales returned, default to 32}
+\item{len}{integer, number of scales returned, default to 32, len only works if \code{logfilter == TRUE}}
 }
 \value{
 a list with two elements \code{allRs} and \code{allL}
