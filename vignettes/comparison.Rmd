@@ -1,19 +1,26 @@
 ---
-title: "Computing Fractal Dimension"
-subtitle: "But at which Scales?"
+title: "Comparison with a previous approach"
 author:
 - name: Hervé Guillon
-  affiliation: University of California, Davis
 date: "`r format(Sys.time(), '%d %B %Y')`"
-output:
-  html_document:
-    toc: true
-    toc_float: true
-    code_folding: hide
-    theme: readable
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Comparison with previous approaches}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: /home/justpwd/thesis/production/latex/bibliography/hegui.bib
 ---
 
-```{r warning = FALSE, message = FALSE, include = TRUE, echo = TRUE}
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7, 
+  fig.height = 7
+)
+```
+
+```{r warning = FALSE, message = FALSE, include = TRUE, echo = TRUE, include = FALSE}
 ### LIBRARIES ###
 library("ggplot2")
 library("cowplot")
@@ -43,9 +50,9 @@ In the following, I drop the subscript and equate $L_s$ with $L$.
 When dealing with data on a grid, it is obviously convenient if the lateral dimensions $R$ corresponds to factors of $L$.
 A factor $b\in\mathbb{N}$ of $a\in\mathbb{N}$ is such that the remainder of $a/b$ is zero and $b \notin \left\{1;a\right\}$.
 
-# Original Approach
+# @Guillon2020's approach
 
-The original set of scales was defined from 5 seeds $s = \left\{ 2;3;5;7;9 \right\}$ (the primes between 2 and 10) and used as multiplier for the power of 2 from 0 to 13:
+The original set of scales was defined from 5 seeds $s = \left\{ 2;3;5;7;9 \right\}$ (the prime numbers between 2 and 10) and used as multiplier for the power of 2 from 0 to 13:
 
 \[ \left\{R_i\right\} = \left\{s_i \cdot 2^{k}\right\}_{i = 1, k = 0}^{i = 5, k = 13}\]
 
@@ -88,6 +95,7 @@ Ls <- lapply(Rs, function(R) tail(R, -5))
 print(Ls)
 
 ```
+
 The run with the largest scale ($L = 9216$) failed such that the final set of surface sizes $L$ is:
 ```{r warning = FALSE, message = FALSE, include = TRUE, echo = TRUE}
 Ls <- head(sort(unlist(Ls)), -1)
@@ -102,9 +110,10 @@ colnames(df2017) <- c(paste0("R.", 1:5), "L")
 print(df2017)
 ```
 
-# New Approach
+# `statisticalRoughness`'s approach
 
-However, there are $5369$ numbers that satisfy the conditions I used to select $\left\{L_i\right\}_{i = 1}^{n_S}$ and $\left\{R_i\right\}_{i = 1}^{n_R}$ with $n_R = 5$ and 6 of them are smaller than the minimum surface size. This is important as it potentially leverages information at a finer spatial scale.
+However, there are $5369$ numbers that satisfy the conditions @Guillon2020 used to select $\left\{L_i\right\}_{i = 1}^{n_S}$ and $\left\{R_i\right\}_{i = 1}^{n_R}$ with $n_R = 5$ and 6 of them are smaller than the minimum surface size. This is important as it potentially leverages information at a finer spatial scale.
+
 ```{r warning = FALSE, message = FALSE, include = TRUE, echo = TRUE}
 nR <- 5
 RL <- get_all_R_L(Lmax, nR, logfilter = FALSE)
@@ -114,14 +123,15 @@ print(head(RL$allL[RL$allL < min(Ls)]))
 
 # Comparison of Factor Distributions
 
-So why use the 32 surface sizes defined in 2017? What is so peculiar about them?
+So why use the 32 surface sizes defined in @Guillon2020? What is so peculiar about them?
+
 They have been initially defined as:
 \[ \left\{R_i\right\} = \left\{s_i \cdot 2^{k}\right\}_{i = 1, k = 0}^{i = 5, k = 13}\]
 
 Because of the $2^{k}$ part of this definition, the factors $R$ are perfectly logarithmically distributed on the number line for $s = 2$ and well-behaved for the other seeds.
-Is this true for the new approach?
+Is this true for the approach implemented in `statisticalRoughness`?
 
-## Factor Distribution (Original)
+## Factor Distribution from @Guillon2020
 
 The following plots identify the number $L$ and its 5 largest factors on the number line.
 ```{r warning = FALSE, message = FALSE, include = TRUE, echo = TRUE}
@@ -136,9 +146,11 @@ for (k in seq_along(Ls)){
 }
 ```
 
-## Factor Distribution (New)
+## Factor Distribution from `statisticalRoughness`
+
 The following plots identify the number $L$ and all its factors on the number line.
-**The factors appears similarly well-behaved for the original and new approaches.**
+**The factors appears similarly well-behaved for @Guillon2020 and `statisticalRoughness` approaches.**
+
 ```{r warning = FALSE, message = FALSE, include = TRUE, echo = TRUE}
 numberline <- 1:Lmax
 RL$allL[RL$allL < min(Ls)]
@@ -156,7 +168,7 @@ for (k in seq_along(RL$allL[RL$allL < min(Ls)])){
 # Distribution of Surface Sizes $L$
 
 Here I compare the distribution of the surface sizes $L$ on the number line.
-When indicated, the new approach is filtered so that $L$ are distributed logarithmically along the number line.
+When indicated, `statisticalRoughness` approach is filtered so that $L$ are distributed logarithmically along the number line.
 
 ```{r warning = FALSE, message = FALSE, include = TRUE, echo = TRUE}
 numberline <- 1:Lmax
@@ -189,6 +201,7 @@ abline(v = numberline[numberline %in% df2017[1, 6]], col = "blue", pch = 19)
 ## All Numbers
 
 This graph displays the number of factors for numbers between 2 and $L_\textrm{max}$.
+
 ```{r warning = FALSE, message = FALSE, include = TRUE, echo = TRUE}
 numbers <- 2:Lmax
 facts <- sapply(numbers, function(i) length(get_factors(i)) - 2)
@@ -212,7 +225,6 @@ Of the numbers between 2 and 10, 6 and 10 have the greatest number of factors.
 In consequence, all multiple of these numbers also have a higher number of factors.
 In the following, I display factors such that $a \in \left\{6;10\right\}$.
 
-
 This graph displays the number of factors for numbers between 2 and $L_\textrm{max}$.
 ```{r warning = FALSE, message = FALSE, include = TRUE, echo = TRUE}
 numbers <- 2:Lmax
@@ -233,6 +245,7 @@ p_fact + ylim(c(2,64)) + xlim(c(0 , 20))
 ```
 
 ## Multiples of 12
+
 Interestingly as 12 is the first number with at least 4 factors, all subsequent multiples of 12 have at least 4 factors.
 In the following, I display factors such that: $a \in \left\{6;10;12\right\}$.
 ```{r warning = FALSE, message = FALSE, include = TRUE, echo = TRUE}
@@ -275,5 +288,8 @@ abline(v = numberline[numberline %in% df2017[1, 6]], col = "blue", pch = 19)
 print(RL$allL)
 print(RL$allL[which(RL$allL %in% df2017[, 6])])
 ```
-Of these surface sizes, two appeared in the original version: 192 and 1536.
-**Quite drastically, using this new approach would divide by 5.3 the smaller scale at which fractal dimension is computed (120-m vs 640-m).**
+
+Of these surface sizes, two appeared in @Guillon2020: 192 and 1536.
+Importantly, using this new approach divides by 5.3 the smaller scale at which fractal dimension was computed in @Guillon2020 (120-m vs 640-m).
+
+# References

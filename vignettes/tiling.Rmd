@@ -1,0 +1,103 @@
+---
+title: "Tiling DEM"
+author:
+- name: Hervé Guillon
+  affiliation: University of California, Davis
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Tiling DEM}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Why tiling?
+
+Why tiling in the first place?
+Tiling allows for massively parallelizing the use of `statisticalRoughness` which comes particularly handy if you have large raster or if you want to explore the evolution of the scaling over a large range of scales.
+In this vignette, the code is not run but walk-through as the whole vignette tasks about 40 minutes to run.
+
+# Workflow
+
+The tiling has 3 main components:
+
+1. Resampling the target raster
+1. Making it into polygons
+1. Using the polygons to tile the target raster
+
+# Libraries
+```
+library("terra")
+library("tictoc")
+library("statisticalRoughness")
+```
+
+# Factorization
+
+Here we use functions from `statisticalRoughness` to derive the values of $L$ and $R$. 
+Note that `Lmax` corresponds to a 100 km.
+
+```{r}
+library(statisticalRoughness)
+Lmax <- 1E4
+allLR <- get_all_R_L(Lmax, 5, only = 12, len = 32)
+maxL <- max(allLR$allL)
+```
+
+# Target DEM reading
+
+This chunk reads a target DEM and extracts its name as `fname_sans_ext`.
+`terraOptions` ensures that the data are not stored on a system disk.
+
+```
+root.dir <- get_rootdir() # a in-house functiont to retrieve a path
+dem.dir <- 'data/california-rivers/gis-files/NED'
+terraOptions(tempdir = file.path(root.dir, dem.dir), memfrac = 0.7)
+fname <- "CA_DEM.grd"
+fname_sans_ext <- tools::file_path_sans_ext(fname)
+DEM <- terra::rast(file.path(root.dir, dem.dir, fname))
+```
+
+# Resampling
+
+This chunks resample the target raster to the size of `maxL`, the biggest value of $L$.
+
+```
+maxL_raster <- aggregate(DEM, fact = maxL, fun = mean)
+writeRaster(maxL_raster, file.path(root.dir, dem.dir, paste0(fname_sans_ext, "_Lmax-resampled.tif")), overwrite = TRUE)
+```
+
+# Raster to polygons
+
+We now transform the resampled raster into polygons.
+
+```
+maxL_raster <- raster::raster(file.path(root.dir, dem.dir, paste0(fname_sans_ext, "_Lmax-resampled.tif")))
+maxL_polygons <- raster::rasterToPolygons(maxL_raster)
+# maxL_polygons <- terra:as.polygons(maxL_raster, dissolve = FALSE, values = FALSE)
+raster::shapefile(maxL_polygons, file.path(root.dir, dem.dir, paste0(fname_sans_ext, "_Lmax-polygons.shp")), overwrite = TRUE)
+```
+
+# Tiling DEM
+
+In this chunk, the target DEM is iteravely `crop`'ed into tiles.
+
+```
+out.dir <- file.path(root.dir, dem.dir, paste0(fname_sans_ext, "_tiles"))
+if (!dir.exists(out.dir)) dir.create(out.dir)
+for (n in seq(1, length(maxL_polygons))){
+	print(n)
+	fname <- file.path(out.dir, paste0(fname_sans_ext, "_tile_", n, ".tif"))
+	dem <- crop(DEM, maxL_polygons[n, ])
+	terra::writeRaster(dem, fname, overwrite = TRUE)
+}
+```
+
+# Cleaning files
+
+Removing temporary files.
+
+```
+tmpFiles(old = TRUE, remove = TRUE)
+raster::removeTmpFiles(h = 0)
+```

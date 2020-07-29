@@ -14,7 +14,7 @@ get_factors <- function(x) {
 #' @param factor_limit a threshold of the minimum length of factors for a scale to be accepted
 #' @param only default to `NULL`, if `only == 610` only factors of 6 and 10 are considered for a quick search, if `only == 12` only factors of 12 are considered for the fastest search
 #' @param logfilter logical, default to `TRUE`, if `TRUE` the returned scale are logaritmically spaced
-#' @param len integer, number of scales returned, default to 32
+#' @param len integer, number of scales returned, default to 32, len only works if `logfilter == TRUE`
 #' @return a list with two elements `allRs` and `allL`
 #' @export
 get_all_R_L <- function(Lmax, factor_limit, only = NULL, logfilter = TRUE, len = 32){
@@ -41,7 +41,7 @@ get_all_R_L <- function(Lmax, factor_limit, only = NULL, logfilter = TRUE, len =
 		}
 	}
 	if (logfilter){
-		stopifnot(length(allL) >= len)
+		if (length(allL) < len) stop('Number of factors return is lower than requested.')
 		ind <- 1
 		k <- 0
 		while (length(ind) != len){

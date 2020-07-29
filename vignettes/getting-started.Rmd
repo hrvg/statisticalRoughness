@@ -1,0 +1,56 @@
+---
+title: "Getting started with `statisticalRoughness`"
+author:
+- name: Hervé Guillon
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: /home/justpwd/thesis/production/latex/bibliography/hegui.bib
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Statistical roughness
+
+Statistical roughness is an important descriptor of surface topography [@Turcotte2007].
+While `statisticalRoughness` has been developed for terrain analysis in the context of geomorphology, there is a vast array of applications to statistical roughness from microscopic scales (e.g., material science) to studying craters in the Solar Systems.
+
+There are multiple main to derive estimates of the statistical roughness for a given surface [@Shepard2001].
+In `statisticalRoughness`, the statistical roughness is estimated from the self-affine scaling relationship between the standard deviation of the elevation in regions of a given lateral dimension and the size of that lateral dimension [@Family1991].
+
+# Self-affine scaling of surfaces
+
+The width of a surface $S$ of vertical dimension $z$ and lateral dimension $(x,y)$ is defined as:
+
+\[\left\langle w \right\rangle_R = \sqrt{\left\langle  \left\langle u^2(x,y) \right\rangle_R \right\rangle_s} \]
+with $u_R$ the deviation function:
+\[u_R(x,y) = z(x,y) - \left\langle z(x,y) \right\rangle_R \]
+
+Notice that $\left\langle w \right\rangle_R$ is an average over all regions the surface $S$ with lateral dimensions $R$ and corresponds to the average over $S$ of the standard deviations over $R$.
+
+\[\left\langle w \right\rangle_R \sim R^H\]
+
+$H$ depends on the size $L_S$ of the surface $S$ and the lateral dimensions $R$.
+In the following, I drop the subscript and equate $L_s$ with $L$.
+
+When dealing with data on a grid, it is obviously convenient if the lateral dimensions $R$ corresponds to factors of $L$.
+A factor $b\in\mathbb{N}$ of $a\in\mathbb{N}$ is such that the remainder of $a/b$ is zero and $b \notin \left\{1;a\right\}$.
+In other words, for a given value of $L$, we are interested in finding all the factors of $L$, excluding $1$ and $L$ itself.
+
+# Workflow
+
+The workflow of `statisticalRoughness` then is divided into three main components:
+
+1. [Factoring](factoring.html)
+1. [Tiling the elevation data](tiling.html)
+1. [Computing the statistical roughness for each tile](computing.html)
+
+# References

@@ -1,0 +1,67 @@
+---
+title: "Factoring"
+author:
+- name: Hervé Guillon
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Factoring}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 6, 
+  fig.height = 6
+)
+```
+
+# Introduction
+
+In `statisticalRoughness`, scale factorization is handled by the function `get_all_R_L` which returns a list with the values of $L$, and, for each value of $L$, the associated values of $R$.
+The calculation is constrained by a maximum for $L$, `Lmax`, which is _independent_ of map units: it is just a number on the number line.
+The second parameter of `get_all_R_L` is the minimum number of factors that have to be found for a value of $L$ to be returned.
+Let's see one example:
+
+```{r factor example}
+library(statisticalRoughness)
+get_all_R_L(20, 3, logfilter = FALSE)
+```
+
+There are `r length(get_all_R_L(20, 3, logfilter = FALSE)[[1]])` numbers that have at least 3 factors between 1 and 20.
+
+# `logfilter` option
+
+The `logfilter = FALSE`  option, along with the options detailed below, handles a number of speed up factorization when $L$ becomes large.
+
+`logfilter = TRUE` tries to find $n$ logarithmically spaced factors, with $n$ controlled by the `len` parameter
+Let's see it in action with `Lmax = 1E4`:
+
+```{r log example}
+get_all_R_L(1e4, 55, logfilter = FALSE, len = 3)
+get_all_R_L(1e4, 55, logfilter = TRUE, len = 3)
+```
+
+In the first case, `len` has no effect and `r length(get_all_R_L(1e4, 55, logfilter = FALSE, len = 3)[[1]])` are returned.
+In the second case, only `r length(get_all_R_L(1e4, 55, logfilter = TRUE, len = 3)[[1]])` logarithmically spaced values are returned.
+
+# `only` option
+
+The `only` options speeds up the execution by looking directly at multiples of 6 and 10 if `only = 610` and at multiples of 12 if `only = 12`.
+Because these numbers have the most numbers of factors at the start of the number line, their factors also do have a greater number of factors.
+Focusing on these only, speeds up the factorization.
+More details can be found [here](fractal_scales.html).
+
+```{r only example}
+library(microbenchmark)
+tm <- microbenchmark(
+	get_all_R_L(1e4, 5, only = NULL),
+	get_all_R_L(1e4, 5, only = 610),
+	get_all_R_L(1e4, 5, only = 12),
+	times = 10
+)
+ggplot2::autoplot(tm) + ggpubr::theme_pubr()
+```

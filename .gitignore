@@ -1,13 +1,3 @@
-/data/raw/streamcat/
-/data/raw/mirad/
-/data/fmt/GAGESII/
-/output/benchmark/
-/output/predictions/impaired_class_predictions.dbf
-/output/predictions/impaired_class_predictions.prj
-/output/predictions/impaired_class_predictions.shp
-/output/predictions/impaired_class_predictions.shx
-/output/predictions/impaired_class_predictions.zip
-
 # History files
 .Rhistory
 .Rapp.history
@@ -47,3 +37,4 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+docs

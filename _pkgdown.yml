@@ -1,0 +1,9 @@
+articles:
+- title: Vignettes
+  navbar: ~
+  contents:
+  - getting-started
+  - factoring
+  - tiling
+  - computing 
+  - comparison 
