@@ -1,5 +1,5 @@
 ---
-title: "Getting started with `statisticalRoughness`"
+title: "Getting started"
 author:
 - name: Hervé Guillon
 date: "`r format(Sys.time(), '%d %B %Y')`"
