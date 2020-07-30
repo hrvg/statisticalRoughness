@@ -10,6 +10,8 @@ get_mean_res(r, L, crs.ref = crs_ref)
 \item{r}{aggegated raster}
 
 \item{L}{aggregation factor}
+
+\item{crs.ref}{reference crs}
 }
 \value{
 numeric, mean resolution in m

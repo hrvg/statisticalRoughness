@@ -21,8 +21,10 @@ compute_Hurst_rasters <- function(dem, L, R){
 #' @return a RasterStack with four layers q, H, p-value and R squared values
 #' @import foreach
 #' @import doFuture
+#' @importFrom stats lm lm.fit pt
 #' @export
 compute_Hurst_rasters_internal <- function(mean_sd_rasters, R, mean_res, L_raster, min_res = 1.87){
+	x <- logsd <- r <- id <- variable <- NULL
 	raster_values <- foreach(x = mean_sd_rasters, r = R, .combine = rbind) %do% {
 		data.frame(
 			id = seq(terra::ncell(x)),

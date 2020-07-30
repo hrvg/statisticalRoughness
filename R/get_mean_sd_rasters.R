@@ -4,6 +4,7 @@
 #' @param R vector of values
 #' @return list of rasters
 #' @importFrom magrittr %>%
+#' @importFrom stats sd
 #' @export
 get_mean_sd_rasters <- function(dem, L, R){
 	mean_sd_rasters <- lapply(R, function(r) {

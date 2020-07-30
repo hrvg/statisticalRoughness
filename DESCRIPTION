@@ -26,6 +26,7 @@ Imports:
     microbenchmark,
     pracma,
     raster,
+    reshape2,
     rgdal,
     terra,
     viridis,
