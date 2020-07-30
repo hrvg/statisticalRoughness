@@ -8,7 +8,7 @@ vignette: >
   %\VignetteIndexEntry{Comparison with previous approaches}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-bibliography: /home/justpwd/thesis/production/latex/bibliography/hegui.bib
+bibliography: bibliography.bib
 ---
 
 ```{r, include = FALSE}
