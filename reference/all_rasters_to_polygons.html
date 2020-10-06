@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Compute box-counting mean standard deviation rasters — get_mean_sd_rasters • statisticalRoughness</title>
+<title>This function transforms all rasters found into a directory into SpatialPolygons and save them to shapefiles. — all_rasters_to_polygons • statisticalRoughness</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Compute box-counting mean standard deviation rasters — get_mean_sd_rasters" />
-<meta property="og:description" content="Compute box-counting mean standard deviation rasters" />
+<meta property="og:title" content="This function transforms all rasters found into a directory into SpatialPolygons and save them to shapefiles. — all_rasters_to_polygons" />
+<meta property="og:description" content="The main use of this function is to parallelize processing for each pixels of each rasters." />
 
 
 
@@ -130,37 +130,37 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Compute box-counting mean standard deviation rasters</h1>
+    <h1>This function transforms all rasters found into a directory into SpatialPolygons and save them to shapefiles.</h1>
     
-    <div class="hidden name"><code>get_mean_sd_rasters.Rd</code></div>
+    <div class="hidden name"><code>all_rasters_to_polygons.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Compute box-counting mean standard deviation rasters</p>
+    <p>The main use of this function is to parallelize processing for each pixels of each rasters.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_mean_sd_rasters</span><span class='op'>(</span><span class='va'>dem</span>, <span class='va'>L</span>, <span class='va'>R</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>all_rasters_to_polygons</span><span class='op'>(</span><span class='va'>input_dir</span>, <span class='va'>output_dir</span>, reference_path <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>dem</th>
-      <td><p>initial DEM</p></td>
+      <th>input_dir</th>
+      <td><p><code>character</code>, input directory</p></td>
     </tr>
     <tr>
-      <th>L</th>
-      <td><p>integer</p></td>
+      <th>output_dir</th>
+      <td><p><code>character</code>, output directory</p></td>
     </tr>
     <tr>
-      <th>R</th>
-      <td><p>vector of values</p></td>
+      <th>reference_path</th>
+      <td><p>optional, <code>character</code>, path to a reference raster used to crop the rasters found in <code>input_dir</code></p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>list of rasters</p>
+    <p><code>list</code> of `SpatialPolygons</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

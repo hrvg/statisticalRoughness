@@ -1,6 +1,11 @@
 pandoc: '2.2'
-pkgdown: 1.5.1
+pkgdown: 1.6.1
 pkgdown_sha: ~
-articles: []
-last_built: 2020-07-30T18:51Z
+articles:
+  comparison: comparison.html
+  computing: computing.html
+  factoring: factoring.html
+  getting-started: getting-started.html
+  tiling: tiling.html
+last_built: 2020-10-06T16:47Z
 

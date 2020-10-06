@@ -90,7 +90,7 @@
       <h1 data-toc-skip>Factoring</h1>
                         <h4 class="author">Hervé Guillon</h4>
                         
-            <h4 class="date">30 July 2020</h4>
+            <h4 class="date">06 October 2020</h4>
       
       
       <div class="hidden name"><code>factoring.Rmd</code></div>
@@ -103,8 +103,13 @@
 <h1 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h1>
 <p>In <code>statisticalRoughness</code>, scale factorization is handled by the function <code>get_all_R_L</code> which returns a list with the values of <span class="math inline">\(L\)</span>, and, for each value of <span class="math inline">\(L\)</span>, the associated values of <span class="math inline">\(R\)</span>. The calculation is constrained by a maximum for <span class="math inline">\(L\)</span>, <code>Lmax</code>, which is <em>independent</em> of map units: it is just a number on the number line. The second parameter of <code>get_all_R_L</code> is the minimum number of factors that have to be found for a value of <span class="math inline">\(L\)</span> to be returned. Let’s see one example:</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">statisticalRoughness</span>)
-<span class="fu"><a href="https://rdrr.io/pkg/statisticalRoughness/man/get_all_R_L.html">get_all_R_L</a></span>(<span class="fl">20</span>, <span class="fl">3</span>, <span class="kw">logfilter</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
+<div class="sourceCode" id="cb1"><pre class="downlit">
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">statisticalRoughness</span><span class="op">)</span>
+<span class="co">#&gt; Warning: replacing previous import 'raster::head' by 'utils::head' when loading</span>
+<span class="co">#&gt; 'statisticalRoughness'</span>
+<span class="co">#&gt; Warning: replacing previous import 'raster::tail' by 'utils::tail' when loading</span>
+<span class="co">#&gt; 'statisticalRoughness'</span>
+<span class="fu"><a href="../reference/get_all_R_L.html">get_all_R_L</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">3</span>, logfilter <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 <span class="co">#&gt; $allRs</span>
 <span class="co">#&gt; $allRs[[1]]</span>
 <span class="co">#&gt; [1] 2 3 4 6</span>
@@ -120,7 +125,7 @@
 <span class="co">#&gt; </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $allL</span>
-<span class="co">#&gt; [1] 12 16 18 20</span></pre></body></html></div>
+<span class="co">#&gt; [1] 12 16 18 20</span></pre></div>
 <p>There are 4 numbers that have at least 3 factors between 1 and 20.</p>
 </div>
 <div id="logfilter-option" class="section level1">
@@ -128,7 +133,8 @@
 <a href="#logfilter-option" class="anchor"></a><code>logfilter</code> option</h1>
 <p>The <code>logfilter = FALSE</code> option, along with the options detailed below, handles a number of speed up factorization when <span class="math inline">\(L\)</span> becomes large.</p>
 <p><code>logfilter = TRUE</code> tries to find <span class="math inline">\(n\)</span> logarithmically spaced factors, with <span class="math inline">\(n\)</span> controlled by the <code>len</code> parameter Let’s see it in action with <code>Lmax = 1E4</code>:</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/pkg/statisticalRoughness/man/get_all_R_L.html">get_all_R_L</a></span>(<span class="fl">1e4</span>, <span class="fl">55</span>, <span class="kw">logfilter</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">len</span> <span class="kw">=</span> <span class="fl">3</span>)
+<div class="sourceCode" id="cb2"><pre class="downlit">
+<span class="fu"><a href="../reference/get_all_R_L.html">get_all_R_L</a></span><span class="op">(</span><span class="fl">1e4</span>, <span class="fl">55</span>, logfilter <span class="op">=</span> <span class="cn">FALSE</span>, len <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>
 <span class="co">#&gt; $allRs</span>
 <span class="co">#&gt; $allRs[[1]]</span>
 <span class="co">#&gt;  [1]    2    3    4    5    6    7    8    9   10   12   14   15   16   18   20</span>
@@ -171,7 +177,7 @@
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $allL</span>
 <span class="co">#&gt; [1] 5040 7560 7920 8400 9240 9360</span>
-<span class="fu"><a href="https://rdrr.io/pkg/statisticalRoughness/man/get_all_R_L.html">get_all_R_L</a></span>(<span class="fl">1e4</span>, <span class="fl">55</span>, <span class="kw">logfilter</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">len</span> <span class="kw">=</span> <span class="fl">3</span>)
+<span class="fu"><a href="../reference/get_all_R_L.html">get_all_R_L</a></span><span class="op">(</span><span class="fl">1e4</span>, <span class="fl">55</span>, logfilter <span class="op">=</span> <span class="cn">TRUE</span>, len <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>
 <span class="co">#&gt; $allRs</span>
 <span class="co">#&gt; $allRs[[1]]</span>
 <span class="co">#&gt;  [1]    2    3    4    5    6    7    8    9   10   12   14   15   16   18   20</span>
@@ -194,22 +200,23 @@
 <span class="co">#&gt; </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $allL</span>
-<span class="co">#&gt; [1] 5040 7560 9360</span></pre></body></html></div>
+<span class="co">#&gt; [1] 5040 7560 9360</span></pre></div>
 <p>In the first case, <code>len</code> has no effect and 6 are returned. In the second case, only 3 logarithmically spaced values are returned.</p>
 </div>
 <div id="only-option" class="section level1">
 <h1 class="hasAnchor">
 <a href="#only-option" class="anchor"></a><code>only</code> option</h1>
 <p>The <code>only</code> options speeds up the execution by looking directly at multiples of 6 and 10 if <code>only = 610</code> and at multiples of 12 if <code>only = 12</code>. Because these numbers have the most numbers of factors at the start of the number line, their factors also do have a greater number of factors. Focusing on these only, speeds up the factorization. More details can be found <a href="fractal_scales.html">here</a>.</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">microbenchmark</span>)
-<span class="no">tm</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html">microbenchmark</a></span>(
-    <span class="fu"><a href="https://rdrr.io/pkg/statisticalRoughness/man/get_all_R_L.html">get_all_R_L</a></span>(<span class="fl">1e4</span>, <span class="fl">5</span>, <span class="kw">only</span> <span class="kw">=</span> <span class="kw">NULL</span>),
-    <span class="fu"><a href="https://rdrr.io/pkg/statisticalRoughness/man/get_all_R_L.html">get_all_R_L</a></span>(<span class="fl">1e4</span>, <span class="fl">5</span>, <span class="kw">only</span> <span class="kw">=</span> <span class="fl">610</span>),
-    <span class="fu"><a href="https://rdrr.io/pkg/statisticalRoughness/man/get_all_R_L.html">get_all_R_L</a></span>(<span class="fl">1e4</span>, <span class="fl">5</span>, <span class="kw">only</span> <span class="kw">=</span> <span class="fl">12</span>),
-    <span class="kw">times</span> <span class="kw">=</span> <span class="fl">10</span>
-)
-<span class="kw pkg">ggplot2</span><span class="kw ns">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html">autoplot</a></span>(<span class="no">tm</span>) + <span class="kw pkg">ggpubr</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggpubr/man/theme_pubr.html">theme_pubr</a></span>()
-<span class="co">#&gt; Coordinate system already present. Adding new coordinate system, which will replace the existing one.</span></pre></body></html></div>
+<div class="sourceCode" id="cb3"><pre class="downlit">
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joshuaulrich/microbenchmark/">microbenchmark</a></span><span class="op">)</span>
+<span class="va">tm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html">microbenchmark</a></span><span class="op">(</span>
+    <span class="fu"><a href="../reference/get_all_R_L.html">get_all_R_L</a></span><span class="op">(</span><span class="fl">1e4</span>, <span class="fl">5</span>, only <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>,
+    <span class="fu"><a href="../reference/get_all_R_L.html">get_all_R_L</a></span><span class="op">(</span><span class="fl">1e4</span>, <span class="fl">5</span>, only <span class="op">=</span> <span class="fl">610</span><span class="op">)</span>,
+    <span class="fu"><a href="../reference/get_all_R_L.html">get_all_R_L</a></span><span class="op">(</span><span class="fl">1e4</span>, <span class="fl">5</span>, only <span class="op">=</span> <span class="fl">12</span><span class="op">)</span>,
+    times <span class="op">=</span> <span class="fl">10</span>
+<span class="op">)</span>
+<span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html">autoplot</a></span><span class="op">(</span><span class="va">tm</span><span class="op">)</span> <span class="op">+</span> <span class="fu">ggpubr</span><span class="fu">::</span><span class="fu"><a href="https://rpkgs.datanovia.com/ggpubr/reference/theme_pubr.html">theme_pubr</a></span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; Coordinate system already present. Adding new coordinate system, which will replace the existing one.</span></pre></div>
 <p><img src="factoring_files/figure-html/only%20example-1.png" width="576"></p>
 </div>
   </div>
@@ -229,7 +236,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
