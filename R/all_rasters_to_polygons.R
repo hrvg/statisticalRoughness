@@ -11,6 +11,7 @@
 #' @import raster
 #' @import sp
 #' @import rgdal
+#' @export
 all_rasters_to_polygons <- function(input_dir, output_dir, reference_path = NULL){
 	supported_ext <- c("tif", "grd")
 	raster_file <- NULL
