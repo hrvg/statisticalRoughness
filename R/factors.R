@@ -16,7 +16,6 @@ get_factors <- function(x) {
 #' @param logfilter logical, default to `TRUE`, if `TRUE` the returned scale are logaritmically spaced
 #' @param len integer, number of scales returned, default to 32, len only works if `logfilter == TRUE`
 #' @return a list with two elements `allRs` and `allL`
-#' @importFrom utils head tail
 #' @export
 get_all_R_L <- function(Lmax, factor_limit, only = NULL, logfilter = TRUE, len = 32){
 	allRs  <- list()
@@ -34,8 +33,8 @@ get_all_R_L <- function(Lmax, factor_limit, only = NULL, logfilter = TRUE, len =
 	}
 	for (L in Ls){
 		Rs <- get_factors(L)
-		Rs <- tail(Rs, -1)
-		Rs <- head(Rs, -1)
+		Rs <- utils::tail(Rs, -1)
+		Rs <- utils::head(Rs, -1)
 		if (length(Rs) >= factor_limit){
 			allRs <- append(allRs, list(Rs))
 			allL <- append(allL, L)
