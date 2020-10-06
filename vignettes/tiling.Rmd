@@ -49,8 +49,8 @@ maxL <- max(allLR$allL)
 This chunk reads a target DEM and extracts its name as `fname_sans_ext`.
 `terraOptions` ensures that the data are not stored on a system disk.
 
-```
-root.dir <- get_rootdir() # a in-house functiont to retrieve a path
+```{r, eval = FALSE}
+root.dir <- get_rootdir() # a in-house function to retrieve a path
 dem.dir <- 'data/california-rivers/gis-files/NED'
 terraOptions(tempdir = file.path(root.dir, dem.dir), memfrac = 0.7)
 fname <- "CA_DEM.grd"
@@ -62,7 +62,7 @@ DEM <- terra::rast(file.path(root.dir, dem.dir, fname))
 
 This chunks resample the target raster to the size of `maxL`, the biggest value of $L$.
 
-```
+```{r, eval = FALSE}
 maxL_raster <- aggregate(DEM, fact = maxL, fun = mean)
 writeRaster(maxL_raster, file.path(root.dir, dem.dir, paste0(fname_sans_ext, "_Lmax-resampled.tif")), overwrite = TRUE)
 ```
@@ -71,7 +71,7 @@ writeRaster(maxL_raster, file.path(root.dir, dem.dir, paste0(fname_sans_ext, "_L
 
 We now transform the resampled raster into polygons.
 
-```
+```{r, eval = FALSE}
 maxL_raster <- raster::raster(file.path(root.dir, dem.dir, paste0(fname_sans_ext, "_Lmax-resampled.tif")))
 maxL_polygons <- raster::rasterToPolygons(maxL_raster)
 # maxL_polygons <- terra:as.polygons(maxL_raster, dissolve = FALSE, values = FALSE)
@@ -82,7 +82,7 @@ raster::shapefile(maxL_polygons, file.path(root.dir, dem.dir, paste0(fname_sans_
 
 In this chunk, the target DEM is iteravely `crop`'ed into tiles.
 
-```
+```{r, eval = FALSE}
 out.dir <- file.path(root.dir, dem.dir, paste0(fname_sans_ext, "_tiles"))
 if (!dir.exists(out.dir)) dir.create(out.dir)
 for (n in seq(1, length(maxL_polygons))){
@@ -97,7 +97,7 @@ for (n in seq(1, length(maxL_polygons))){
 
 Removing temporary files.
 
-```
+```{r, eval = FALSE}
 tmpFiles(old = TRUE, remove = TRUE)
 raster::removeTmpFiles(h = 0)
 ```

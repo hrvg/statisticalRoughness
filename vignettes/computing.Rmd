@@ -10,6 +10,15 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7, 
+  fig.height = 7,
+  eval = FALSE
+)
+```
 # Description
 
 This script is an example of the use of the function of `statisticalRoughness` on a [tiled DEM](tiling.htlm).
@@ -19,14 +28,14 @@ This script is an example of the use of the function of `statisticalRoughness` o
 
 This sets up the `terraOptions` and a reference coordinate system.
 
-```
+```{r}
 terra::terraOptions(tempdir = "F:/tmp/")
 crs_ref <- terra::crs("+proj=aea +lat_1=34 +lat_2=40.5 +lat_0=0 +lon_0=-120 +x_0=0 +y_0=-4000000 +ellps=GRS80 + +towgs84=0,0,0,0,0,0,0 +units=m +no_defs ")
 ```
 
 This sets up the location to look for tiles.
 
-```
+```{r}
 dem.dir <- 'data/california-rivers/gis-files/NED'
 fname <- "CA_DEM.grd"
 fname_sans_ext <- tools::file_path_sans_ext(fname)
@@ -37,7 +46,7 @@ out.dir <- file.path(root.dir, dem.dir, paste0(fname_sans_ext, "_tiles"))
 
 With this, we retrieve the scales at which the DEM has been tiled.
 
-```
+```{r}
 Lmax <- 1E4
 allLR <- get_all_R_L(Lmax, 5, only = 12, len = 32)
 maxL <- max(allLR$allL)
@@ -48,7 +57,7 @@ maxL <- max(allLR$allL)
 Computing can be made parallel or sequential. Here we have 80 tiles and `n` indicates the current tile, `l` indicates the current scale at which the calculation takes place.
 Note that the fractal dimension is calculated over the last 5 scales.
 
-```
+```{r}
 for (n in seq(80)){
 	print(n)
 	dem <- terra::rast(file.path(out.dir, paste0(fname_sans_ext, "_tile_", n, ".tif")))
