@@ -2,7 +2,7 @@
 % Please edit documentation in R/all_rasters_to_polygons.R
 \name{all_rasters_to_polygons}
 \alias{all_rasters_to_polygons}
-\title{This function transforms all rasters found into a directory into SpatialPolygons and save them to shapefiles.}
+\title{This function transforms all rasters found into a directory into SpatVector and save them to shapefiles.}
 \usage{
 all_rasters_to_polygons(input_dir, output_dir, reference_path = NULL)
 }
@@ -14,7 +14,7 @@ all_rasters_to_polygons(input_dir, output_dir, reference_path = NULL)
 \item{reference_path}{optional, \code{character}, path to a reference raster used to crop the rasters found in \code{input_dir}}
 }
 \value{
-\code{list} of `SpatialPolygons
+\code{list} of \code{SpatVector}
 }
 \description{
 The main use of this function is to parallelize processing for each pixels of each rasters.
