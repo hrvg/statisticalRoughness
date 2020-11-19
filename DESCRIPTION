@@ -1,6 +1,6 @@
 Package: statisticalRoughness
 Title: Estimation of roughness exponents across scale for large areas
-Version: 0.1
+Version: 0.2
 Authors@R: 
     person(given = "Hervé",
            family = "Guillon",

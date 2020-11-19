@@ -23,3 +23,4 @@ a list with two elements \code{allRs} and \code{allL}
 \description{
 Get a list of upper spatial scale at which the roughness coefficient is calculated
 }
+\keyword{factors}

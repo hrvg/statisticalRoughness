@@ -19,3 +19,4 @@ numeric, mean resolution in m
 \description{
 Compute the mean resolution of lat long raster in meters
 }
+\keyword{Hurst}

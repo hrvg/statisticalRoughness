@@ -4,7 +4,12 @@
 \alias{all_rasters_to_polygons}
 \title{This function transforms all rasters found into a directory into SpatVector and save them to shapefiles.}
 \usage{
-all_rasters_to_polygons(input_dir, output_dir, reference_path = NULL)
+all_rasters_to_polygons(
+  input_dir,
+  output_dir,
+  reference_path = NULL,
+  reversed = FALSE
+)
 }
 \arguments{
 \item{input_dir}{\code{character}, input directory}
@@ -12,6 +17,8 @@ all_rasters_to_polygons(input_dir, output_dir, reference_path = NULL)
 \item{output_dir}{\code{character}, output directory}
 
 \item{reference_path}{optional, \code{character}, path to a reference raster used to crop the rasters found in \code{input_dir}}
+
+\item{reverse}{\code{logical}, optional, if \code{TRUE} the files are processed in reverse order}
 }
 \value{
 \code{list} of \code{SpatVector}
@@ -19,3 +26,4 @@ all_rasters_to_polygons(input_dir, output_dir, reference_path = NULL)
 \description{
 The main use of this function is to parallelize processing for each pixels of each rasters.
 }
+\keyword{Hurst}

@@ -6,6 +6,7 @@
 #' @importFrom magrittr %>%
 #' @importFrom stats sd
 #' @export
+#' @keywords Hurst
 get_mean_sd_rasters <- function(dem, L, R){
 	mean_sd_rasters <- lapply(R, function(r) {
 		terra::aggregate(dem, fact = r, fun = sd, na.rm = TRUE) %>% 

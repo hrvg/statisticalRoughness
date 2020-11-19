@@ -12,6 +12,7 @@
 #' @import sp
 #' @import rgdal
 #' @export
+#' @keywords Hurst
 all_rasters_to_polygons <- function(input_dir, output_dir, reference_path = NULL, reversed = FALSE){
 	supported_ext <- c("tif", "grd")
 	raster_file <- NULL

@@ -2,6 +2,7 @@
 #' @param Hurst_dir a file.path to a directory containing tiled Hurst rasters
 #' @importFrom magrittr %>%
 #' @export
+#' @keywords Hurst
 merge_Hurst_rasters <- function(Hurst_dir = file.path('F:/hguillon/research/exploitation/out/run127')){
 	path <- xmin <- xmax <- ymin <- ymax <- NULL
 	out_dir <- file.path(Hurst_dir, "out")

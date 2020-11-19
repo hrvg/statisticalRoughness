@@ -15,3 +15,4 @@ list of factors
 \description{
 Get factor of an integer
 }
+\keyword{factors}
