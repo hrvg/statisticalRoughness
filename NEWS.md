@@ -17,6 +17,8 @@ New features
 Enhancements
 
 - re-organized the Reference and the Articles
+- added one vignette describing the basic use of Fourier analysis functions
+- added one vignette describing how to rotate rasters along 2DFT main components
 
 # statisticalRoughness 0.1
 

@@ -8,6 +8,7 @@ before_install:
   - sudo apt-get -q update
   - sudo apt-get -y install libgdal-dev libgeos-dev libproj-dev 
   - sudo apt-get -y install libharfbuzz-dev libfribidi-dev
+  - sudo apt-get -y install libmagick++-dev
 
 warnings_are_errors: false
 

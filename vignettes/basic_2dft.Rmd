@@ -1,0 +1,85 @@
+---
+title: "A basic 2D Fourier analysis of topography"
+author:
+- name: Hervé Guillon
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{A basic 2D Fourier analysis of topography}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: bibliography.bib
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 8, 
+  fig.height = 8,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+```{r}
+devtools::load_all()
+```
+
+# Purpose
+
+The code of `fft2d()`, `bin()` and `Hann2D()` is for the most part a port from Matlab to `R` of the code from [2DSpecTools](https://web.mit.edu/perron/www/files/2DSpecTools-v1.1.zip): A 2D spectral analysis toolkit for Matlab by J. Taylor Perron et al.
+In consequence, a great introduction to this code is reading @Perron2008 paper in which the authors apply spectral analysis to two examples in California (USA).
+
+# Loading data
+
+First, we load a raster corresponding to one of the two examples from @Perron2008, the one located near Gabilan Mesa in California. 
+
+```{r}
+library("rayshader")
+library("raster")
+gabilan_mesa <- raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "gabilan_mesa.tif"))
+```
+
+# Detrending
+
+First, we detrend the DEM using `detrend_dem()` and convert it to a `matrix`.
+
+```{r}
+summary(gabilan_mesa)
+gabilan_mesa <- gabilan_mesa %>% detrend_dem() 
+summary(gabilan_mesa)
+gabilan_mesa <- raster_to_matrix(gabilan_mesa)
+```
+
+# Hillshade visualization
+
+Here is what the area looks like.
+We can clearly see the imprint of @Perron2008's Fig. 3a.
+```{r}
+gabilan_mesa %>%
+	sphere_shade(texture = "desert") %>%
+    add_shadow(ray_shade(gabilan_mesa, sunaltitude = 20), max_darken = 0.3) %>%  
+    add_shadow(ambient_shade(gabilan_mesa), 0) %>%
+    plot_map()
+```
+
+# 2D Fourier transform
+
+
+As `gabilan_mesa` is already a `matrix` that we can pass directly to `fft2d()` with a Hann window (`Hann = TRUE` ensures that `Hann2d()` is called).
+We also bin the power spectrum using `bin()` and visualize the results with `spectrum_plot()`.
+For convenience, we report as a vertical line the rolloff frequency identified in @Perron2008's Fig. 4a.
+
+```{r}
+raster_resolution <- 9.015
+FT2D <- fft2D(gabilan_mesa, dx = raster_resolution, dy = raster_resolution, Hann = TRUE)
+nbin <- 50
+binned_power_spectrum <- bin(log10(FT2D$radial_frequency_vector), log10(FT2D$spectral_power_vector), nbin)
+binned_power_spectrum <- na.omit(binned_power_spectrum)
+spectrum_plot(binned_power_spectrum, FT2D) + ggplot2::geom_vline(xintercept = 1/180)
+```
+
+While produced with different underlying data, this plot passes the sanity check against @Perron2008's example.
+
+# References

@@ -4,7 +4,7 @@
 \alias{fft2D}
 \title{Perfoms a two-dimensional Fourier transform}
 \usage{
-fft2D(M, dx, dy, Hann = FALSE)
+fft2D(M, dx, dy, Hann = TRUE)
 }
 \arguments{
 \item{M}{a \code{matrix}}

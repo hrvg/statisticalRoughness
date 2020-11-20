@@ -21,8 +21,10 @@ navbar:
       - text: -------       
       - text: 2D Fourier analyis of topography
         menu:
-        - text: Vignette
-          href: articles/vignette.html
+        - text: A basic 2D Fourier analysis of topography
+          href: articles/basic_2dft.html
+        - text: Rotating rasters along 2DFT main components
+          href: articles/rotating_rasters.html
 
 reference:
   - title: Hurst exponents calculation

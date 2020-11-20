@@ -21,15 +21,23 @@ Imports:
     gdalUtils,
     ggplot2,
     ggpubr,
+    imager,
     kableExtra,
+    magick,
     magrittr,
+    matlab,
     microbenchmark,
+    mrbsizeR,
+    oce,
     pracma,
     raster,
-    sp,
+    rayshader,
     reshape2,
     rgdal,
+    sp,
+    spatstat,
     terra,
+    useful,
     viridis,
     viridisLite
 Suggests: 
@@ -38,3 +46,5 @@ Suggests:
     pkgdown,
     testthat
 VignetteBuilder: knitr
+Depends: 
+    R (>= 2.10)

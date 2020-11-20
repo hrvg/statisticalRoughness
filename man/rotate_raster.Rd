@@ -4,12 +4,10 @@
 \alias{rotate_raster}
 \title{Rotates the detrended DEM according to the main direction of the Fourier spectrum}
 \usage{
-rotate_raster(dem_detrended, dem, ang_fourier, mean_res)
+rotate_raster(dem, ang_fourier)
 }
 \arguments{
-\item{dem_detrended}{\code{RasterLayer}, detrended DEM}
-
-\item{dem}{\code{RasterLayer}, original (cropped) DEM}
+\item{dem}{\code{RasterLayer}, detrended DEM}
 
 \item{ang_fourier}{\code{numeric}, angle of the main component of the 2D Fourier spectrum}
 }

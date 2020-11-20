@@ -5,7 +5,7 @@
 #' @param x `numeric`
 #' @param y `numeric`
 #' @param nbin `numeric`, the number of bins
-#' @return a matrix with with binned values and summary statistics
+#' @return a matrix with binned values and summary statistics
 #' @export
 #' @keywords rotate_raster
 bin <- function(x, y, nbin){
@@ -98,14 +98,12 @@ get_fourier_angle <- function(Pmn_truncated){
 }
 
 #' Rotates the detrended DEM according to the main direction of the Fourier spectrum
-#' @param dem_detrended `RasterLayer`, detrended DEM
-#' @param dem `RasterLayer`, original (cropped) DEM
+#' @param mm `matrix`, matrix corresponding to a DEM
 #' @param ang_fourier `numeric`, angle of the main component of the 2D Fourier spectrum
 #' @return a `matrix` corresponding to the DEM rotated in the main direction of the Fourier spectrum
 #' @export
 #' @keywords rotate_raster
-rotate_raster <- function(dem_detrended, dem, ang_fourier, mean_res){
-	mm <- as.matrix(dem_detrended)
+rotate_raster <- function(mm, ang_fourier){
 	mm.max <- max(mm, na.rm = TRUE)
 	mm.min <- .9 * min(mm, na.rm = TRUE)
 	mm <- (mm - mm.min) / (mm.max - mm.min)

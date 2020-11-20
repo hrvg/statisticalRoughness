@@ -14,7 +14,7 @@ bin(x, y, nbin)
 \item{nbin}{\code{numeric}, the number of bins}
 }
 \value{
-a matrix with with binned values and summary statistics
+a matrix with binned values and summary statistics
 }
 \description{
 This code is (largely) a port from Matlab to \code{R} of the code from \href{https://web.mit.edu/perron/www/files/2DSpecTools-v1.1.zip}{2DSpecTools}: A 2D spectral analysis toolkit for Matlab by Taylor Perron et al.

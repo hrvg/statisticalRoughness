@@ -1,0 +1,123 @@
+---
+title: "Rotating rasters along 2DFT main components"
+author:
+- name: Hervé Guillon
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Rotating rasters along 2DFT main components}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: bibliography.bib
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 8, 
+  fig.height = 8,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+```{r}
+devtools::load_all()
+```
+
+# Purpose
+
+The main purpose of Fourier analysis in this package is to rotate rasters so that they face the main components of the two-dimensional Fourier spectrum.
+
+# Loading data
+
+First, we perform the basic steps from [this vignette](articles/basic_2dft.html).
+
+```{r}
+library("rayshader")
+library("raster")
+gabilan_mesa <- raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "gabilan_mesa.tif"))
+gabilan_mesa <- gabilan_mesa %>% detrend_dem() 
+gabilan_mesa <- raster_to_matrix(gabilan_mesa)
+raster_resolution <- 9.015
+FT2D <- fft2D(gabilan_mesa, dx = raster_resolution, dy = raster_resolution, Hann = TRUE)
+nbin <- 50
+binned_power_spectrum <- bin(log10(FT2D$radial_frequency_vector), log10(FT2D$spectral_power_vector), nbin)
+binned_power_spectrum <- na.omit(binned_power_spectrum)
+```
+
+# Filtering the spectral power matrix
+
+Then we obtain a normalized spectral power matrix by removing the background spectrum.
+More details are provided in @Perron2008.
+This normalized spectral power matrix is then filtered to identify main components.
+While @Perron2008 used a comparison with a $\chi^2$ distribution, we filter out the spectral power that are below the 99th percentile of the values.
+The plot below corresponds, albeit not exactly, to their Fig. 3c.
+
+
+```{r}
+normalized_spectral_power_matrix <- get_normalized_spectral_power_matrix(binned_power_spectrum, FT2D)
+filtered_spectral_power_matrix <- filter_spectral_power_matrix(normalized_spectral_power_matrix, FT2D, quantile_prob = c(0.99))
+oce::imagep(filtered_spectral_power_matrix %>% raster_to_matrix(), col = viridisLite::viridis(25), asp = 1)
+```
+
+# Extracting the angle
+
+Fromm the filtered spectral power matrix, `get_fourier_angle()` extracts the maximum value of a circular density.
+In the current example, that angle $\theta$ is $\simeq$ `r round(get_fourier_angle(filtered_spectral_power_matrix))`.
+In their paper, @Perron2008 identifies the main direction at 131$^\circ$ and a secondary one at 45$^\circ$.
+The mod(180) we found is `r round(get_fourier_angle(filtered_spectral_power_matrix)) %% 180`.
+
+```{r}
+ang_fourier <- get_fourier_angle(filtered_spectral_power_matrix)
+ang_fourier
+```
+
+```{r, echo = FALSE}
+points <- raster::rasterToPoints(filtered_spectral_power_matrix, spatial = TRUE)
+coord <- raster::coordinates(points)
+coord_polar <- useful::cart2pol(coord[, 1], coord[, 2], degree = TRUE)
+
+power_ww <- na.omit(raster::getValues(filtered_spectral_power_matrix))
+power_ww <- log10(power_ww)^2
+power_ww <- power_ww / sum(power_ww)
+cDens_fourier <- spatstat::circdensity(coord_polar$theta, weights = power_ww, bw = 5)
+spatstat::rose(cDens_fourier, main = "Rose plot of FFT components")
+```
+
+# Rotating the raster
+
+Now that we have an angle for the rotation, we use the `rotate_raster()` function to turn the raster along the main direction.
+This mean that the rows and columns of the underlying matrix are parallel or orthogonal to the main component of the 2D Fourier transform.
+
+```{r}
+rotated_raster <- rotate_raster(gabilan_mesa, ang_fourier)
+```
+
+## Original topography
+
+```{r}
+gabilan_mesa %>%
+	sphere_shade(texture = "desert") %>%
+    add_shadow(ray_shade(gabilan_mesa, sunaltitude = 20), max_darken = 0.3) %>%  
+    add_shadow(ambient_shade(gabilan_mesa), 0) %>%
+    plot_map()
+```
+
+## Rotated topography
+
+```{r}
+rotated_raster %>%
+	sphere_shade(texture = "desert") %>%
+    add_shadow(ray_shade(rotated_raster, sunaltitude = 20), max_darken = 0.3) %>%  
+    add_shadow(ambient_shade(rotated_raster), 0) %>%
+    plot_map()
+```
+
+```{r}
+dim(gabilan_mesa)
+dim(rotated_raster)
+```
+
+# References
