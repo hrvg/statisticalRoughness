@@ -41,3 +41,6 @@ reference:
   - subtitle: Rotating DEMs
   - contents:
     - has_keyword("rotate_raster")
+  - subtitle: Visualizations
+  - contents:
+    - has_keyword("fft2d_viz")

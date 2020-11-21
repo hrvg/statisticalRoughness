@@ -13,6 +13,9 @@ New features
 	+ `filter_spectral_power_matrix()`
 	+ `get_fourier_angle()`
 	+ `rotate_raster()`
+- Some visualization functions:
+	+ `view_matrix()`
+	+ `spectrum_plot()`	
 
 Enhancements
 

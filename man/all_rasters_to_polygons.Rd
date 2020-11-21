@@ -18,7 +18,7 @@ all_rasters_to_polygons(
 
 \item{reference_path}{optional, \code{character}, path to a reference raster used to crop the rasters found in \code{input_dir}}
 
-\item{reverse}{\code{logical}, optional, if \code{TRUE} the files are processed in reverse order}
+\item{reversed}{\code{logical}, optional, if \code{TRUE} the files are processed in reverse order}
 }
 \value{
 \code{list} of \code{SpatVector}

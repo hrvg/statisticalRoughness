@@ -4,10 +4,14 @@
 \alias{get_fourier_angle}
 \title{Get the angle of the 2D Fourier spectrum}
 \usage{
-get_fourier_angle(Pmn_truncated)
+get_fourier_angle(filtered_spectral_power_matrix, FT2D, bandwidth = 5)
 }
 \arguments{
-\item{Pmn_truncated}{truncated normalized power spectrum}
+\item{filtered_spectral_power_matrix}{truncated normalized power spectrum}
+
+\item{FT2D}{\code{list}, results from \code{fft2d()} with objects radial frequency and spectral power matrices}
+
+\item{bandwidth}{\code{numeric} the bandwidth for the kernel smoothing of the circular density calculation}
 }
 \value{
 angle of the main component of the Fourier spectrum

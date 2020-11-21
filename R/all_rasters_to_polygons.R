@@ -5,7 +5,7 @@
 #' @param input_dir `character`, input directory
 #' @param output_dir `character`, output directory
 #' @param reference_path optional, `character`, path to a reference raster used to crop the rasters found in `input_dir`
-#' @param reverse `logical`, optional, if `TRUE` the files are processed in reverse order
+#' @param reversed `logical`, optional, if `TRUE` the files are processed in reverse order
 #' @return `list` of `SpatVector`
 #' @import foreach
 #' @import doFuture

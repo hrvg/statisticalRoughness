@@ -13,6 +13,8 @@ filter_spectral_power_matrix(
 \arguments{
 \item{normalized_spectral_power_matrix}{\code{matrix}, normalized spectral power matrix}
 
+\item{FT2D}{\code{list}, results from \code{fft2d()} with objects radial frequency and spectral power matrices}
+
 \item{quantile_prob}{vector of quantile probabilities, default to \code{c(0.99)}}
 }
 \value{

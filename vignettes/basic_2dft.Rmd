@@ -22,10 +22,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r}
-devtools::load_all()
-```
-
 # Purpose
 
 The code of `fft2d()`, `bin()` and `Hann2D()` is for the most part a port from Matlab to `R` of the code from [2DSpecTools](https://web.mit.edu/perron/www/files/2DSpecTools-v1.1.zip): A 2D spectral analysis toolkit for Matlab by J. Taylor Perron et al.
@@ -36,6 +32,7 @@ In consequence, a great introduction to this code is reading @Perron2008 paper i
 First, we load a raster corresponding to one of the two examples from @Perron2008, the one located near Gabilan Mesa in California. 
 
 ```{r}
+library("statisticalRoughness")
 library("rayshader")
 library("raster")
 gabilan_mesa <- raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "gabilan_mesa.tif"))
@@ -49,7 +46,6 @@ First, we detrend the DEM using `detrend_dem()` and convert it to a `matrix`.
 summary(gabilan_mesa)
 gabilan_mesa <- gabilan_mesa %>% detrend_dem() 
 summary(gabilan_mesa)
-gabilan_mesa <- raster_to_matrix(gabilan_mesa)
 ```
 
 # Hillshade visualization
@@ -58,9 +54,10 @@ Here is what the area looks like.
 We can clearly see the imprint of @Perron2008's Fig. 3a.
 ```{r}
 gabilan_mesa %>%
+	raster_to_matrix() %>%
 	sphere_shade(texture = "desert") %>%
-    add_shadow(ray_shade(gabilan_mesa, sunaltitude = 20), max_darken = 0.3) %>%  
-    add_shadow(ambient_shade(gabilan_mesa), 0) %>%
+    add_shadow(ray_shade(gabilan_mesa %>% raster_to_matrix(), sunaltitude = 20), max_darken = 0.3) %>%  
+    add_shadow(ambient_shade(gabilan_mesa %>% raster_to_matrix()), 0) %>%
     plot_map()
 ```
 
@@ -73,13 +70,19 @@ For convenience, we report as a vertical line the rolloff frequency identified i
 
 ```{r}
 raster_resolution <- 9.015
-FT2D <- fft2D(gabilan_mesa, dx = raster_resolution, dy = raster_resolution, Hann = TRUE)
+FT2D <- fft2D(raster::as.matrix(gabilan_mesa), dx = raster_resolution, dy = raster_resolution, Hann = TRUE)
+view_matrix(log10(Re(FT2D$spectral_power_matrix)))
+```
+
+# Radial power spectrum
+
+While produced with different underlying data, this plot passes the sanity check against @Perron2008's example.
+
+```{r}
 nbin <- 50
 binned_power_spectrum <- bin(log10(FT2D$radial_frequency_vector), log10(FT2D$spectral_power_vector), nbin)
 binned_power_spectrum <- na.omit(binned_power_spectrum)
 spectrum_plot(binned_power_spectrum, FT2D) + ggplot2::geom_vline(xintercept = 1/180)
 ```
-
-While produced with different underlying data, this plot passes the sanity check against @Perron2008's example.
 
 # References
