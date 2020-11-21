@@ -9,6 +9,7 @@ before_install:
   - sudo apt-get -y install libgdal-dev libgeos-dev libproj-dev 
   - sudo apt-get -y install libharfbuzz-dev libfribidi-dev
   - sudo apt-get -y install libmagick++-dev
+  - sudo apt-get -y install libglu1-mesa-dev freeglut3-dev mesa-common-dev
 
 warnings_are_errors: false
 
