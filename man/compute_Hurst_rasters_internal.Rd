@@ -29,3 +29,4 @@ a RasterStack with four layers q, H, p-value and R squared values
 \description{
 Compute Hurst rasters from a log-log regression between scales and mean standard deviation
 }
+\keyword{Hurst}

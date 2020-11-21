@@ -4,6 +4,7 @@
 #' @param R list of scales (aggregation factors)
 #' @return a RasterStack with four layers q, H, p-value and R squared values
 #' @export
+#' @keywords Hurst
 compute_Hurst_rasters <- function(dem, L, R){
 	L_raster <- terra::aggregate(dem, fact = L, fun = mean, na.rm = TRUE)
 	mean_res <- get_mean_res(L_raster, L)
@@ -23,6 +24,7 @@ compute_Hurst_rasters <- function(dem, L, R){
 #' @import doFuture
 #' @importFrom stats lm lm.fit pt
 #' @export
+#' @keywords Hurst
 compute_Hurst_rasters_internal <- function(mean_sd_rasters, R, mean_res, L_raster, min_res = 1.87){
 	x <- logsd <- r <- id <- variable <- NULL
 	raster_values <- foreach(x = mean_sd_rasters, r = R, .combine = rbind) %do% {

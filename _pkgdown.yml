@@ -1,9 +1,46 @@
-articles:
-- title: Vignettes
-  navbar: ~
-  contents:
-  - getting-started
-  - factoring
-  - tiling
-  - computing 
-  - comparison 
+navbar:
+  structure:
+    left:  [home, intro, articles, reference, news]
+
+  components:
+    articles:
+      text: Articles
+      menu:
+      - text: Computing Hurst exponents
+        menu:
+          - text: Getting started
+            href: articles/getting-started.html
+          - text: Factoring
+            href: articles/factoring.html
+          - text: Tiling rasters
+            href: articles/tiling.html
+          - text: Computing 
+            href: articles/computing .html
+          - text: Comparison with a previous approach 
+            href: articles/comparison .html
+      - text: -------       
+      - text: 2D Fourier analyis of topography
+        menu:
+        - text: A basic 2D Fourier analysis of topography
+          href: articles/basic_2dft.html
+        - text: Rotating rasters along 2DFT main components
+          href: articles/rotating_rasters.html
+
+reference:
+  - title: Hurst exponents calculation
+  - subtitle: Raster operations
+  - contents:
+      - has_keyword("Hurst")
+  - subtitle: Factoring
+  - contents:
+      - has_keyword("factors")
+  - title: 2D Fourier analysis of topography
+  - subtitle: Basic functions
+  - contents:
+    - has_keyword("fft2d")
+  - subtitle: Rotating DEMs
+  - contents:
+    - has_keyword("rotate_raster")
+  - subtitle: Visualizations
+  - contents:
+    - has_keyword("fft2d_viz")

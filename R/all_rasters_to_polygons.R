@@ -5,13 +5,14 @@
 #' @param input_dir `character`, input directory
 #' @param output_dir `character`, output directory
 #' @param reference_path optional, `character`, path to a reference raster used to crop the rasters found in `input_dir`
-#' @param reverse `logical`, optional, if `TRUE` the files are processed in reverse order
+#' @param reversed `logical`, optional, if `TRUE` the files are processed in reverse order
 #' @return `list` of `SpatVector`
 #' @import foreach
 #' @import doFuture
 #' @import sp
 #' @import rgdal
 #' @export
+#' @keywords Hurst
 all_rasters_to_polygons <- function(input_dir, output_dir, reference_path = NULL, reversed = FALSE){
 	supported_ext <- c("tif", "grd")
 	raster_file <- NULL

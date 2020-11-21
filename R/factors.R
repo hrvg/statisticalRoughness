@@ -2,6 +2,7 @@
 #' @param x, numeric, converted to integer
 #' @return list of factors
 #' @export
+#' @keywords factors
 get_factors <- function(x) {
     x <- as.integer(x)
     div <- seq_len(abs(x))
@@ -17,6 +18,7 @@ get_factors <- function(x) {
 #' @param len integer, number of scales returned, default to 32, len only works if `logfilter == TRUE`
 #' @return a list with two elements `allRs` and `allL`
 #' @export
+#' @keywords factors
 get_all_R_L <- function(Lmax, factor_limit, only = NULL, logfilter = TRUE, len = 32){
 	allRs  <- list()
 	allL  <- c()

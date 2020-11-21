@@ -19,3 +19,4 @@ list of rasters
 \description{
 Compute box-counting mean standard deviation rasters
 }
+\keyword{Hurst}

@@ -14,3 +14,4 @@ merge_Hurst_rasters(
 \description{
 merge all Hurst raster
 }
+\keyword{Hurst}

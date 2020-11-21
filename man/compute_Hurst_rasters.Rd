@@ -19,3 +19,4 @@ a RasterStack with four layers q, H, p-value and R squared values
 \description{
 Wrapper function around the computation of Hurst coefficients from box-counting and log-log regression
 }
+\keyword{Hurst}

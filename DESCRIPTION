@@ -1,6 +1,6 @@
 Package: statisticalRoughness
 Title: Estimation of roughness exponents across scale for large areas
-Version: 0.1
+Version: 0.2
 Authors@R: 
     person(given = "Hervé",
            family = "Guillon",
@@ -21,15 +21,26 @@ Imports:
     gdalUtils,
     ggplot2,
     ggpubr,
+    imager,
     kableExtra,
+    magick,
     magrittr,
+    MASS,
+    matlab,
     microbenchmark,
+    mrbsizeR,
+    plotly,
     pracma,
     raster,
-    sp,
+    rayshader,
     reshape2,
     rgdal,
+    rlang,
+    scales,
+    sp,
+    spatstat,
     terra,
+    useful,
     viridis,
     viridisLite
 Suggests: 
@@ -38,3 +49,5 @@ Suggests:
     pkgdown,
     testthat
 VignetteBuilder: knitr
+Depends: 
+    R (>= 2.10)
