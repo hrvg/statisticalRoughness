@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">statisticalRoughness</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2</span>
       </span>
     </div>
 
@@ -83,9 +83,6 @@
      
   </a>
 </li>
-<li>
-  <a href="../reference/index.html">Reference</a>
-</li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Articles
@@ -93,22 +90,42 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="../articles/getting-started.html">Getting started</a>
+    <li class="dropdown-submenu">
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Computing Hurst exponents</a>
+      <ul class="dropdown-menu" role="menu">
+        <li>
+          <a href="../articles/getting-started.html">Getting started</a>
+        </li>
+        <li>
+          <a href="../articles/factoring.html">Factoring</a>
+        </li>
+        <li>
+          <a href="../articles/tiling.html">Tiling rasters</a>
+        </li>
+        <li>
+          <a href="../articles/computing .html">Computing</a>
+        </li>
+        <li>
+          <a href="../articles/comparison .html">Comparison with a previous approach</a>
+        </li>
+      </ul>
     </li>
-    <li>
-      <a href="../articles/factoring.html">Factoring</a>
-    </li>
-    <li>
-      <a href="../articles/tiling.html">Tiling DEM</a>
-    </li>
-    <li>
-      <a href="../articles/computing.html">Computing</a>
-    </li>
-    <li>
-      <a href="../articles/comparison.html">Comparison with a previous approach</a>
+    <li class="divider"></li>
+    <li class="dropdown-submenu">
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">2D Fourier analyis of topography</a>
+      <ul class="dropdown-menu" role="menu">
+        <li>
+          <a href="../articles/basic_2dft.html">A basic 2D Fourier analysis of topography</a>
+        </li>
+        <li>
+          <a href="../articles/rotating_rasters.html">Rotating rasters along 2DFT main components</a>
+        </li>
+      </ul>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../reference/index.html">Reference</a>
 </li>
 <li>
   <a href="../news/index.html">Changelog</a>
@@ -133,11 +150,59 @@
       
     </div>
 
+    <div id="statisticalroughness-0-2" class="section level1">
+<h1 class="page-header" data-toc-text="0.2">
+<a href="#statisticalroughness-0-2" class="anchor"></a>statisticalRoughness 0.2</h1>
+<p>New features</p>
+<ul>
+<li>The following functions were added to allow a 2D Fourier analysis of topography:
+<ul>
+<li><code><a href="../reference/detrend_dem.html">detrend_dem()</a></code></li>
+<li><code><a href="../reference/pad_mat.html">pad_mat()</a></code></li>
+<li><code><a href="../reference/Hann2D.html">Hann2D()</a></code></li>
+<li><code><a href="../reference/fft2D.html">fft2D()</a></code></li>
+</ul>
+</li>
+<li>The following functions were added to rotate raster according to a 2D Fourier analysis:
+<ul>
+<li><code><a href="../reference/bin.html">bin()</a></code></li>
+<li><code><a href="../reference/get_normalized_spectral_power_matrix.html">get_normalized_spectral_power_matrix()</a></code></li>
+<li><code><a href="../reference/filter_spectral_power_matrix.html">filter_spectral_power_matrix()</a></code></li>
+<li><code><a href="../reference/get_fourier_angle.html">get_fourier_angle()</a></code></li>
+<li><code><a href="../reference/rotate_raster.html">rotate_raster()</a></code></li>
+</ul>
+</li>
+<li>Some visualization functions:
+<ul>
+<li><code><a href="../reference/view_matrix.html">view_matrix()</a></code></li>
+<li><code><a href="../reference/spectrum_plot.html">spectrum_plot()</a></code></li>
+</ul>
+</li>
+</ul>
+<p>Enhancements</p>
+<ul>
+<li>re-organized the Reference and the Articles</li>
+<li>added one vignette describing the basic use of Fourier analysis functions</li>
+<li>added one vignette describing how to rotate rasters along 2DFT main components</li>
+</ul>
+</div>
     <div id="statisticalroughness-0-1" class="section level1">
 <h1 class="page-header" data-toc-text="0.1">
 <a href="#statisticalroughness-0-1" class="anchor"></a>statisticalRoughness 0.1</h1>
+<p>Initial release.</p>
 <ul>
-<li>Initial release</li>
+<li>Contains the following functions
+<ul>
+<li><code><a href="../reference/all_rasters_to_polygons.html">all_rasters_to_polygons()</a></code></li>
+<li><code><a href="../reference/compute_Hurst_rasters.html">compute_Hurst_rasters()</a></code></li>
+<li><code><a href="../reference/compute_Hurst_rasters_internal.html">compute_Hurst_rasters_internal()</a></code></li>
+<li><code><a href="../reference/get_mean_res.html">get_mean_res()</a></code></li>
+<li><code><a href="../reference/get_mean_sd_rasters.html">get_mean_sd_rasters()</a></code></li>
+<li><code><a href="../reference/merge_Hurst_rasters.html">merge_Hurst_rasters()</a></code></li>
+<li><code><a href="../reference/get_all_R_L.html">get_all_R_L()</a></code></li>
+<li><code><a href="../reference/get_factors.html">get_factors()</a></code></li>
+</ul>
+</li>
 </ul>
 </div>
   </div>
