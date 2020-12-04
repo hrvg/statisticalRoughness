@@ -7,7 +7,7 @@ jobs:
     steps:
       - checkout
       - run: 
-          name: Installing packages
+          name: Install packages
           command: |
             sudo add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable
             sudo apt-get -q update
@@ -16,8 +16,11 @@ jobs:
             sudo apt-get -y install libmagick++-dev
             sudo apt-get -y install libglu1-mesa-dev freeglut3-dev mesa-common-dev
       - run:
-           name: Install R
-           command: sudo apt-get -y install r-base      
+          name: Install R
+          command: sudo apt-get -y install r-base
+      - run:
+          name: Install devtools and Roxygen
+          command: R -e "install.packages(c('devtools', 'roxygen2'), repos='http://cran.us.r-project.org')"
       - run:
           name: Install package dependencies
           command: R -e "devtools::install_deps(dep = TRUE)"
