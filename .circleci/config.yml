@@ -17,7 +17,9 @@ jobs:
             sudo apt-get -y install libglu1-mesa-dev freeglut3-dev mesa-common-dev
       - run:
           name: Install R
-          command: sudo apt-get -y install r-base
+          command: |
+            sudo apt-get -y install r-base
+            echo -e 'R --version'
       - run:
           name: Install devtools and Roxygen
           command: R -e "install.packages(c('devtools', 'roxygen2'), repos='http://cran.us.r-project.org')"
