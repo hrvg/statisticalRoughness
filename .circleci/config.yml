@@ -24,7 +24,7 @@ jobs:
           command: sudo R -e "install.packages(c('devtools', 'roxygen2'))"
       - run:
           name: Install package dependencies
-          command: R -e "devtools::install_deps(dep = TRUE)"
+          command: sudo R -e "devtools::install_deps(dep = TRUE)"
       - run:
           name: Build package
           command: R CMD build .
