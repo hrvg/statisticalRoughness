@@ -1,21 +1,13 @@
-## tic Circle CI template: linux
-## revision date: 2020-05-09
 version: 2.1
 jobs:
-  r-release:
-    environment:
-    docker:
-      - image: rocker/verse
+  build: # name of your job
+    machine: # executor type
+      image: ubuntu-2004:202010-01 # # recommended linux image - includes Ubuntu 20.04, docker 19.03.13, docker-compose 1.27.4
+
     steps:
       - checkout
-
-      # create a unique env var for the cache. Unfortunately normal env vars
-      # are not picked up by the cache, therefore this workaround is needed.
-      # See https://discuss.circleci.com/t/cannot-use-circle-yml-environment-variables-in-cache-keys/10994/7
-      - run: echo "$(date '+%d-%m')-r-release" > /tmp/_tmp_file
-
       - run: 
-          name: "installing packages"
+          name: "Installing packages"
           command: |
             sudo add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable
             sudo apt-get -q update
@@ -23,52 +15,12 @@ jobs:
             sudo apt-get -y install libharfbuzz-dev libfribidi-dev
             sudo apt-get -y install libmagick++-dev
             sudo apt-get -y install libglu1-mesa-dev freeglut3-dev mesa-common-dev
-
-      - restore_cache:
-          key: R-package-library-{{ checksum "/tmp/_tmp_file" }}
-
-      # install deps and check pkg ---------------------------------------------
       - run:
-          name: "[r-release] Install dependencies"
-          command: |
-            sudo apt update && sudo apt install -y ccache
-            echo -e 'options(Ncpus = 4, repos = structure(c(CRAN = "https://cloud.r-project.org/")))' > $HOME/.Rprofile
-            mkdir -p $HOME/.ccache && echo -e 'max_size = 5.0G\nsloppiness = include_file_ctime\nhash_dir=false' > $HOME/.ccache/ccache.conf
-            mkdir -p ~/.R && echo -e 'CC=ccache gcc\nCPP=ccache gcc\nCXX=ccache g++\nCXX11=ccache g++\nCXX14=ccache g++\nCXX17=ccache g++\nF77=ccache gfortran\nFC=ccache gfortran' > $HOME/.R/Makevars
-            R -q -e 'install.packages("remotes")'
-            R -q -e 'if (getRversion() < "3.2" && !requireNamespace("curl")) install.packages("curl")'
-            R -q -e 'remotes::install_github("ropensci/tic", upgrade = "always"); print(tic::dsl_load()); tic::prepare_all_stages()'
-            R -q -e 'tic::before_install()'
-            R -q -e 'tic::install()'
-
+          name: Install package dependencies
+          command: R -e "devtools::install_deps(dep = TRUE)"
       - run:
-          name: "[r-release] R CMD Check"
-          no_output_timeout: 60m
-          command: |
-            R -q -e 'tic::before_script()'
-            R -q -e 'tic::script()'
-
-      # save R pkg cache -------------------------------------------------------
-      - save_cache:
-          key: R-package-library-{{ checksum "/tmp/_tmp_file" }}
-          paths:
-            - /usr/local/lib/R/site-library
-
-workflows:
-  build:
-    jobs:
-      - r-release
-
-# CRON job daily at 4 am in the morning
-# - runs the "build" job on the master branch and builds package cache
-  nightly:
-    triggers:
-      - schedule:
-          cron: "0 4 * * *"
-          filters:
-            branches:
-              only:
-                - master
-    jobs:
-      - r-release
-# Custom user code -------------------------------------------------------------
+          name: Build package
+          command: R CMD build .
+      - run:
+          name: Check package
+          command: R CMD check *tar.gz
