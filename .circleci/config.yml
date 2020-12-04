@@ -19,6 +19,7 @@ jobs:
           name: Install R
           command: |
             sudo apt-get -y install r-base
+            sudo apt-get -y install r-cran-rgl
       - run:
           name: Install devtools and Roxygen
           command: sudo R -e "install.packages(c('devtools', 'roxygen2'))"
