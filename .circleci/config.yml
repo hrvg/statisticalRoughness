@@ -21,7 +21,7 @@ jobs:
             sudo apt-get -y install r-base
       - run:
           name: Install devtools and Roxygen
-          command: Rscript -e "install.packages(c('devtools', 'roxygen2'))"
+          command: sudo R -e "install.packages(c('devtools', 'roxygen2'))"
       - run:
           name: Install package dependencies
           command: R -e "devtools::install_deps(dep = TRUE)"
