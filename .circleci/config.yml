@@ -15,6 +15,7 @@ jobs:
             sudo apt-get -y install libharfbuzz-dev libfribidi-dev
             sudo apt-get -y install libmagick++-dev
             sudo apt-get -y install libglu1-mesa-dev freeglut3-dev mesa-common-dev
+            sudo apt-get -y install git libssl-dev ssh texlive-latex-base texlive-fonts-recommended libcurl4-openssl-dev libxml2-dev
       - run:
           name: Install R
           command: |
