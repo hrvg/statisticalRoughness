@@ -9,6 +9,9 @@ jobs:
 
     steps:
       - checkout
+       - restore_cache:
+          keys:
+            - cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
       - run: 
           name: Install packages
           command: |
@@ -40,9 +43,13 @@ jobs:
       - run:
           name: Build docs
           command: sudo Rscript -e "pkgdown::build_site()"
-      - persist_to_workspace:
-          root: docs
-          paths: html
+      - run:
+          name: Calculate code coverage
+          command: sudo Rscript -e "covr::codecov()"    
+       - save_cache:
+          key: cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
+          paths:
+            - "/usr/local/lib/R/site-library"    
 
 workflows:
   build_deploy:
