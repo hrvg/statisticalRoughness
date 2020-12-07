@@ -1,4 +1,7 @@
 version: 2.1
+orbs:
+  gh-pages: sugarshin/gh-pages@0.0.6
+
 jobs:
   build: # name of your job
     machine: # executor type
@@ -34,3 +37,16 @@ jobs:
       - run:
           name: Check package
           command: R CMD check *tar.gz
+      - run:
+          name: Build website
+          command: sudo Rscript -e "pkgdown::build_site()"
+
+workflows:
+  build_deploy:
+    jobs:
+      - build
+      - gh-pages/deploy:
+          build-dir: docs
+          requires:
+            - build
+          ssh-fingerprints: '8e:85:be:3c:e5:f4:5d:1b:90:23:95:59:f3:ce:cb:c0'
