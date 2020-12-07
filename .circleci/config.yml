@@ -25,6 +25,7 @@ jobs:
           command: |
             sudo apt-get -y install r-base
             sudo apt-get -y install r-cran-rgl
+            sudo chmod -R 777 /usr/local/lib/R/site-library
       - restore_cache:
           keys: 
           - cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
