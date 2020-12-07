@@ -5,7 +5,7 @@ orbs:
 jobs:
   build: # name of your job
     docker: # executor type
-    - image: rocker/verse:3.6.0
+    - image: rocker/verse:3.6.3-ubuntu18.04
 
     steps:
       - checkout
