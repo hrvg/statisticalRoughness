@@ -47,7 +47,8 @@ jobs:
           name: Calculate code coverage
           command: |
             sudo R -e "install.packages(c('covr'))"
-            sudo Rscript -e "covr::codecov()"    
+            sudo Rscript -e "covr::codecov()"
+            bash <(curl -s https://codecov.io/bash) -v"
       - save_cache:
           key: cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
           paths:
