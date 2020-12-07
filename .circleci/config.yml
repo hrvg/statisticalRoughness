@@ -4,14 +4,11 @@ orbs:
 
 jobs:
   build: # name of your job
-    machine: # executor type
-      image: ubuntu-2004:202010-01 # # recommended linux image - includes Ubuntu 20.04, docker 19.03.13, docker-compose 1.27.4
+      docker:
+        - image: rocker/verse:3.6.3-ubuntu18.04
 
     steps:
       - checkout
-      - run:
-          name: Adjust permission for cache
-          command: sudo chmod -R 777 /usr/local/lib/R/site-library
       - restore_cache:
           keys: 
           - cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
