@@ -40,6 +40,9 @@ jobs:
       - run:
           name: Build website
           command: sudo Rscript -e "pkgdown::build_site()"
+      - persist_to_workspace:
+        root: docs/
+        paths: html
 
 workflows:
   build_deploy:
