@@ -9,9 +9,9 @@ jobs:
 
     steps:
       - checkout
-       - restore_cache:
-          keys:
-            - cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
+      - restore_cache:
+          keys: 
+          - cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
       - run: 
           name: Install packages
           command: |
@@ -46,7 +46,7 @@ jobs:
       - run:
           name: Calculate code coverage
           command: sudo Rscript -e "covr::codecov()"    
-       - save_cache:
+      - save_cache:
           key: cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
           paths:
             - "/usr/local/lib/R/site-library"    
