@@ -47,7 +47,8 @@ Suggests:
     knitr,
     rmarkdown,
     pkgdown,
-    testthat
+    testthat,
+    covr
 VignetteBuilder: knitr
 Remotes:
   rspatial/terra,
