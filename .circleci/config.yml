@@ -4,11 +4,14 @@ orbs:
 
 jobs:
   build: # name of your job
-    docker: # executor type
-    - image: rocker/verse:3.6.3-ubuntu18.04
+    machine: # executor type
+      image: ubuntu-2004:202010-01 # # recommended linux image - includes Ubuntu 20.04, docker 19.03.13, docker-compose 1.27.4
 
     steps:
       - checkout
+      - run:
+          name: Initializing temp dir for libraries
+          command: mkdir $HOME/site-library
       - restore_cache:
           keys: 
           - cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
@@ -21,13 +24,16 @@ jobs:
             sudo apt-get -y install libharfbuzz-dev libfribidi-dev
             sudo apt-get -y install libmagick++-dev
             sudo apt-get -y install libglu1-mesa-dev freeglut3-dev mesa-common-dev
-            sudo apt-get -y install git libssl-dev ssh texlive-latex-base texlive-fonts-recommended libcurl4-openssl-dev libxml2-dev texlive-base texlive-binaries
-            sudo apt-get -y install -f
-      # - run:
-      #     name: Install R
-      #     command: |
-      #       sudo apt-get -y install r-base
-      #       sudo apt-get -y install r-cran-rgl
+            sudo apt-get -y install git libssl-dev ssh texlive-latex-base texlive-fonts-recommended libcurl4-openssl-dev libxml2-dev
+            sudo apt-get -y install pandoc pandoc-citeproc
+      - run:
+          name: Install R
+          command: |
+            sudo apt-get -y install r-base
+            sudo apt-get -y install r-cran-rgl
+      - run:
+          name: Restoring cached libraries from HOME
+          command: sudo cp -r $HOME/site-library /usr/local/lib/R/site-library            
       - run:
           name: Install devtools and Roxygen
           command: sudo R -e "install.packages(c('devtools', 'roxygen2'))"
@@ -45,14 +51,14 @@ jobs:
           command: sudo Rscript -e "pkgdown::build_site()"
       - run:
           name: Calculate code coverage
-          command: |
-            sudo R -e "install.packages(c('covr'))"
-            sudo Rscript -e "covr::codecov()"
-            bash <(curl -s https://codecov.io/bash) -v"
+          command: sudo Rscript -e "covr::codecov()"
+      - run:
+          name: Saving libraries into HOME
+          command: sudo cp -r /usr/local/lib/R/site-library $HOME/site-library        
       - save_cache:
           key: cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
           paths:
-            - "/usr/local/lib/R/site-library"    
+            - $HOME/site-library    
 
 workflows:
   build_deploy:
