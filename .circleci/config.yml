@@ -38,10 +38,10 @@ jobs:
           name: Check package
           command: R CMD check *tar.gz
       - run:
-          name: Build website
+          name: Build docs
           command: sudo Rscript -e "pkgdown::build_site()"
       - persist_to_workspace:
-        root: docs/
+        root: docs
         paths: html
 
 workflows:
