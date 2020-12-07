@@ -22,13 +22,12 @@ jobs:
             sudo apt-get -y install libmagick++-dev
             sudo apt-get -y install libglu1-mesa-dev freeglut3-dev mesa-common-dev
             sudo apt-get -y install git libssl-dev ssh texlive-latex-base texlive-fonts-recommended libcurl4-openssl-dev libxml2-dev texlive-base texlive-binaries
-            sudo apt-get -y install pandoc pandoc-citeproc
             sudo apt-get -y install -f
-      - run:
-          name: Install R
-          command: |
-            sudo apt-get -y install r-base
-            sudo apt-get -y install r-cran-rgl
+      # - run:
+      #     name: Install R
+      #     command: |
+      #       sudo apt-get -y install r-base
+      #       sudo apt-get -y install r-cran-rgl
       - run:
           name: Install devtools and Roxygen
           command: sudo R -e "install.packages(c('devtools', 'roxygen2'))"
