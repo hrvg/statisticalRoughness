@@ -4,14 +4,11 @@ orbs:
 
 jobs:
   build: # name of your job
-    docker:
-      - image: rocker/verse:3.6.3-ubuntu18.04
+    machine: # executor type
+      image: ubuntu-2004:202010-01 # # recommended linux image - includes Ubuntu 20.04, docker 19.03.13, docker-compose 1.27.4
 
     steps:
       - checkout
-      - restore_cache:
-          keys: 
-          - cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
       - run: 
           name: Install packages
           command: |
@@ -28,6 +25,9 @@ jobs:
           command: |
             sudo apt-get -y install r-base
             sudo apt-get -y install r-cran-rgl
+      - restore_cache:
+          keys: 
+          - cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
       - run:
           name: Install devtools and Roxygen
           command: sudo R -e "install.packages(c('devtools', 'roxygen2'))"
