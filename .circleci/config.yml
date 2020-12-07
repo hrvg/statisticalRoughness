@@ -4,11 +4,14 @@ orbs:
 
 jobs:
   build: # name of your job
-    machine: # executor type
-      image: ubuntu-2004:202010-01 # # recommended linux image - includes Ubuntu 20.04, docker 19.03.13, docker-compose 1.27.4
+    docker: # executor type
+    - image: rocker/verse:3.6.0
 
     steps:
       - checkout
+      - restore_cache:
+          keys: 
+          - cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
       - run: 
           name: Install packages
           command: |
@@ -20,15 +23,12 @@ jobs:
             sudo apt-get -y install libglu1-mesa-dev freeglut3-dev mesa-common-dev
             sudo apt-get -y install git libssl-dev ssh texlive-latex-base texlive-fonts-recommended libcurl4-openssl-dev libxml2-dev
             sudo apt-get -y install pandoc pandoc-citeproc
+            sudo apt-get -y install -f
       - run:
           name: Install R
           command: |
             sudo apt-get -y install r-base
             sudo apt-get -y install r-cran-rgl
-            sudo chmod -R 777 /usr/local/lib/R/site-library
-      - restore_cache:
-          keys: 
-          - cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
       - run:
           name: Install devtools and Roxygen
           command: sudo R -e "install.packages(c('devtools', 'roxygen2'))"
