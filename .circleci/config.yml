@@ -48,6 +48,10 @@ jobs:
       - run:
           name: Install package dependencies
           command: R -e "withr::with_libpaths(Sys.getenv('R_LIBS_USER'), devtools::install_deps(dep = TRUE))"
+      - save_cache:
+          key: cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
+          paths:
+            - ~/R   
       - run:
           name: Build package
           command: R CMD build .
@@ -76,10 +80,6 @@ jobs:
       #       echo $(pwd)
       #       echo $(ls $HOME/site-library)
       #       echo $(ls /usr/local/lib/R/site-library)
-      - save_cache:
-          key: cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
-          paths:
-            - ~/R   
 
 workflows:
   build_deploy:
