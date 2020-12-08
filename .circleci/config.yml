@@ -33,12 +33,13 @@ jobs:
           command: |
             sudo apt-get -y install r-base
             sudo apt-get -y install r-cran-rgl
+            R -e ".libPaths()"
       - run:
           name: Restoring cached libraries from HOME
           command: sudo cp -r $HOME/site-library/ /usr/local/lib/R/site-library/            
-      # - run:
-      #     name: Install devtools and Roxygen
-      #     command: sudo R -e "install.packages(c('devtools', 'roxygen2'))"
+      - run:
+          name: Install devtools and Roxygen
+          command: sudo R -e "install.packages(c('devtools', 'roxygen2'))"
       # - run:
       #     name: Install package dependencies
       #     command: sudo R -e "devtools::install_deps(dep = TRUE)"
