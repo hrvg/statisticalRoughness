@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.com/hrvg/statisticalRoughness.svg?token=Dx1gYTrTiuxgW9Sq3s3q&branch=master)](https://travis-ci.com/hrvg/statisticalRoughness)
 
+[![CircleCI](https://circleci.com/gh/hrvg/statisticalRoughness.svg?style=svg)](https://circleci.com/gh/hrvg/statisticalRoughness)
+
 # `statisticalRoughness`
 
 ## Purpose

@@ -62,32 +62,10 @@ jobs:
           name: Build docs
           command: |
             R -e "pkgdown::build_site()"
+      - run:  
+          name: Calculate code coverage
+          command: |
+            sudo Rscript -e "covr::codecov()"
+            bash <(curl -s https://codecov.io/bash)
       - gh-pages/deploy:
           build-dir: docs
-          # ssh-fingerprints: '8e:85:be:3c:e5:f4:5d:1b:90:23:95:59:f3:ce:cb:c0'
-              
-      # - run:  
-      #     name: Calculate code coverage
-      #     command: |
-      #       sudo Rscript -e "covr::codecov()"
-      #       bash <(curl -s https://codecov.io/bash)
-
-
-      # - run:
-      #     name: Saving libraries into HOME
-      #     command: sudo cp -r /usr/local/lib/R/site-library/ $HOME/site-library/        
-      # - run: 
-      #     name: Checking file structure
-      #     command: |
-      #       echo $(pwd)
-      #       echo $(ls $HOME/site-library)
-      #       echo $(ls /usr/local/lib/R/site-library)
-
-# workflows:
-#   build_deploy:
-#     jobs:
-#       - build
-      # - gh-pages/deploy:
-      #     build-dir: docs
-      #     requires:
-      #       - build
