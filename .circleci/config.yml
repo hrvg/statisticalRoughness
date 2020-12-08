@@ -51,7 +51,9 @@ jobs:
           command: sudo Rscript -e "pkgdown::build_site()"
       - run:
           name: Calculate code coverage
-          command: sudo Rscript -e "covr::codecov()"
+          command: |
+            sudo Rscript -e "covr::codecov()"
+            bash <(curl -s https://codecov.io/bash) 
       - run:
           name: Saving libraries into HOME
           command: sudo cp -r /usr/local/lib/R/site-library $HOME/site-library        
