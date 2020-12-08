@@ -61,7 +61,7 @@ jobs:
       - run:
           name: Build docs
           command: |
-            sudo Rscript -e "pkgdown::build_site()"
+            R -e "pkgdown::build_site()"
             tree -d ~
             pwd
       # - run:  
