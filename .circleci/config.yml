@@ -31,12 +31,10 @@ jobs:
           command: |
             sudo apt-get -y install r-base
             sudo apt-get -y install r-cran-rgl
-            R -e ".libPaths()"
       - run:
           name: Create local library folder
           command: |
             R -e "dir.create(path = Sys.getenv('R_LIBS_USER'), showWarnings = FALSE, recursive = TRUE)"
-            tree -d $HOME
       - restore_cache:
           keys: 
           - cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
@@ -47,10 +45,9 @@ jobs:
           name: Install devtools and Roxygen
           command: |
             R -e "install.packages(c('devtools', 'roxygen2'), lib = Sys.getenv('R_LIBS_USER'))"
-            tree -d $HOME
-      # - run:
-      #     name: Install package dependencies
-      #     command: sudo R -e "withr::with_libpaths(Sys.getenv('R_LIBS_USER'), devtools::install_deps(dep = TRUE))"
+      - run:
+          name: Install package dependencies
+          command: sudo R -e "withr::with_libpaths(Sys.getenv('R_LIBS_USER'), devtools::install_deps(dep = TRUE))"
       # - run:
       #     name: Build package
       #     command: R CMD build .
