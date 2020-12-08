@@ -25,6 +25,7 @@ jobs:
             sudo apt-get -y install libglu1-mesa-dev freeglut3-dev mesa-common-dev
             sudo apt-get -y install git libssl-dev ssh texlive-latex-base texlive-fonts-recommended libcurl4-openssl-dev libxml2-dev
             sudo apt-get -y install pandoc pandoc-citeproc
+            sudo apt-get -y install tree
       - run:
           name: Install R
           command: |
@@ -35,7 +36,7 @@ jobs:
           name: Create local library folder
           command: |
             R -e 'dir.create(path = Sys.getenv("R_LIBS_USER"), showWarnings = FALSE, recursive = TRUE)'
-            ls $HOME
+            tree -d $HOME
       # - restore_cache:
       #     keys: 
       #     - cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
@@ -44,7 +45,7 @@ jobs:
       #     command: sudo cp -r $HOME/site-library/ /usr/local/lib/R/site-library/            
       - run:
           name: Install devtools and Roxygen
-          command: sudo R -e "install.packages(c('devtools', 'roxygen2'))"
+          command: R -e "install.packages(c('devtools', 'roxygen2'), lib = Sys.getenv("R_LIBS_USER"))"
       # - run:
       #     name: Install package dependencies
       #     command: sudo R -e "devtools::install_deps(dep = TRUE)"
