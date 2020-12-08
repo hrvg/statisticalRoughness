@@ -11,7 +11,9 @@ jobs:
       - checkout
       - run:
           name: Initializing temp dir for libraries
-          command: mkdir $HOME/site-library
+          command: |
+            echo $HOME
+            mkdir $HOME/site-library
       - restore_cache:
           keys: 
           - cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
