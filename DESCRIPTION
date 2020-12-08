@@ -1,6 +1,6 @@
 Package: statisticalRoughness
 Title: Estimation of roughness exponents across scale for large areas
-Version: 0.2
+Version: 0.2.0.4
 Authors@R: 
     person(given = "Hervé",
            family = "Guillon",
@@ -47,9 +47,12 @@ Suggests:
     knitr,
     rmarkdown,
     pkgdown,
-    testthat
+    testthat,
+    covr
 VignetteBuilder: knitr
 Remotes:
-  rspatial/terra
+  rspatial/raster,
+  rspatial/terra,
+  tylermorganwall/rayshader
 Depends: 
     R (>= 2.10)
