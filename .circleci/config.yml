@@ -37,9 +37,9 @@ jobs:
           command: |
             R -e "dir.create(path = Sys.getenv('R_LIBS_USER'), showWarnings = FALSE, recursive = TRUE)"
             tree -d $HOME
-      # - restore_cache:
-      #     keys: 
-      #     - cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
+      - restore_cache:
+          keys: 
+          - cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
       # - run:
       #     name: Restoring cached libraries from HOME
       #     command: sudo cp -r $HOME/site-library/ /usr/local/lib/R/site-library/            
@@ -50,7 +50,7 @@ jobs:
             tree -d $HOME
       # - run:
       #     name: Install package dependencies
-      #     command: sudo R -e "devtools::install_deps(dep = TRUE)"
+      #     command: sudo R -e "withr::with_libpaths(Sys.getenv('R_LIBS_USER'), devtools::install_deps(dep = TRUE))"
       # - run:
       #     name: Build package
       #     command: R CMD build .
@@ -76,10 +76,10 @@ jobs:
       #       echo $(pwd)
       #       echo $(ls $HOME/site-library)
       #       echo $(ls /usr/local/lib/R/site-library)
-      # - save_cache:
-      #     key: cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
-      #     paths:
-      #       - $HOME/site-library    
+      - save_cache:
+          key: cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
+          paths:
+            - $HOME/R   
 
 workflows:
   build_deploy:
