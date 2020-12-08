@@ -35,7 +35,7 @@ jobs:
           name: Create local library folder
           command: |
             echo $R_LIBS_USER
-            R -e 'dir.create(path = Sys.getenv("R_LIBS_USER"), showWarnings = FALSE, recursive = TRUE)''
+            R -e 'dir.create(path = Sys.getenv("R_LIBS_USER"), showWarnings = FALSE, recursive = TRUE)'
       # - restore_cache:
       #     keys: 
       #     - cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
