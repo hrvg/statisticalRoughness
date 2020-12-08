@@ -31,13 +31,12 @@ jobs:
           command: |
             sudo apt-get -y install r-base
             sudo apt-get -y install r-cran-rgl
-            ls /usr/local/lib/R/site-library
       - run:
           name: Restoring cached libraries from HOME
           command: sudo cp -r $HOME/site-library /usr/local/lib/R/site-library            
-      - run:
-          name: Install devtools and Roxygen
-          command: sudo R -e "install.packages(c('devtools', 'roxygen2'))"
+      # - run:
+      #     name: Install devtools and Roxygen
+      #     command: sudo R -e "install.packages(c('devtools', 'roxygen2'))"
       # - run:
       #     name: Install package dependencies
       #     command: sudo R -e "devtools::install_deps(dep = TRUE)"
@@ -50,17 +49,22 @@ jobs:
       # - run:
       #     name: Build docs
       #     command: sudo Rscript -e "pkgdown::build_site()"
-      - run:
-          name: checking libraries
-          command: R -e 'installed.packages()'
-      - run:  
-          name: Calculate code coverage
-          command: |
-            sudo Rscript -e "covr::codecov()"
-            bash <(curl -s https://codecov.io/bash) 
+      # - run:  
+      #     name: Calculate code coverage
+      #     command: |
+      #       sudo Rscript -e "covr::codecov()"
+      #       bash <(curl -s https://codecov.io/bash)
+
+
       - run:
           name: Saving libraries into HOME
           command: sudo cp -r /usr/local/lib/R/site-library $HOME/site-library        
+      - run: 
+          name: Checking file structure
+          command: |
+            echo $(pwd)
+            echo $(ls $HOME/site-library)
+            echo $(ls /usr/local/lib/R/site-library)
       - save_cache:
           key: cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
           paths:
