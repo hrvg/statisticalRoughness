@@ -44,7 +44,7 @@ jobs:
       - run:
           name: Install devtools and Roxygen
           command: |
-            R -e "install.packages(c('devtools', 'roxygen2'), lib = Sys.getenv('R_LIBS_USER'))"
+            R -e "install.packages(c('devtools', 'roxygen2', 'pkgdown'), lib = Sys.getenv('R_LIBS_USER'))"
       - run:
           name: Install package dependencies
           command: R -e "withr::with_libpaths(Sys.getenv('R_LIBS_USER'), devtools::install_deps(dep = TRUE))"
