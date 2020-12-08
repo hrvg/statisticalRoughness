@@ -79,7 +79,7 @@ jobs:
       - save_cache:
           key: cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
           paths:
-            - $HOME/R   
+            - ~/R   
 
 workflows:
   build_deploy:
