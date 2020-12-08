@@ -43,8 +43,7 @@ jobs:
       #     command: sudo cp -r $HOME/site-library/ /usr/local/lib/R/site-library/            
       - run:
           name: Install devtools and Roxygen
-          command: |
-            R -e "install.packages(c('devtools', 'roxygen2', 'pkgdown'), lib = Sys.getenv('R_LIBS_USER'))"
+          command: R -e "install.packages(c('devtools', 'roxygen2'), lib = Sys.getenv('R_LIBS_USER'))"
       - run:
           name: Install package dependencies
           command: R -e "withr::with_libpaths(Sys.getenv('R_LIBS_USER'), devtools::install_deps(dep = TRUE))"
@@ -59,13 +58,18 @@ jobs:
           name: Check package
           command: R CMD check *tar.gz
       - run:
+          name: Install pkgdown
+          command: R -e "install.packages(c('pkgdown'), lib = Sys.getenv('R_LIBS_USER'))"
+      - run:
           name: Build docs
-          command: |
-            R -e "pkgdown::build_site()"
+          command: R -e "pkgdown::build_site()"
+      - run:  
+          name: Install covr
+          command: R -e "install.packages(c('covr'), lib = Sys.getenv('R_LIBS_USER'))"
       - run:  
           name: Calculate code coverage
           command: |
-            sudo Rscript -e "covr::codecov()"
+            R -e "covr::codecov()"
             bash <(curl -s https://codecov.io/bash)
       - gh-pages/deploy:
           build-dir: docs
