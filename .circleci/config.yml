@@ -34,8 +34,8 @@ jobs:
       - run:
           name: Create local library folder
           command: |
-            echo $R_LIBS_USER
             R -e 'dir.create(path = Sys.getenv("R_LIBS_USER"), showWarnings = FALSE, recursive = TRUE)'
+            ls $HOME
       # - restore_cache:
       #     keys: 
       #     - cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
