@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">statisticalRoughness</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0.4</span>
       </span>
     </div>
 
@@ -108,7 +108,7 @@
       <h1 data-toc-skip>A basic 2D Fourier analysis of topography</h1>
                         <h4 class="author">Hervé Guillon</h4>
                         
-            <h4 class="date">04 December 2020</h4>
+            <h4 class="date">08 December 2020</h4>
       
       
       <div class="hidden name"><code>basic_2dft.Rmd</code></div>
@@ -120,7 +120,7 @@
 <div id="purpose" class="section level1">
 <h1 class="hasAnchor">
 <a href="#purpose" class="anchor"></a>Purpose</h1>
-<p>The code of <code>fft2d()</code>, <code><a href="../reference/bin.html">bin()</a></code> and <code><a href="../reference/Hann2D.html">Hann2D()</a></code> is for the most part a port from Matlab to <code>R</code> of the code from <a href="https://web.mit.edu/perron/www/files/2DSpecTools-v1.1.zip">2DSpecTools</a>: A 2D spectral analysis toolkit for Matlab by J. Taylor Perron et al. In consequence, a great introduction to this code is reading <span class="citation">Perron, Kirchner, and Dietrich (2008)</span> paper in which the authors apply spectral analysis to two examples in California (USA).</p>
+<p>The code of <code>fft2d()</code>, <code><a href="../reference/bin.html">bin()</a></code> and <code><a href="../reference/Hann2D.html">Hann2D()</a></code> is for the most part a port from Matlab to <code>R</code> of the code from <a href="https://web.mit.edu/perron/www/files/2DSpecTools-v1.1.zip">2DSpecTools</a>: A 2D spectral analysis toolkit for Matlab by J. Taylor Perron et al. In consequence, a great introduction to this code is reading <span class="citation">Perron, Kirchner, and Dietrich (2008)</span> paper in which the authors apply spectral analysis to two examples in California (USA).</p>
 </div>
 <div id="loading-data" class="section level1">
 <h1 class="hasAnchor">
@@ -161,11 +161,11 @@
 <p>Here is what the area looks like. We can clearly see the imprint of <span class="citation">Perron, Kirchner, and Dietrich (2008)</span>’s Fig. 3a.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">gabilan_mesa</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="https://rdrr.io/pkg/rayshader/man/raster_to_matrix.html">raster_to_matrix</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="https://rdrr.io/pkg/rayshader/man/sphere_shade.html">sphere_shade</a></span><span class="op">(</span>texture <span class="op">=</span> <span class="st">"desert"</span><span class="op">)</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="https://rdrr.io/pkg/rayshader/man/add_shadow.html">add_shadow</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/rayshader/man/ray_shade.html">ray_shade</a></span><span class="op">(</span><span class="va">gabilan_mesa</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/pkg/rayshader/man/raster_to_matrix.html">raster_to_matrix</a></span><span class="op">(</span><span class="op">)</span>, sunaltitude <span class="op">=</span> <span class="fl">20</span><span class="op">)</span>, max_darken <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span> <span class="op">%&gt;%</span>  
-    <span class="fu"><a href="https://rdrr.io/pkg/rayshader/man/add_shadow.html">add_shadow</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/rayshader/man/ambient_shade.html">ambient_shade</a></span><span class="op">(</span><span class="va">gabilan_mesa</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/pkg/rayshader/man/raster_to_matrix.html">raster_to_matrix</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>, <span class="fl">0</span><span class="op">)</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="https://rdrr.io/pkg/rayshader/man/plot_map.html">plot_map</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+    <span class="fu"><a href="https://www.rayshader.com/reference/raster_to_matrix.html">raster_to_matrix</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="https://www.rayshader.com/reference/sphere_shade.html">sphere_shade</a></span><span class="op">(</span>texture <span class="op">=</span> <span class="st">"desert"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="https://www.rayshader.com/reference/add_shadow.html">add_shadow</a></span><span class="op">(</span><span class="fu"><a href="https://www.rayshader.com/reference/ray_shade.html">ray_shade</a></span><span class="op">(</span><span class="va">gabilan_mesa</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://www.rayshader.com/reference/raster_to_matrix.html">raster_to_matrix</a></span><span class="op">(</span><span class="op">)</span>, sunaltitude <span class="op">=</span> <span class="fl">20</span><span class="op">)</span>, max_darken <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span> <span class="op">%&gt;%</span>  
+    <span class="fu"><a href="https://www.rayshader.com/reference/add_shadow.html">add_shadow</a></span><span class="op">(</span><span class="fu"><a href="https://www.rayshader.com/reference/ambient_shade.html">ambient_shade</a></span><span class="op">(</span><span class="va">gabilan_mesa</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://www.rayshader.com/reference/raster_to_matrix.html">raster_to_matrix</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>, <span class="fl">0</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="https://www.rayshader.com/reference/plot_map.html">plot_map</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p><img src="basic_2dft_files/figure-html/unnamed-chunk-4-1.png" width="768"></p>
 </div>
 <div id="d-fourier-transform" class="section level1">
@@ -194,7 +194,7 @@
 <a href="#references" class="anchor"></a>References</h1>
 <div id="refs" class="references">
 <div id="ref-Perron2008">
-<p>Perron, J. Taylor, James W. Kirchner, and William E. Dietrich. 2008. “Spectral Signatures of Characteristic Spatial Scales and Nonfractal Structure in Landscapes.” <em>Journal of Geophysical Research: Earth Surface</em> 113 (F4): n/a–n/a. <a href="https://doi.org/10.1029/2007JF000866" class="uri">https://doi.org/10.1029/2007JF000866</a>.</p>
+<p>Perron, J. Taylor, James W. Kirchner, and William E. Dietrich. 2008. “Spectral Signatures of Characteristic Spatial Scales and Nonfractal Structure in Landscapes.” <em>Journal of Geophysical Research: Earth Surface</em> 113 (F4): n/a–n/a. <a href="https://doi.org/10.1029/2007JF000866">https://doi.org/10.1029/2007JF000866</a>.</p>
 </div>
 </div>
 </div>
