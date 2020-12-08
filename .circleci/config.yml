@@ -47,7 +47,7 @@ jobs:
             R -e "install.packages(c('devtools', 'roxygen2'), lib = Sys.getenv('R_LIBS_USER'))"
       - run:
           name: Install package dependencies
-          command: sudo R -e "withr::with_libpaths(Sys.getenv('R_LIBS_USER'), devtools::install_deps(dep = TRUE))"
+          command: R -e "withr::with_libpaths(Sys.getenv('R_LIBS_USER'), devtools::install_deps(dep = TRUE))"
       # - run:
       #     name: Build package
       #     command: R CMD build .
