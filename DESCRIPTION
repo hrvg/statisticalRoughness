@@ -7,7 +7,7 @@ Authors@R:
            role = c("aut", "cre"),
            email = "herve@guillon.xyz",
            comment = c(ORCID = "0000-0002-6297-8253"))
-Description: This package estimates the roughness exponent of the topography over a range of predefined spatial scales. It implements an efficient way of exploring the scaling of the topography for large areas by leveraging a tiling process. The spatial scales are defined using some factorization. 
+Description: This package estimates the roughness exponent of the topography over a range of predefined spatial scales. It implements an efficient way of exploring the scaling of the topography for large areas by leveraging a tiling process. The spatial scales are defined using some factorization.  
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
