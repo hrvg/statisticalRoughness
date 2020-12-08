@@ -31,9 +31,10 @@ jobs:
           command: |
             sudo apt-get -y install r-base
             sudo apt-get -y install r-cran-rgl
+            ls /usr/local/lib/R/site-library
       - run:
           name: Restoring cached libraries from HOME
-          command: sudo cp -r $HOME/site-library/* /usr/local/lib/R/site-library/*            
+          command: sudo cp -r $HOME/site-library /usr/local/lib/R/site-library            
       - run:
           name: Install devtools and Roxygen
           command: sudo R -e "install.packages(c('devtools', 'roxygen2'))"
@@ -59,7 +60,7 @@ jobs:
             bash <(curl -s https://codecov.io/bash) 
       - run:
           name: Saving libraries into HOME
-          command: sudo cp -r /usr/local/lib/R/site-library/* $HOME/site-library/*        
+          command: sudo cp -r /usr/local/lib/R/site-library $HOME/site-library        
       - save_cache:
           key: cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
           paths:
