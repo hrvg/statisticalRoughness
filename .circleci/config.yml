@@ -62,8 +62,10 @@ jobs:
           name: Build docs
           command: |
             R -e "pkgdown::build_site()"
-            tree -d ~
-            pwd
+      - gh-pages/deploy:
+          build-dir: docs
+          ssh-fingerprints: '8e:85:be:3c:e5:f4:5d:1b:90:23:95:59:f3:ce:cb:c0'
+              
       # - run:  
       #     name: Calculate code coverage
       #     command: |
@@ -81,12 +83,11 @@ jobs:
       #       echo $(ls $HOME/site-library)
       #       echo $(ls /usr/local/lib/R/site-library)
 
-workflows:
-  build_deploy:
-    jobs:
-      - build
+# workflows:
+#   build_deploy:
+#     jobs:
+#       - build
       # - gh-pages/deploy:
       #     build-dir: docs
       #     requires:
       #       - build
-      #     ssh-fingerprints: '8e:85:be:3c:e5:f4:5d:1b:90:23:95:59:f3:ce:cb:c0'
