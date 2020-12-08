@@ -9,14 +9,11 @@ jobs:
 
     steps:
       - checkout
-      - run:
-          name: Initializing temp dir for libraries
-          command: |
-            echo $HOME
-            mkdir $HOME/site-library
-      - restore_cache:
-          keys: 
-          - cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
+      # - run:
+      #     name: Initializing temp dir for libraries
+      #     command: |
+      #       echo $HOME
+      #       mkdir $HOME/site-library
       - run: 
           name: Install packages
           command: |
@@ -35,8 +32,16 @@ jobs:
             sudo apt-get -y install r-cran-rgl
             R -e ".libPaths()"
       - run:
-          name: Restoring cached libraries from HOME
-          command: sudo cp -r $HOME/site-library/ /usr/local/lib/R/site-library/            
+          name: Create local library folder
+          command: |
+            echo $R_LIBS_USER
+            R -e 'dir.create(path = Sys.getenv("R_LIBS_USER"), showWarnings = FALSE, recursive = TRUE)''
+      # - restore_cache:
+      #     keys: 
+      #     - cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
+      # - run:
+      #     name: Restoring cached libraries from HOME
+      #     command: sudo cp -r $HOME/site-library/ /usr/local/lib/R/site-library/            
       - run:
           name: Install devtools and Roxygen
           command: sudo R -e "install.packages(c('devtools', 'roxygen2'))"
@@ -59,26 +64,26 @@ jobs:
       #       bash <(curl -s https://codecov.io/bash)
 
 
-      - run:
-          name: Saving libraries into HOME
-          command: sudo cp -r /usr/local/lib/R/site-library/ $HOME/site-library/        
-      - run: 
-          name: Checking file structure
-          command: |
-            echo $(pwd)
-            echo $(ls $HOME/site-library)
-            echo $(ls /usr/local/lib/R/site-library)
-      - save_cache:
-          key: cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
-          paths:
-            - $HOME/site-library    
+      # - run:
+      #     name: Saving libraries into HOME
+      #     command: sudo cp -r /usr/local/lib/R/site-library/ $HOME/site-library/        
+      # - run: 
+      #     name: Checking file structure
+      #     command: |
+      #       echo $(pwd)
+      #       echo $(ls $HOME/site-library)
+      #       echo $(ls /usr/local/lib/R/site-library)
+      # - save_cache:
+      #     key: cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
+      #     paths:
+      #       - $HOME/site-library    
 
 workflows:
   build_deploy:
     jobs:
       - build
-      - gh-pages/deploy:
-          build-dir: docs
-          requires:
-            - build
-          ssh-fingerprints: '8e:85:be:3c:e5:f4:5d:1b:90:23:95:59:f3:ce:cb:c0'
+      # - gh-pages/deploy:
+      #     build-dir: docs
+      #     requires:
+      #       - build
+      #     ssh-fingerprints: '8e:85:be:3c:e5:f4:5d:1b:90:23:95:59:f3:ce:cb:c0'
