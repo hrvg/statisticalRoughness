@@ -30,6 +30,7 @@ Imports:
     microbenchmark,
     mrbsizeR,
     plotly,
+    plyr,
     pracma,
     raster,
     rayshader,

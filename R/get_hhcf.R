@@ -1,0 +1,68 @@
+#' This wrapper function derives the one-dimensional `HHCF()` for all columns or rows of a matrix
+#' @param mat a `matrix`
+#' @param margin indicate the direction, 1 = row, 2 = column, passed to `apply`'s `MARGIN`
+#' @param detrend `logical` indicates if the data need to be detrended, default to `FALSE`
+#' @param get_autocorr `logical`, indicaites if the auto-correlation length is calculated
+#' @export
+#' @keywords zeta
+get_hhcf <- function(mat, margin = 1, detrend = FALSE, get_autocorr = FALSE){
+	if (detrend){
+		mean_profile <- apply(mat, MARGIN = ifelse(margin == 1, 2, 1), FUN = function(values) mean(values, na.rm = TRUE))
+	}
+
+	hhcf <- plyr::alply(mat, .margins = margin, .fun = function(row){
+		ind <- which(!is.na(row))
+		if (length(ind) > 1) {
+			if (detrend){
+				row <- row - mean_profile
+			}
+			row <- row[ind]
+			return(HHCF(row))
+		} else {
+			return(NA)
+		}
+	})
+
+	if (get_autocorr){
+		autocorr_len <- plyr::alply(mat, .margins = margin, .fun = function(row){
+			ind <- which(!is.na(row))
+			if (length(ind) > 1) {
+				if (detrend){
+					row <- row - mean_profile
+				}
+				row <- row[ind]
+				ACF <- stats::acf(row, plot = FALSE, type = "correlation", lag.max = length(row) - 1)
+				return(ACF$lag[head(which(ACF$acf <= 1 / exp(1)), 1)])
+			} else {
+				return(NA)
+			}
+		})
+		autocorr_len <- unname(unlist(autocorr_len))
+	} else {
+		autocorr_len <- NULL
+	}
+
+	max_length <- max(sapply(hhcf, length))
+	hhcf <- lapply(hhcf, function(row){
+		length(row) <- max_length
+		return(row)
+	})
+	hhcf <- do.call(rbind, hhcf)
+	hhcf <- data.frame(hhcf)
+	# hhcf <- hhcf[rowSums(is.na(hhcf)) != ncol(hhcf), ]
+	len <- apply(hhcf, MARGIN = 1, FUN = function(row) length(na.omit(row)))
+	return(list(hhcf = hhcf, len = len, autocorr_len = autocorr_len))
+}
+
+#' Internal; derives a one-dimensional height-height correlation function
+#' @param row array of values
+#' @return array with the values of the height-height correlation function
+#' @export
+#' @keywords zeta
+HHCF <- function(row){
+	len <- length(row) - 1
+	dr <- seq(1, len)
+	diffs <- lapply(dr, function(r) diff(row, lag = r))
+	hhcf <- sapply(diffs, function(d) sqrt(sum(d^2) / length(d)))
+	return(hhcf)
+}

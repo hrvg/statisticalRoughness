@@ -1,0 +1,99 @@
+---
+title: "Deriving the anisotropy exponent"
+author:
+- name: Hervé Guillon
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Deriving the anisotropy exponent}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: bibliography.bib
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 8, 
+  fig.height = 8,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+# Purpose
+
+
+# Loading data
+
+First, we perform all the steps from [this vignette](articles/rotating_rasters.html).
+
+```{r devtools}
+devtools::load_all()
+```
+
+```{r loading}
+library("statisticalRoughness")
+library("rayshader")
+library("raster")
+
+gabilan_mesa <- raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "gabilan_mesa.tif"))
+gabilan_mesa <- gabilan_mesa %>% detrend_dem() 
+raster_resolution <- 9.015
+FT2D <- fft2D(raster::as.matrix(gabilan_mesa), dx = raster_resolution, dy = raster_resolution, Hann = TRUE)
+nbin <- 50
+binned_power_spectrum <- bin(log10(FT2D$radial_frequency_vector), log10(FT2D$spectral_power_vector), nbin)
+binned_power_spectrum <- na.omit(binned_power_spectrum)
+normalized_spectral_power_matrix <- get_normalized_spectral_power_matrix(binned_power_spectrum, FT2D)
+filtered_spectral_power_matrix <- filter_spectral_power_matrix(normalized_spectral_power_matrix, FT2D, quantile_prob = c(0.9999))
+ang_fourier <- get_fourier_angle(filtered_spectral_power_matrix, FT2D)
+rotated_raster <- rotate_raster(raster::as.matrix(gabilan_mesa), ang_fourier)
+```
+
+```{r rayshader, echo = FALSE}
+ind_x <- nrow(rotated_raster) %/% 2
+ind_y <- ncol(rotated_raster) %/% 3
+.rotate_raster <- rotated_raster
+.rotated_raster[ind_x + 1, ] <- NA
+.rotated_raster[, ind_y + 1] <- NA
+.rotated_raster[, ind_x + 1] <- NA
+
+matrix_for_rayshader(.rotated_raster) %>%
+	sphere_shade(texture = "desert") %>%
+    add_shadow(ray_shade(matrix_for_rayshader(rotated_raster), sunaltitude = 20), max_darken = 0.3) %>%  
+    add_shadow(ambient_shade(matrix_for_rayshader(rotated_raster)), 0) %>%
+    plot_map()
+```
+
+# Height-height correlation functions
+
+[TEXT]
+
+```{r hhfc}
+hhcf_x <- get_hhcf(rotated_raster, margin = 1)
+hhcf_y <- get_hhcf(rotated_raster, margin = 2)
+```
+
+```{r example_x_1}
+get_alpha(hhcf_x$hhcf[ind_x, ], raster_resolution, do_plot = TRUE)
+```
+
+```{r example_y_1}
+get_alpha(hhcf_y$hhcf[ind_y, ], raster_resolution, do_plot = TRUE)
+```
+```{r example_y_2}
+get_alpha(hhcf_y$hhcf[ind_x, ], raster_resolution, do_plot = TRUE)
+```
+
+```{r all_alpha}
+alpha_x <- get_all_alpha(hhcf_x, raster_resolution) 
+alpha_y <- get_all_alpha(hhcf_y, raster_resolution)
+```
+
+```{r summarize}
+alpha_x %>% stats::na.omit() %>% dplyr::filter(.data$slope1 > 0, .data$slope2 > 0) %>%
+dplyr::summarise(dplyr::across(dplyr::everything(), list(min = min, mean = mean, max = max, sd = sd)))
+alpha_y %>% stats::na.omit() %>% dplyr::filter(.data$slope1 > 0, .data$slope2 > 0) %>%
+dplyr::summarise(dplyr::across(dplyr::everything(), list(min = min, mean = mean, max = max, sd = sd)))
+```
