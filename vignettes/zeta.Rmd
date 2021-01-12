@@ -51,7 +51,7 @@ ang_fourier <- get_fourier_angle(filtered_spectral_power_matrix, FT2D)
 rotated_raster <- rotate_raster(raster::as.matrix(gabilan_mesa), ang_fourier)
 ```
 
-On figure below, the horizontal line is the middle row, the leftmost vertical line is the first third column and the rightmost vertical line is the middle column.
+On the figure below, the horizontal line is the middle row, the leftmost vertical line is the first third column and the rightmost vertical line is the middle column.
 
 ```{r rayshader, echo = FALSE}
 ind_x <- nrow(rotated_raster) %/% 2
@@ -82,84 +82,100 @@ hhcf_x <- get_hhcf(rotated_raster, margin = 1)
 hhcf_y <- get_hhcf(rotated_raster, margin = 2)
 ```
 
+# Roughness exponent, $\alpha$
 
-## Roughness exponents
+## Definition and examples
 
-The HHCF scales with increasing $r$: 
+The HHCF scales with increasing $r$ as: 
 
 \[ C(r) \sim r^\alpha \]
 
 with $\alpha$ the roughness exponent.
-We now use `get_alpha()` to derive the roughness exponent $\alpha_1$ and $\alpha_2$ in each direction.
+We now use `get_alpha()` to derive the roughness exponents $\alpha_x$ and $\alpha_y$ in each direction.
 The option `do_plot = TRUE` provides a graphical display of the step-wise binned regression process and identification of the cross-over lengthscale.
-
+As the regression is a piecewise regression, for each direction, two slopes are returned, for example: $\alpha_{1,x}$ and $\alpha_{2,x}$.
 
 ```{r example_x_1}
-get_alpha(hhcf_x$hhcf[ind_x, ], raster_resolution, do_plot = TRUE)
+get_alpha(hhcf_x$hhcf[ind_x, ], raster_resolution, do_plot = TRUE) %>% signif(2)
 ```
 
 ```{r example_y_1}
-get_alpha(hhcf_y$hhcf[ind_y, ], raster_resolution, do_plot = TRUE)
+get_alpha(hhcf_y$hhcf[ind_y, ], raster_resolution, do_plot = TRUE) %>% signif(2)
 ```
 
 `get_alpha()` includes a number of safeguard and the function will return `NA`.
-Here is an example the roughly follow a ridgeline with no statistically consistent scaling.
+Here is an example the roughly follow a ridgeline, the middle column, with no statistically consistent scaling.
 
 ```{r example_y_2}
 get_alpha(hhcf_y$hhcf[ind_x, ], raster_resolution, do_plot = TRUE)
 ```
 
+## Computing all roughness exponents
+
 Provided a list of HHCF from `get_hhcf()`, the function `get_all_alpha()` computes all step-wise regressions.
 
 ```{r all_alpha}
 alpha_x <- get_all_alpha(hhcf_x, raster_resolution) 
-quantile(alpha_x$slope1, probs = c(.9,.95,.99,.999), na.rm = TRUE)
-quantile(alpha_x$slope2, probs = c(.9,.95,.99,.999), na.rm = TRUE)
 alpha_y <- get_all_alpha(hhcf_y, raster_resolution)
-quantile(alpha_y$slope1, probs = c(.9,.95,.99,.999), na.rm = TRUE)
-quantile(alpha_y$slope2, probs = c(.9,.95,.99,.999), na.rm = TRUE)
 ```
 
-
-
-
-The resulting `data.frames` can easily be processed using `dplyr`.
-For example:
-
-```{r summarize}
-alpha_x %>% stats::na.omit() %>% dplyr::filter(.data$slope1 > 0, .data$slope2 > 0, .data$slope1 < 2, .data$slope2 < 2) %>%
-dplyr::summarise(dplyr::across(dplyr::everything(), list(min = min, mean = mean, median = median, max = max, sd = sd)))
-alpha_y %>% stats::na.omit() %>% dplyr::filter(.data$slope1 > 0, .data$slope2 > 0, .data$slope1 < 2, .data$slope2 < 2) %>%
-dplyr::summarise(dplyr::across(dplyr::everything(), list(min = min, mean = mean, median = median, max = max, sd = sd)))
-```
-
-```{r summarize_hidden, echo = FALSE}
-x_stats <- alpha_x %>% stats::na.omit() %>% dplyr::filter(.data$slope1 > 0, .data$slope2 > 0, .data$slope1 < 2, .data$slope2 < 2) %>%
-dplyr::summarise(dplyr::across(dplyr::everything(), list(min = min, mean = mean, median = median, max = max, sd = sd)))
-y_stats <- alpha_y %>% stats::na.omit() %>% dplyr::filter(.data$slope1 > 0, .data$slope2 > 0, .data$slope1 < 2, .data$slope2 < 2) %>%
-dplyr::summarise(dplyr::across(dplyr::everything(), list(min = min, mean = mean, median = median, max = max, sd = sd)))
-```
-
-In a more human-readable format, we can summarize the entire landscape on `rotated_raster` by:
-
-|                          |                            row-wise direction, $x$                            |                          column-wise direction, $y$                           |
-|:-------------------------|:-----------------------------------------------------------------------------:|:-----------------------------------------------------------------------------:|
-| median first slope  (sd) | `r x_stats$slope1_median %>% signif(2)` (`r x_stats$slope1_sd %>% signif(2)`) | `r y_stats$slope1_median %>% signif(2)` (`r y_stats$slope1_sd %>% signif(2)`) |
-| median second slope (sd) | `r x_stats$slope2_median %>% signif(2)` (`r x_stats$slope2_sd %>% signif(2)`) | `r y_stats$slope2_median %>% signif(2)` (`r y_stats$slope2_sd %>% signif(2)`) |
-
-These numbers mean that the topography is mainly correlated in a positive way below `r mean(x_stats$break1_median, y_stats$break1_median) %>% signif(2)` meters and more correlated in the $x$-direction than in the $y$-direction as $\alpha_{1,x} > \alpha_{1,y} > 0.5$.
-Above `r mean(x_stats$break1_median, y_stats$break1_median) %>% signif(3)` meters, the topography is negatively correlated and more so in the y-direction than in the $x$-direction $\alpha_{2,y} < \alpha_{2,x} < 0.5$.
-The dominant slope in the $x$-direction results in increased smoothing, this is what we could have expected from a visual inspection of the landscape.
+A quick look at the distributions of the resulting roughness exponents values underline that in some cases $alpha > 1$, and in rare occurences, $\alpha > 10$ or even $\alpha > 100$.
 
 ```{r, echo = FALSE}
 alphas <- rbind(
-  alpha_x %>% stats::na.omit() %>% dplyr::filter(.data$slope1 > 0, .data$slope2 > 0) %>% dplyr::mutate(direction = 'x'),
-  alpha_y %>% stats::na.omit() %>% dplyr::filter(.data$slope1 > 0, .data$slope2 > 0) %>% dplyr::mutate(direction = 'y')
+  alpha_x %>% stats::na.omit() %>% dplyr::mutate(direction = 'x'),
+  alpha_y %>% stats::na.omit() %>% dplyr::mutate(direction = 'y')
   ) %>% reshape2::melt(measure.vars = c("slope1", "slope2"))
 p <- ggplot2::ggplot(alphas, ggplot2::aes(x = .data$value, group = .data$direction, color = .data$direction)) +
   ggplot2::geom_density(n = 512) +
   ggplot2::facet_grid(.data$variable ~ .) +
   ggpubr::theme_pubr() +
   ggplot2::scale_x_log10()
-p %>% plotly::ggplotly()  
+p
 ```
+
+
+This large values happen more often for the second slopes and are filtered using the 99.9% quantile of the initial slope with `filter_alpha()`.
+The resulting `data.frames` can easily be summarized with `summarise_alpha()`.
+For example:
+
+```{r summarize}
+alpha_x %>% filter_alpha() %>% summarise_alpha()
+alpha_y %>% filter_alpha() %>% summarise_alpha()
+```
+
+```{r summarize_hidden, echo = FALSE}
+x_stats <- alpha_x %>% filter_alpha() %>% summarise_alpha()
+y_stats <- alpha_y %>% filter_alpha() %>% summarise_alpha()
+```
+
+In a more human-readable format, we can summarize the entire landscape on `rotated_raster` by:
+
+|            |                             row-wise direction, $x$                             |                           column-wise direction, $y$                            |
+|:-----------|:-------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------:|
+| $\alpha_1$ | `r x_stats$slope1_mean %>% signif(2)` $\pm$ `r x_stats$slope1_sd %>% signif(2)` | `r y_stats$slope1_mean %>% signif(2)` $\pm$ `r y_stats$slope1_sd %>% signif(2)` |
+| $\alpha_2$ | `r x_stats$slope2_mean %>% signif(2)` $\pm$ `r x_stats$slope2_sd %>% signif(2)` | `r y_stats$slope2_mean %>% signif(2)` $\pm$ `r y_stats$slope2_sd %>% signif(2)` |
+
+These numbers mean that the topography is mainly correlated in a positive way below `r mean(x_stats$break1_mean, y_stats$break1_mean) %>% signif(3)` meters and more correlated in the $x$-direction than in the $y$-direction as $\alpha_{1,x} > \alpha_{1,y} > 0.5$.
+Above `r mean(x_stats$break1_mean, y_stats$break1_mean) %>% signif(3)` meters, the topography is negatively correlated and more so in the y-direction than in the $x$-direction $\alpha_{2,y} < \alpha_{2,x} < 0.5$.
+These results also mean that the $x$-direction corresponds to the down-slope direction, $\mathbf{e}_\parallel$, while the $y$-direction corresponds to the across-slope direction, $\mathbf{e}_\perp$.
+Further, the dominant slope in the $x$-direction results in increased smoothing and higher values of roughness exponents.
+This is what we could have expected from a visual inspection of the landscape.
+
+# Anisotropy exponent, $\zeta$
+
+The anisotropy exponent is the ratio between the down-slope and across-slope roughness exponents:
+
+\[ \zeta = \frac{\alpha_\perp}{\alpha_\parallel}\]
+
+Because of the increased smoothing due to gravity in the down-slope direction, $\alpha_\perp \geq \alpha_\parallel$ and $\zeta \geq 1$.
+From the central values of $\alpha_{1,x}$ and $\alpha_{1,y}$, the value of the anisotropy exponent $\zeta_1$ can be derived as:
+
+\[ \zeta_1 = \frac{\max{\alpha_{1,x}, \alpha_{1,x}}}{\min{\alpha_{1,x}, \alpha_{1,x}}}\]
+
+This estimate of $\zeta$ is handled by `get_zeta()`. For the current landscape:
+
+|           |                     anisotropy exponent, $\zeta$                     |
+|:----------|:--------------------------------------------------------------------:|
+| $\zeta_1$ | `r get_zeta(x_stats$slope1_mean, y_stats$slope1_mean) %>% signif(3)` |
+| $\zeta_2$ | `r get_zeta(x_stats$slope2_mean, y_stats$slope2_mean) %>% signif(3)` |

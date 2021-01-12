@@ -83,3 +83,39 @@ alpha_plot <- function(df, df_bin, change_point, xdecades= 3,  ydecades = 3){
 		ggplot2::guides(color = FALSE, alpha = FALSE)
   return(p)
 }
+
+#' Filters the slope values of alpha returned by `get_all_alpha()` between zero and the 99.9% quantile of the initial slopes
+#' @param alpha, a `data.frame` returned by `get_all_alpha()`
+#' @param prob, `numeric` the value of the probabilities passed to `quantile()`
+#' @return a `data.frame`
+#' @export
+#' @keywords zeta
+#' @importFrom rlang .data
+filter_alpha <- function(alpha, prob = .999){
+	alpha <- na.omit(alpha)
+	threshold <- quantile(alpha$slope1, probs = prob[1])
+	alpha <- alpha %>% dplyr::filter(.data$slope1 > 0, .data$slope2 > 0, .data$slope1 <= threshold, .data$slope2 <= threshold)
+	return(alpha)
+}
+
+#' Wrapper to summarize `alpha` values
+#' @param alpha, a `data.frame` returned by `get_all_alpha()` or `filter_alpha()`
+#' @return a summarized `data.frame`
+#' @export
+#' @keywords zeta
+#' @importFrom rlang .data
+summarise_alpha <- function(alpha){
+	alpha %>% dplyr::summarise(dplyr::across(dplyr::everything(), list(min = min, mean = mean, median = median, max = max, sd = sd)))
+}
+
+
+#' Wrapper to derive the anisotropy exponent from two roughness exponents
+#' @param alpha_1 `numeric`, a roughness coefficient
+#' @param alpha_2 `numeric`, a roughness coefficient
+#' @return a `numeric` anisotropy exponent
+#' @export
+#' @keywords zeta
+get_zeta <- function(alpha_1, alpha_2){
+	zeta <- max(c(alpha_1, alpha_2), na.rm = TRUE) / min(c(alpha_1, alpha_2), na.rm = TRUE)
+	return(zeta)
+}
