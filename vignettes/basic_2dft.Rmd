@@ -32,7 +32,6 @@ In consequence, a great introduction to this code is reading @Perron2008 paper i
 First, we load a raster corresponding to one of the two examples from @Perron2008, the one located near Gabilan Mesa in California. 
 
 ```{r}
-devtools::load_all()
 library("statisticalRoughness")
 library("rayshader")
 library("raster")
