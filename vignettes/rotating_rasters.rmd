@@ -31,6 +31,7 @@ The main purpose of Fourier analysis in this package is to rotate rasters so tha
 First, we perform the basic steps from [this vignette](articles/basic_2dft.html).
 
 ```{r}
+devtools::load_all()
 library("statisticalRoughness")
 library("rayshader")
 library("raster")

@@ -107,15 +107,3 @@ filter_alpha <- function(alpha, prob = .999){
 summarise_alpha <- function(alpha){
 	alpha %>% dplyr::summarise(dplyr::across(dplyr::everything(), list(min = min, mean = mean, median = median, max = max, sd = sd)))
 }
-
-
-#' Wrapper to derive the anisotropy exponent from two roughness exponents
-#' @param alpha_1 `numeric`, a roughness coefficient
-#' @param alpha_2 `numeric`, a roughness coefficient
-#' @return a `numeric` anisotropy exponent
-#' @export
-#' @keywords zeta
-get_zeta <- function(alpha_1, alpha_2){
-	zeta <- max(c(alpha_1, alpha_2), na.rm = TRUE) / min(c(alpha_1, alpha_2), na.rm = TRUE)
-	return(zeta)
-}
