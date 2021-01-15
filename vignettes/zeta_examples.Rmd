@@ -52,6 +52,7 @@ view_rotated_raster <- function(rstr, raster_resolution = 9.015, nbin = 50, .Han
 
 ```{r}
 gabilan_mesa <- raster::raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "gabilan_mesa.tif"))
+summary(gabilan_mesa)
 results <- get_zeta(gabilan_mesa) 
 ```
 
