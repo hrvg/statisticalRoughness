@@ -21,40 +21,55 @@ get_all_alpha <- function(hhcf, dr){
 #' @export
 #' @keywords zeta
 get_alpha <- function(row, dr, do_plot = FALSE){
-	if (length(na.omit(row)) < 30){
-		return(data.frame(slope1 = NA, slope2 = NA, break1 = NA))
+	if (length(na.omit(log10(unlist(row)))) < 30){
+		return(data.frame(slope1 = NA, slope2 = NA, change_point = NA, max_point = NA))
 	}
 	df <- data.frame(dr = seq_along(row) * dr, hhcf = unlist(row))
-	binned_hhcf <- bin(log10(df$dr), log10(df$hhcf), 60)
-	if (nrow(na.omit(binned_hhcf)) < 30){
-		return(data.frame(slope1 = NA, slope2 = NA, break1 = NA))
-	}
-	df_bin <- data.frame(dr = 10^binned_hhcf[, 1], hhcf = 10^binned_hhcf[, 2])
+	# binned_hhcf <- bin(log10(df$dr), log10(df$hhcf), 60)
+	# if (nrow(na.omit(binned_hhcf)) < 30){
+	# 	return(data.frame(slope1 = NA, slope2 = NA, change_point = NA, max_point = NA))
+	# }
+	# df_bin <- data.frame(dr = 10^binned_hhcf[, 1], hhcf = 10^binned_hhcf[, 2])
 
-	hhcf_fun <- splinefun(x = log10(df_bin$dr), y = log10(df_bin$hhcf))
-	d_hhcf_dr <- hhcf_fun(log10(df_bin$dr), deriv = 1)
+	hhcf_fun1 <- splinefun(x = log10(df$dr), y = log10(df$hhcf))
+	d_hhcf_dr <- hhcf_fun1(log10(df$dr), deriv = 1)
 
 	ind_neg <- which(d_hhcf_dr < 0)
 	if (length(ind_neg) < 1){
-		return(data.frame(slope1 = NA, slope2 = NA, break1 = NA))
+		return(data.frame(slope1 = NA, slope2 = NA, change_point = NA, max_point = NA))
 	} else {
-		df_bin <- df_bin[1:(ind_neg %>% head(1)), ]
-		min_dr <- stats::na.omit(df_bin) %>% dplyr::pull(.data$dr) %>% min()
-		df_bin <- dplyr::bind_rows(df %>% dplyr::filter(.data$dr < min_dr), na.omit(df_bin))
+		df_filtered <- df[1:(ind_neg %>% head(1)), ]
+		if (nrow(df_filtered) < 5){
+			return(data.frame(slope1 = NA, slope2 = NA, change_point = NA, max_point = NA))
+		}
+		# min_dr <- stats::na.omit(df_bin) %>% dplyr::pull(.data$dr) %>% min()
+		# df_bin <- df %>% dplyr::filter(.data$dr < min_dr)
+		# df_bin <- dplyr::bind_rows(df %>% dplyr::filter(.data$dr < min_dr), na.omit(df_bin))
 
-		hhcf_fun <- splinefun(x = log10(df_bin$dr), y = log10(df_bin$hhcf))
-		dd_hhcf_dr <- hhcf_fun(log10(df_bin$dr), deriv = 2)
+		binned_hhcf <- bin(log10(df_filtered$dr), log10(df_filtered$hhcf), 30)
+		if (nrow(na.omit(binned_hhcf)) < 5){
+			return(data.frame(slope1 = NA, slope2 = NA, change_point = NA, max_point = NA))
+		}
+		df_bin <- data.frame(dr = 10^binned_hhcf[, 1], hhcf = 10^binned_hhcf[, 2]) %>% na.omit()
 
-		change_point <- df_bin$dr[which.min(dd_hhcf_dr)]
-		alpha_1 <- hhcf_fun(log10(df_bin$dr)[which(df_bin$dr <= change_point)], deriv = 1) %>% mean()
-		alpha_2 <- hhcf_fun(log10(df_bin$dr)[which(df_bin$dr >= change_point)], deriv = 1) %>% mean()
-	if(do_plot){
-		p <- alpha_plot(df, df_bin, change_point)
-		print(p)
-	} 
-	return(data.frame(slope1 = alpha_1, slope2 = alpha_2, break1 = change_point))
+		hhcf_fun2 <- splinefun(x = log10(df_bin$dr), y = log10(df_bin$hhcf))
+		dd_hhcf_dr <- hhcf_fun2(log10(df_bin$dr), deriv = 2)
+
+		ind_neg <- which(dd_hhcf_dr < 0)
+		if (length(ind_neg) < 1){
+			return(data.frame(slope1 = NA, slope2 = NA, change_point = NA, max_point = NA))
+		} else {
+			change_point <- df_bin$dr[ind_neg %>% head(1)]
+			alpha_1 <- hhcf_fun1(log10(df_filtered$dr)[which(df_filtered$dr <= change_point)], deriv = 1) %>% median()
+			alpha_2 <- hhcf_fun1(log10(df_filtered$dr)[which(df_filtered$dr >= change_point)], deriv = 1) %>% median()
+			if(do_plot){
+				p <- alpha_plot(df, df_filtered, change_point)
+				print(p)
+			} 
+			return(data.frame(slope1 = alpha_1, slope2 = alpha_2, change_point = change_point, max_point = max(df_filtered$dr, na.rm = TRUE)))
+		}
 	}
-	}
+}
 
 #' Internal companion function to `get_alpha`.
 #' @param df a `data.frame` with the non-binned data
@@ -105,5 +120,5 @@ filter_alpha <- function(alpha, prob = .999){
 #' @keywords zeta
 #' @importFrom rlang .data
 summarise_alpha <- function(alpha){
-	alpha %>% dplyr::summarise(dplyr::across(dplyr::everything(), list(min = min, mean = mean, median = median, max = max, sd = sd)))
+	alpha %>% na.omit(alpha) %>% dplyr::summarise(dplyr::across(dplyr::everything(), list(min = min, mean = mean, median = median, max = max, sd = sd)))
 }
