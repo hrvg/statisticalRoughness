@@ -82,6 +82,17 @@
         </li>
       </ul>
 </li>
+    <li class="dropdown-submenu">
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">-------</a>
+      <ul class="dropdown-menu" role="menu">
+<li>
+          <a href="../articles/zeta.html">Computing roughness and anisotropy exponents</a>
+        </li>
+        <li>
+          <a href="../articles/zeta_examples.html">Example of anisotropic landscapes</a>
+        </li>
+      </ul>
+</li>
   </ul>
 </li>
 <li>
@@ -107,7 +118,7 @@
       <h1 data-toc-skip>A basic 2D Fourier analysis of topography</h1>
                         <h4 class="author">Hervé Guillon</h4>
                         
-            <h4 class="date">12 January 2021</h4>
+            <h4 class="date">16 January 2021</h4>
       
       
       <div class="hidden name"><code>basic_2dft.Rmd</code></div>
@@ -147,11 +158,11 @@
 <span class="va">gabilan_mesa</span> <span class="op">&lt;-</span> <span class="va">gabilan_mesa</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/detrend_dem.html">detrend_dem</a></span><span class="op">(</span><span class="op">)</span> 
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">gabilan_mesa</span><span class="op">)</span>
 <span class="co">#&gt;         gabilan_mesa</span>
-<span class="co">#&gt; Min.     -128.593304</span>
-<span class="co">#&gt; 1st Qu.   -31.408450</span>
-<span class="co">#&gt; Median     -2.761952</span>
-<span class="co">#&gt; 3rd Qu.    31.035896</span>
-<span class="co">#&gt; Max.      115.623467</span>
+<span class="co">#&gt; Min.      -82.600540</span>
+<span class="co">#&gt; 1st Qu.   -18.781493</span>
+<span class="co">#&gt; Median      2.099804</span>
+<span class="co">#&gt; 3rd Qu.    20.267014</span>
+<span class="co">#&gt; Max.       59.039808</span>
 <span class="co">#&gt; NA's        0.000000</span></code></pre></div>
 </div>
 <div id="hillshade-visualization" class="section level1">
@@ -162,7 +173,7 @@
 <code class="sourceCode R"><span class="va">gabilan_mesa</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="https://www.rayshader.com/reference/raster_to_matrix.html">raster_to_matrix</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="https://www.rayshader.com/reference/sphere_shade.html">sphere_shade</a></span><span class="op">(</span>texture <span class="op">=</span> <span class="st">"desert"</span><span class="op">)</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="https://www.rayshader.com/reference/add_shadow.html">add_shadow</a></span><span class="op">(</span><span class="fu"><a href="https://www.rayshader.com/reference/ray_shade.html">ray_shade</a></span><span class="op">(</span><span class="va">gabilan_mesa</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://www.rayshader.com/reference/raster_to_matrix.html">raster_to_matrix</a></span><span class="op">(</span><span class="op">)</span>, sunaltitude <span class="op">=</span> <span class="fl">20</span><span class="op">)</span>, max_darken <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span> <span class="op">%&gt;%</span>  
+    <span class="fu"><a href="https://www.rayshader.com/reference/add_shadow.html">add_shadow</a></span><span class="op">(</span><span class="fu"><a href="https://www.rayshader.com/reference/ray_shade.html">ray_shade</a></span><span class="op">(</span><span class="va">gabilan_mesa</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://www.rayshader.com/reference/raster_to_matrix.html">raster_to_matrix</a></span><span class="op">(</span><span class="op">)</span>, sunaltitude <span class="op">=</span> <span class="fl">45</span><span class="op">)</span>, max_darken <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span> <span class="op">%&gt;%</span>  
     <span class="fu"><a href="https://www.rayshader.com/reference/add_shadow.html">add_shadow</a></span><span class="op">(</span><span class="fu"><a href="https://www.rayshader.com/reference/ambient_shade.html">ambient_shade</a></span><span class="op">(</span><span class="va">gabilan_mesa</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://www.rayshader.com/reference/raster_to_matrix.html">raster_to_matrix</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>, <span class="fl">0</span><span class="op">)</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="https://www.rayshader.com/reference/plot_map.html">plot_map</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p><img src="basic_2dft_files/figure-html/unnamed-chunk-4-1.png" width="768"></p>
@@ -180,13 +191,16 @@
 <div id="radial-power-spectrum" class="section level1">
 <h1 class="hasAnchor">
 <a href="#radial-power-spectrum" class="anchor"></a>Radial power spectrum</h1>
-<p>While produced with different underlying data, this plot passes the sanity check against <span class="citation">Perron, Kirchner, and Dietrich (2008)</span>’s example.</p>
+<p>While produced with different underlying data, this plot passes the sanity check against <span class="citation">Perron, Kirchner, and Dietrich (2008)</span>’s example. We can assess the break point and sloeps with <code><a href="../reference/get_beta.html">get_beta()</a></code>. In the graph below, the solid line corresponds to 180 m as in <span class="citation">Perron, Kirchner, and Dietrich (2008)</span> while the dashed-line is the change point of a segmented regression on the binned power spectrum.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">nbin</span> <span class="op">&lt;-</span> <span class="fl">50</span>
 <span class="va">binned_power_spectrum</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bin.html">bin</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log10</a></span><span class="op">(</span><span class="va">FT2D</span><span class="op">$</span><span class="va">radial_frequency_vector</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log10</a></span><span class="op">(</span><span class="va">FT2D</span><span class="op">$</span><span class="va">spectral_power_vector</span><span class="op">)</span>, <span class="va">nbin</span><span class="op">)</span>
 <span class="va">binned_power_spectrum</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html">na.omit</a></span><span class="op">(</span><span class="va">binned_power_spectrum</span><span class="op">)</span>
-<span class="fu"><a href="../reference/spectrum_plot.html">spectrum_plot</a></span><span class="op">(</span><span class="va">binned_power_spectrum</span>, <span class="va">FT2D</span><span class="op">)</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fl">180</span><span class="op">)</span></code></pre></div>
-<p><img src="basic_2dft_files/figure-html/unnamed-chunk-6-1.png" width="768"></p>
+<span class="va">beta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_beta.html">get_beta</a></span><span class="op">(</span><span class="va">binned_power_spectrum</span>, <span class="va">FT2D</span><span class="op">)</span>
+<span class="va">beta</span>
+<span class="co">#&gt;   change_point    slope1    slope2 adj.r.squared</span>
+<span class="co">#&gt; x  0.004210226 -2.187938 -5.531858     0.9970638</span></code></pre></div>
+<p><img src="basic_2dft_files/figure-html/unnamed-chunk-7-1.png" width="768"></p>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1 class="hasAnchor">
