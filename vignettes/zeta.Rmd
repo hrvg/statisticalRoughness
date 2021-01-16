@@ -30,10 +30,6 @@ This vignette showcases the functions used to derive the roughness and anisotrop
 
 First, we perform all the steps from [this vignette](articles/rotating_rasters.html).
 
-```{r devtools}
-devtools::load_all()
-```
-
 ```{r loading}
 library("statisticalRoughness")
 library("rayshader")

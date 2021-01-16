@@ -38,6 +38,7 @@ Imports:
     rgdal,
     rlang,
     scales,
+    segmented,
     sp,
     spatstat,
     terra,

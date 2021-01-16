@@ -50,7 +50,7 @@ get_hhcf <- function(mat, margin = 1, detrend = FALSE, get_autocorr = FALSE){
 	hhcf <- do.call(rbind, hhcf)
 	hhcf <- data.frame(hhcf)
 	# hhcf <- hhcf[rowSums(is.na(hhcf)) != ncol(hhcf), ]
-	len <- apply(hhcf, MARGIN = 1, FUN = function(row) length(na.omit(row)))
+	len <- apply(hhcf, MARGIN = 1, FUN = function(row) length(stats::na.omit(row)))
 	return(list(hhcf = hhcf, len = len, autocorr_len = autocorr_len))
 }
 

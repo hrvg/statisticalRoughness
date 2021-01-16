@@ -32,7 +32,6 @@ In consequence, a great introduction to this code is reading @Perron2008 paper i
 First, we load a raster corresponding to one of the two examples from @Perron2008, the one located near Gabilan Mesa in California. 
 
 ```{r}
-devtools::load_all()
 library("statisticalRoughness")
 library("rayshader")
 library("raster")
@@ -78,12 +77,19 @@ view_matrix(log10(Re(FT2D$spectral_power_matrix)), ply = FALSE)
 # Radial power spectrum
 
 While produced with different underlying data, this plot passes the sanity check against @Perron2008's example.
+We can assess the break point and sloeps with `get_beta()`.
+In the graph below, the solid line corresponds to 180 m as in @Perron2008 while the dashed-line is the change point of a segmented regression on the binned power spectrum.
 
 ```{r}
 nbin <- 50
 binned_power_spectrum <- bin(log10(FT2D$radial_frequency_vector), log10(FT2D$spectral_power_vector), nbin)
 binned_power_spectrum <- na.omit(binned_power_spectrum)
-spectrum_plot(binned_power_spectrum, FT2D) + ggplot2::geom_vline(xintercept = 1/180)
+beta <- get_beta(binned_power_spectrum, FT2D)
+beta
+```
+
+```{r, echo = FALSE}
+spectrum_plot(binned_power_spectrum, FT2D) + ggplot2::geom_vline(xintercept = 1/180) + ggplot2::geom_vline(xintercept = beta$change_point, lty = 2)
 ```
 
 # References

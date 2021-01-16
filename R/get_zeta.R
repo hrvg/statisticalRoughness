@@ -24,6 +24,8 @@ get_zeta <- function(rstr, raster_resolution = 9.015, nbin = 50, .Hann = TRUE, .
 	rstr <- rstr %>% detrend_dem() 
 	FT2D <- fft2D(raster::as.matrix(rstr), dx = raster_resolution, dy = raster_resolution, Hann = .Hann)
 	binned_power_spectrum <- bin(log10(FT2D$radial_frequency_vector), log10(FT2D$spectral_power_vector), nbin) %>% na.omit()
+	beta <- get_beta(binned_power_spectrum, FT2D)
+	colnames(beta) <- paste0(colnames(beta), ".beta")
 	normalized_spectral_power_matrix <- get_normalized_spectral_power_matrix(binned_power_spectrum, FT2D)
 	filtered_spectral_power_matrix <- filter_spectral_power_matrix(normalized_spectral_power_matrix, FT2D, quantile_prob = .quantile_prob)
 	ang_fourier <- get_fourier_angle(filtered_spectral_power_matrix, FT2D)
@@ -34,7 +36,7 @@ get_zeta <- function(rstr, raster_resolution = 9.015, nbin = 50, .Hann = TRUE, .
 	colnames(alpha_x) <- paste0(colnames(alpha_x), ".x")
 	alpha_y <- get_all_alpha(hhcf_y, raster_resolution) %>% summarise_alpha()
 	colnames(alpha_y) <- paste0(colnames(alpha_y), ".y")
-	res <- dplyr::bind_cols(alpha_x, alpha_y) %>% dplyr::mutate(
+	res <- dplyr::bind_cols(beta, alpha_x, alpha_y) %>% dplyr::mutate(
 		zeta1 = get_zeta_(alpha_x$slope1_mean, alpha_y$slope1_mean),
 		zeta2 = get_zeta_(alpha_x$slope2_mean, alpha_y$slope2_mean),
 		theta = ang_fourier
