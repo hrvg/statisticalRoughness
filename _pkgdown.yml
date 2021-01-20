@@ -26,6 +26,7 @@ navbar:
         - text: Rotating rasters along 2DFT main components
           href: articles/rotating_rasters.html
       - text: -------       
+      - text: Estimating anisotropy
         menu:
         - text: Computing roughness and anisotropy exponents
           href: articles/zeta.html

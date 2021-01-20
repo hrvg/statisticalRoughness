@@ -35,11 +35,11 @@ library("statisticalRoughness")
 library("rayshader")
 library("raster")
 
-gabilan_mesa <- raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "gabilan_mesa.tif"))
+gabilan_mesa <- raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "modoc.tif"))
 gabilan_mesa <- gabilan_mesa %>% detrend_dem() 
 raster_resolution <- 9.015
 FT2D <- fft2D(raster::as.matrix(gabilan_mesa), dx = raster_resolution, dy = raster_resolution, Hann = TRUE)
-nbin <- 50
+nbin <- 20
 binned_power_spectrum <- bin(log10(FT2D$radial_frequency_vector), log10(FT2D$spectral_power_vector), nbin)
 binned_power_spectrum <- na.omit(binned_power_spectrum)
 normalized_spectral_power_matrix <- get_normalized_spectral_power_matrix(binned_power_spectrum, FT2D)
@@ -112,8 +112,8 @@ get_alpha(hhcf_y$hhcf[ind_x, ], raster_resolution, do_plot = TRUE)
 Provided a list of HHCF from `get_hhcf()`, the function `get_all_alpha()` computes all step-wise regressions.
 
 ```{r all_alpha}
-alpha_x <- get_all_alpha(hhcf_x, raster_resolution) 
-alpha_y <- get_all_alpha(hhcf_y, raster_resolution)
+alpha_x <- get_all_alpha(hhcf_x, raster_resolution) %>% filter_alpha() 
+alpha_y <- get_all_alpha(hhcf_y, raster_resolution) %>% filter_alpha()
 ```
 
 ```{r, echo = FALSE}
@@ -146,11 +146,11 @@ In a more human-readable format, we can summarize the entire landscape on `rotat
 
 |            |                             row-wise direction, $x$                             |                           column-wise direction, $y$                            |
 |:-----------|:-------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------:|
-| $\alpha_1$ | `r x_stats$slope1_mean %>% signif(2)` $\pm$ `r x_stats$slope1_sd %>% signif(2)` | `r y_stats$slope1_mean %>% signif(2)` $\pm$ `r y_stats$slope1_sd %>% signif(2)` |
-| $\alpha_2$ | `r x_stats$slope2_mean %>% signif(2)` $\pm$ `r x_stats$slope2_sd %>% signif(2)` | `r y_stats$slope2_mean %>% signif(2)` $\pm$ `r y_stats$slope2_sd %>% signif(2)` |
+| $\alpha_1$ | `r x_stats$slope1_mode %>% signif(2)` $\pm$ `r x_stats$slope1_sd %>% signif(2)` | `r y_stats$slope1_mode %>% signif(2)` $\pm$ `r y_stats$slope1_sd %>% signif(2)` |
+| $\alpha_2$ | `r x_stats$slope2_mode %>% signif(2)` $\pm$ `r x_stats$slope2_sd %>% signif(2)` | `r y_stats$slope2_mode %>% signif(2)` $\pm$ `r y_stats$slope2_sd %>% signif(2)` |
 
-These numbers mean that the topography is mainly correlated in a positive way below `r mean(c(x_stats$change_point_mean, y_stats$change_point_mean)) %>% signif(3)` meters and more correlated in the $x$-direction than in the $y$-direction as $\alpha_{1,x} > \alpha_{1,y} > 0.5$.
-Above `r mean(c(x_stats$change_point_mean, y_stats$change_point_mean)) %>% signif(3)` meters, the topography is negatively correlated and more so in the y-direction than in the $x$-direction $\alpha_{2,y} < \alpha_{2,x} < 0.5$.
+These numbers mean that the topography is mainly correlated in a positive way below `r mean(c(x_stats$change_point_mode, y_stats$change_point_mode)) %>% signif(3)` meters and more correlated in the $x$-direction than in the $y$-direction as $\alpha_{1,x} > \alpha_{1,y} > 0.5$.
+Above `r mean(c(x_stats$change_point_mode, y_stats$change_point_mode)) %>% signif(3)` meters, the topography is negatively correlated and more so in the y-direction than in the $x$-direction $\alpha_{2,y} < \alpha_{2,x} < 0.5$.
 These results also mean that the $x$-direction corresponds to the down-slope direction, $\mathbf{e}_\parallel$, while the $y$-direction corresponds to the across-slope direction, $\mathbf{e}_\perp$.
 Further, the dominant slope in the $x$-direction results in increased smoothing and higher values of roughness exponents.
 This is what we could have expected from a visual inspection of the landscape.
@@ -170,5 +170,5 @@ This estimate of $\zeta$ is handled by an internal function. For the current lan
 
 |           |                     anisotropy exponent, $\zeta$                      |
 |:----------|:---------------------------------------------------------------------:|
-| $\zeta_1$ | `r get_zeta_(x_stats$slope1_mean, y_stats$slope1_mean) %>% signif(3)` |
-| $\zeta_2$ | `r get_zeta_(x_stats$slope2_mean, y_stats$slope2_mean) %>% signif(3)` |
+| $\zeta_1$ | `r get_zeta_(x_stats$slope1_mode, y_stats$slope1_mode) %>% signif(3)` |
+| $\zeta_2$ | `r get_zeta_(x_stats$slope2_mode, y_stats$slope2_mode) %>% signif(3)` |

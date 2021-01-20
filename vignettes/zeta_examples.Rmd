@@ -15,8 +15,8 @@ bibliography: bibliography.bib
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.width = 8, 
-  fig.height = 8,
+  fig.width = 7, 
+  fig.height = 7,
   warning = FALSE,
   message = FALSE
 )
@@ -24,7 +24,7 @@ knitr::opts_chunk$set(
 
 # Purpose
 
-This vignette displays the calculation of anisotropy exponent for different landscapes.
+This vignette displays the calculation of anisotropy exponent for different landscapes: Gabilan Mesa, Yosemite Valley and Modoc Plateau.
 
 ```{r, echo = FALSE}
 library("statisticalRoughness")
@@ -47,11 +47,41 @@ view_rotated_raster <- function(rstr, raster_resolution = 9.015, nbin = 50, .Han
 
 # Gabilan Mesa
 
+Gabilan Mesa landscape is the same landscape that we used in other vignettes and the test bed of @Perron2008 methods.
+Using `get_zeta()` returns a `data.frame` with the variable of interest for the analysis of topographic roughness and anisotropy.
+
 ```{r}
 gabilan_mesa <- raster::raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "gabilan_mesa.tif"))
-summary(gabilan_mesa)
-results <- get_zeta(gabilan_mesa)
+res_gabi <- get_zeta(gabilan_mesa)
 ```
+
+Gabilan Mesa landscape has 
+a minimum elevation of `r raster::minValue(gabilan_mesa) %>% signif(3)` m,
+an average elevation of `r raster::cellStats(gabilan_mesa, stat = "mean") %>% signif(3)` m, 
+and a maximum elevation of `r raster::maxValue(gabilan_mesa) %>% signif(3)` m.
+The maximum relief is thus `r (raster::maxValue(gabilan_mesa) - raster::minValue(gabilan_mesa)) %>% signif(3)` m.
+
+The figure below showcases the landscape in its original form.
+The landscape was rotated so that in this original frame of reference,
+$\theta_x =$ `r res_gabi$theta %% 180 %>% signif(3)`$^\circ$ and
+$\theta_y =$ `r (res_gabi$theta %% 180 + 90) %>% signif(3)`$^\circ$.
+(In the rotated frame of reference, $\theta_x' = 0^\circ$ and $\theta_y' = 90^\circ$.)
+The segmented regression on the power spectrum identifies scalings with slope $\beta_1 =$ `r res_gabi$slope1.beta %>% signif(3)`, and $\beta_2 =$ `r res_gabi$slope2.beta %>% signif(3)`, before and after a cut-off lengthscale of $1/f_c =$ `r (1/res_gabi$change_point.beta) %>% signif(3)` m, respectively.
+As $\beta = 2H + d$, and $d = 2$, the Hurst coefficients $H$ corresponding to $\beta_1$ and $\beta_2$ are 
+`r ((abs(res_gabi$slope1.beta) - 2)/2) %>% signif(3)`, and
+`r ((abs(res_gabi$slope2.beta) - 2)/2) %>% signif(3)`, respectively.
+Before a cut-off lengthscale of
+`r mean(c(res_gabi$change_point_mode.x, res_gabi$change_point_mode.y)) %>% signif(3)` m,
+the roughness exponents in the $x$-- and $y$--directions are
+$\alpha_{1,x} =$ `r res_gabi$slope1_mode.x %>% signif(3)`, and
+$\alpha_{1,y} =$ `r res_gabi$slope1_mode.y %>% signif(3)`.
+Consequently, the anisotropy exponent is $\zeta_1 =$ `r res_gabi$zeta1 %>% signif(3)`.
+After cut-off lengthscale,
+the roughness exponents are lower and almost equal with
+$\alpha_{2,x} =$ `r res_gabi$slope2_mode.x %>% signif(3)`, and
+$\alpha_{2,y} =$ `r res_gabi$slope2_mode.y %>% signif(3)`.
+Consequently, the anisotropy exponent is $\zeta_2 =$ `r res_gabi$zeta2 %>% signif(3)`.
+The maximum cutoff lengthscale recorded for roughness exponents is $r_{max} =$ `r mean(c(res_gabi$max_point_mode.x, res_gabi$max_point_mode.y)) %>% signif(3)` m.
 
 ```{r, echo = FALSE}
 matrix_for_rayshader(raster::as.matrix(gabilan_mesa)) %>%
@@ -59,43 +89,84 @@ matrix_for_rayshader(raster::as.matrix(gabilan_mesa)) %>%
 	    add_shadow(ray_shade(matrix_for_rayshader(raster::as.matrix(gabilan_mesa)), sunaltitude = 20), max_darken = 0.3) %>%  
 	    add_shadow(ambient_shade(matrix_for_rayshader(raster::as.matrix(gabilan_mesa))), 0) %>%
 	    plot_map()
-# view_rotated_raster(gabilan_mesa)
 ```
 
-|               $\beta_1$               |               $\beta_2$               |                     $1/f_c$                     |             $\alpha_{1,x}$              |             $\alpha_{1,y}$              |           $\zeta_{1}$           |             $\alpha_{2,x}$              |             $\alpha_{2,y}$              |            $\zeta_2$            |                                        $r_c$                                        | $r_{max}$                                                                     | $\theta_x$                             | $\theta_y$                            |
-|:-------------------------------------:|:-------------------------------------:|:-----------------------------------------------:|:---------------------------------------:|:---------------------------------------:|:-------------------------------:|:---------------------------------------:|:---------------------------------------:|:-------------------------------:|:-----------------------------------------------------------------------------------:|:------------------------------------------------------------------------------|:---------------------------------------|:--------------------------------------|
-| `r results$slope1.beta %>% signif(3)` | `r results$slope2.beta %>% signif(3)` | `r (1/results$change_point.beta) %>% signif(3)` | `r results$slope1_mean.x %>% signif(3)` | `r results$slope1_mean.y %>% signif(3)` | `r results$zeta1 %>% signif(3)` | `r results$slope2_mean.x %>% signif(3)` | `r results$slope2_mean.y %>% signif(3)` | `r results$zeta2 %>% signif(3)` | `r mean(c(results$change_point_mean.x, results$change_point_mean.y)) %>% signif(3)` | `r mean(c(results$max_point_mean.x, results$max_point_mean.y)) %>% signif(3)` | `r results$theta %% 180 %>% signif(3)` | `r results$theta %% 90 %>% signif(3)` |
-
-
-# Yosemite
+# Yosemite Valley
 
 ```{r}
 yosemite <- raster::raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "yosemite.tif"))
-summary(yosemite)
-results <- get_zeta(yosemite) 
+res_yose <- get_zeta(yosemite) 
 ```
+
+Yosemite Valley landscape has 
+a minimum elevation of `r raster::minValue(yosemite) %>% signif(3)` m,
+an average elevation of `r raster::cellStats(yosemite, stat = "mean") %>% signif(3)` m, 
+and a maximum elevation of `r raster::maxValue(yosemite) %>% signif(3)` m.
+The maximum relief is thus `r (raster::maxValue(yosemite) - raster::minValue(yosemite)) %>% signif(3)` m.
+The figure below showcases the landscape in its original form.
+The landscape was rotated so that in this original frame of reference,
+$\theta_x =$ `r res_yose$theta %% 180 %>% signif(3)`$^\circ$ and
+$\theta_y =$ `r (res_yose$theta %% 180 + 90) %>% signif(3)`$^\circ$.
+(In the rotated frame of reference, $\theta_x' = 0^\circ$ and $\theta_y' = 90^\circ$.)
+The segmented regression on the power spectrum identifies scalings with slope $\beta_1 =$ `r res_yose$slope1.beta %>% signif(3)`, and $\beta_2 =$ `r res_yose$slope2.beta %>% signif(3)`, before and after a cut-off lengthscale of $1/f_c =$ `r (1/res_yose$change_point.beta) %>% signif(3)` m, respectively.
+As $\beta = 2H + d$, and $d = 2$, the Hurst coefficients $H$ corresponding to $\beta_1$ and $\beta_2$ are 
+`r ((abs(res_yose$slope1.beta) - 2)/2) %>% signif(3)`, and
+`r ((abs(res_yose$slope2.beta) - 2)/2) %>% signif(3)`.
+Before a cut-off lengthscale of
+`r mean(c(res_yose$change_point_mode.x, res_yose$change_point_mode.y)) %>% signif(3)` m,
+the roughness exponents in the $x$-- and $y$--directions are
+$\alpha_{1,x} =$ `r res_yose$slope1_mode.x %>% signif(3)`, and
+$\alpha_{1,y} =$ `r res_yose$slope1_mode.y %>% signif(3)`.
+Consequently, the anisotropy exponent is $\zeta_1 =$ `r res_yose$zeta1 %>% signif(3)`.
+After cut-off lengthscale,
+the roughness exponents are lower and almost equal with
+$\alpha_{2,x} =$ `r res_yose$slope2_mode.x %>% signif(3)`, and
+$\alpha_{2,y} =$ `r res_yose$slope2_mode.y %>% signif(3)`.
+Consequently, the anisotropy exponent is $\zeta_2 =$ `r res_yose$zeta2 %>% signif(3)`.
+The maximum cutoff lengthscale recorded for roughness exponents is $r_{max} =$ `r mean(c(res_yose$max_point_mode.x, res_yose$max_point_mode.y)) %>% signif(3)` m.
+
 
 ```{r, echo = FALSE}
 matrix_for_rayshader(raster::as.matrix(yosemite)) %>%
 		sphere_shade(texture = "desert") %>%
 	    add_shadow(ray_shade(matrix_for_rayshader(raster::as.matrix(yosemite)), sunaltitude = 20), max_darken = 0.3) %>%  
 	    plot_map()
-# view_rotated_raster(yosemite)
 ```
 
-|               $\beta_1$               |               $\beta_2$               |                     $1/f_c$                     |             $\alpha_{1,x}$              |             $\alpha_{1,y}$              |           $\zeta_{1}$           |             $\alpha_{2,x}$              |             $\alpha_{2,y}$              |            $\zeta_2$            |                                        $r_c$                                        | $r_{max}$                                                                     | $\theta_x$                             | $\theta_y$                            |
-|:-------------------------------------:|:-------------------------------------:|:-----------------------------------------------:|:---------------------------------------:|:---------------------------------------:|:-------------------------------:|:---------------------------------------:|:---------------------------------------:|:-------------------------------:|:-----------------------------------------------------------------------------------:|:------------------------------------------------------------------------------|:---------------------------------------|:--------------------------------------|
-| `r results$slope1.beta %>% signif(3)` | `r results$slope2.beta %>% signif(3)` | `r (1/results$change_point.beta) %>% signif(3)` | `r results$slope1_mean.x %>% signif(3)` | `r results$slope1_mean.y %>% signif(3)` | `r results$zeta1 %>% signif(3)` | `r results$slope2_mean.x %>% signif(3)` | `r results$slope2_mean.y %>% signif(3)` | `r results$zeta2 %>% signif(3)` | `r mean(c(results$change_point_mean.x, results$change_point_mean.y)) %>% signif(3)` | `r mean(c(results$max_point_mean.x, results$max_point_mean.y)) %>% signif(3)` | `r results$theta %% 180 %>% signif(3)` | `r results$theta %% 90 %>% signif(3)` |
-
-
-
-# Modoc
+# Modoc Plateau
 
 ```{r}
 modoc <- raster::raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "modoc.tif"))
-summary(modoc)
-results <- get_zeta(modoc) 
+res_modo <- get_zeta(modoc) 
 ```
+
+Modoc Plateau landscape has 
+a minimum elevation of `r raster::minValue(modoc) %>% signif(3)` m,
+an average elevation of `r raster::cellStats(modoc, stat = "mean") %>% signif(3)` m, 
+and a maximum elevation of `r raster::maxValue(modoc) %>% signif(3)` m.
+The maximum relief is thus `r (raster::maxValue(modoc) - raster::minValue(modoc)) %>% signif(3)` m.
+The figure below showcases the landscape in its original form.
+The landscape was rotated so that in this original frame of reference,
+$\theta_x =$ `r res_modo$theta %% 180 %>% signif(3)`$^\circ$ and
+$\theta_y =$ `r (res_modo$theta %% 180 + 90) %>% signif(3)`$^\circ$.
+(In the rotated frame of reference, $\theta_x' = 0^\circ$ and $\theta_y' = 90^\circ$.)
+The segmented regression on the power spectrum identifies scalings with slope $\beta_1 =$ `r res_modo$slope1.beta %>% signif(3)`, and $\beta_2 =$ `r res_modo$slope2.beta %>% signif(3)`, before and after a cut-off lengthscale of $1/f_c =$ `r (1/res_modo$change_point.beta) %>% signif(3)` m, respectively.
+As $\beta = 2H + d$, and $d = 2$, the Hurst coefficients $H$ corresponding to $\beta_1$ and $\beta_2$ are 
+`r ((abs(res_modo$slope1.beta) - 2)/2) %>% signif(3)`, and
+`r ((abs(res_modo$slope2.beta) - 2)/2) %>% signif(3)`.
+Before a cut-off lengthscale of
+`r mean(c(res_modo$change_point_mode.x, res_modo$change_point_mode.y)) %>% signif(3)` m,
+the roughness exponents in the $x$-- and $y$--directions are almost equal as
+$\alpha_{1,x} =$ `r res_modo$slope1_mode.x %>% signif(3)`, and
+$\alpha_{1,y} =$ `r res_modo$slope1_mode.y %>% signif(3)`.
+Consequently, the anisotropy exponent is $\zeta_1 =$ `r res_modo$zeta1 %>% signif(3)`.
+After cut-off lengthscale,
+the roughness exponents are more distinct as
+$\alpha_{2,x} =$ `r res_modo$slope2_mode.x %>% signif(3)`, and
+$\alpha_{2,y} =$ `r res_modo$slope2_mode.y %>% signif(3)`.
+Consequently, the anisotropy exponent is $\zeta_2 =$ `r res_modo$zeta2 %>% signif(3)`.
+The maximum cutoff lengthscale recorded for roughness exponents is $r_{max} =$ `r mean(c(res_modo$max_point_mode.x, res_modo$max_point_mode.y)) %>% signif(3)` m.
+
 
 ```{r, echo = FALSE}
 matrix_for_rayshader(raster::as.matrix(modoc)) %>%
@@ -103,9 +174,20 @@ matrix_for_rayshader(raster::as.matrix(modoc)) %>%
 	    add_shadow(ray_shade(matrix_for_rayshader(raster::as.matrix(modoc)), sunaltitude = 20), max_darken = 0.3) %>%  
 	    add_shadow(ambient_shade(matrix_for_rayshader(raster::as.matrix(modoc))), 0) %>%
 	    plot_map()
-# view_rotated_raster(modoc)
 ```
 
-|               $\beta_1$               |               $\beta_2$               |                     $1/f_c$                     |             $\alpha_{1,x}$              |             $\alpha_{1,y}$              |           $\zeta_{1}$           |             $\alpha_{2,x}$              |             $\alpha_{2,y}$              |            $\zeta_2$            |                                        $r_c$                                        | $r_{max}$                                                                     | $\theta_x$                             | $\theta_y$                            |
-|:-------------------------------------:|:-------------------------------------:|:-----------------------------------------------:|:---------------------------------------:|:---------------------------------------:|:-------------------------------:|:---------------------------------------:|:---------------------------------------:|:-------------------------------:|:-----------------------------------------------------------------------------------:|:------------------------------------------------------------------------------|:---------------------------------------|:--------------------------------------|
-| `r results$slope1.beta %>% signif(3)` | `r results$slope2.beta %>% signif(3)` | `r (1/results$change_point.beta) %>% signif(3)` | `r results$slope1_mean.x %>% signif(3)` | `r results$slope1_mean.y %>% signif(3)` | `r results$zeta1 %>% signif(3)` | `r results$slope2_mean.x %>% signif(3)` | `r results$slope2_mean.y %>% signif(3)` | `r results$zeta2 %>% signif(3)` | `r mean(c(results$change_point_mean.x, results$change_point_mean.y)) %>% signif(3)` | `r mean(c(results$max_point_mean.x, results$max_point_mean.y)) %>% signif(3)` | `r results$theta %% 180 %>% signif(3)` | `r results$theta %% 90 %>% signif(3)` |
+# Comparing Landscapes
+
+The following table summarizes the metrics for the three landscapes.
+
+| landscape       |               $\beta_1$                |               $\beta_2$                |                     $1/f_c$                      |              $\alpha_{1,x}$              |              $\alpha_{1,y}$              |           $\zeta_{1}$            |              $\alpha_{2,x}$              |              $\alpha_{2,y}$              |            $\zeta_2$             |                                         $r_c$                                         |                                    $r_{max}$                                    |               $\theta_x$                |                   $\theta_y$                   |
+|:----------------|:--------------------------------------:|:--------------------------------------:|:------------------------------------------------:|:----------------------------------------:|:----------------------------------------:|:--------------------------------:|:----------------------------------------:|:----------------------------------------:|:--------------------------------:|:-------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------:|:---------------------------------------:|:----------------------------------------------:|
+| Gabilan Mesa    | `r res_gabi$slope1.beta %>% signif(3)` | `r res_gabi$slope2.beta %>% signif(3)` | `r (1/res_gabi$change_point.beta) %>% signif(3)` | `r res_gabi$slope1_mode.x %>% signif(3)` | `r res_gabi$slope1_mode.y %>% signif(3)` | `r res_gabi$zeta1 %>% signif(3)` | `r res_gabi$slope2_mode.x %>% signif(3)` | `r res_gabi$slope2_mode.y %>% signif(3)` | `r res_gabi$zeta2 %>% signif(3)` | `r mean(c(res_gabi$change_point_mode.x, res_gabi$change_point_mode.y)) %>% signif(3)` | `r mean(c(res_gabi$max_point_mode.x, res_gabi$max_point_mode.y)) %>% signif(3)` | `r res_gabi$theta %% 180 %>% signif(3)` | `r (res_gabi$theta %% 180 + 90) %>% signif(3)` |
+| Yosemite Valley | `r res_yose$slope1.beta %>% signif(3)` | `r res_yose$slope2.beta %>% signif(3)` | `r (1/res_yose$change_point.beta) %>% signif(3)` | `r res_yose$slope1_mode.x %>% signif(3)` | `r res_yose$slope1_mode.y %>% signif(3)` | `r res_yose$zeta1 %>% signif(3)` | `r res_yose$slope2_mode.x %>% signif(3)` | `r res_yose$slope2_mode.y %>% signif(3)` | `r res_yose$zeta2 %>% signif(3)` | `r mean(c(res_yose$change_point_mode.x, res_yose$change_point_mode.y)) %>% signif(3)` | `r mean(c(res_yose$max_point_mode.x, res_yose$max_point_mode.y)) %>% signif(3)` | `r res_yose$theta %% 180 %>% signif(3)` | `r (res_yose$theta %% 180 + 90) %>% signif(3)` |
+| Modoc Plateau   | `r res_modo$slope1.beta %>% signif(3)` | `r res_modo$slope2.beta %>% signif(3)` | `r (1/res_modo$change_point.beta) %>% signif(3)` | `r res_modo$slope1_mode.x %>% signif(3)` | `r res_modo$slope1_mode.y %>% signif(3)` | `r res_modo$zeta1 %>% signif(3)` | `r res_modo$slope2_mode.x %>% signif(3)` | `r res_modo$slope2_mode.y %>% signif(3)` | `r res_modo$zeta2 %>% signif(3)` | `r mean(c(res_modo$change_point_mode.x, res_modo$change_point_mode.y)) %>% signif(3)` | `r mean(c(res_modo$max_point_mode.x, res_modo$max_point_mode.y)) %>% signif(3)` | `r res_modo$theta %% 180 %>% signif(3)` | `r (res_modo$theta %% 180 + 90) %>% signif(3)` |
+
+While the estimate of statistical roughness from $\beta$ and $\alpha$ values differ for the three landscapes, their interpretations are coherent.
+
+
+
+# References

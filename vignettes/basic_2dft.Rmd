@@ -81,7 +81,7 @@ We can assess the break point and sloeps with `get_beta()`.
 In the graph below, the solid line corresponds to 180 m as in @Perron2008 while the dashed-line is the change point of a segmented regression on the binned power spectrum.
 
 ```{r}
-nbin <- 50
+nbin <- 20
 binned_power_spectrum <- bin(log10(FT2D$radial_frequency_vector), log10(FT2D$spectral_power_vector), nbin)
 binned_power_spectrum <- na.omit(binned_power_spectrum)
 beta <- get_beta(binned_power_spectrum, FT2D)

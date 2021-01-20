@@ -130,8 +130,9 @@ alpha_plot <- function(df, df_bin, change_point, xdecades= 3,  ydecades = 3){
 #' @importFrom rlang .data
 filter_alpha <- function(alpha, prob = .999){
 	alpha <- stats::na.omit(alpha)
-	threshold <- stats::quantile(alpha$slope1, probs = prob[1])
-	alpha <- alpha %>% dplyr::filter(.data$slope1 > 0, .data$slope2 > 0, .data$slope1 <= threshold, .data$slope2 <= threshold)
+	threshold1 <- stats::quantile(alpha$slope1, probs = prob[1])
+	threshold2 <- stats::quantile(alpha$slope2, probs = prob[1])
+	alpha <- alpha %>% dplyr::filter(.data$slope1 > 0, .data$slope2 > 0, .data$slope1 <= threshold1, .data$slope2 <= threshold2)
 	return(alpha)
 }
 
@@ -142,5 +143,5 @@ filter_alpha <- function(alpha, prob = .999){
 #' @keywords zeta
 #' @importFrom rlang .data
 summarise_alpha <- function(alpha){
-	alpha %>% stats::na.omit(alpha) %>% dplyr::summarise(dplyr::across(dplyr::everything(), list(min = min, mean = mean, median = stats::median, max = max, sd = sd)))
+	alpha %>% stats::na.omit(alpha) %>% dplyr::summarise(dplyr::across(dplyr::everything(), list(min = min, mean = mean, median = stats::median, max = max, sd = sd, mode = modeest::meanshift)))
 }

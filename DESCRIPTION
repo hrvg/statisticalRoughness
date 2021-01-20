@@ -29,6 +29,7 @@ Imports:
     matlab,
     microbenchmark,
     mrbsizeR,
+    modeest,
     plotly,
     plyr,
     pracma,
