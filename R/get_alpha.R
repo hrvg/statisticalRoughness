@@ -45,7 +45,7 @@ get_alpha <- function(row, dr, do_plot = FALSE){
 
 		x <- log10(df_filtered$dr)
 		y <- log10(df_filtered$hhcf)
-		segmented.fit <- segmented::segmented(lm(y ~ x))
+		segmented.fit <- segmented::segmented(lm(y ~ x, weights = 1 / x))
 		alpha <- data.frame(
 			change_point = 10^segmented.fit$psi[1,2],
 			slope1 = segmented.fit$coefficients[2],
@@ -124,15 +124,26 @@ alpha_plot <- function(df, df_bin, change_point, xdecades= 3,  ydecades = 3){
 #' Filters the slope values of alpha returned by `get_all_alpha()` between zero and the 99.9% quantile of the initial slopes
 #' @param alpha, a `data.frame` returned by `get_all_alpha()`
 #' @param prob, `numeric` the value of the probabilities passed to `quantile()`
+#' @param rsquared_filter, `logical`, if `TRUE`, filters out the `adj.r.squared` values lower than 0.99
 #' @return a `data.frame`
 #' @export
 #' @keywords zeta
 #' @importFrom rlang .data
-filter_alpha <- function(alpha, prob = .999){
+filter_alpha <- function(alpha, prob = .999, rsquared_filter = TRUE){
 	alpha <- stats::na.omit(alpha)
 	threshold1 <- stats::quantile(alpha$slope1, probs = prob[1])
 	threshold2 <- stats::quantile(alpha$slope2, probs = prob[1])
-	alpha <- alpha %>% dplyr::filter(.data$slope1 > 0, .data$slope2 > 0, .data$slope1 <= threshold1, .data$slope2 <= threshold2)
+	alpha <- alpha %>% dplyr::filter(
+		.data$slope1 > 0,
+		.data$slope2 > 0,
+		.data$slope1 <= threshold1,
+		.data$slope2 <= threshold2
+	)
+	if (rsquared_filter){
+		alpha <- alpha %>% dplyr::filter(
+			.data$adj.r.squared >= 0.99
+		)
+	}
 	return(alpha)
 }
 
@@ -143,5 +154,5 @@ filter_alpha <- function(alpha, prob = .999){
 #' @keywords zeta
 #' @importFrom rlang .data
 summarise_alpha <- function(alpha){
-	alpha %>% stats::na.omit(alpha) %>% dplyr::summarise(dplyr::across(dplyr::everything(), list(min = min, mean = mean, median = stats::median, max = max, sd = sd, mode = modeest::meanshift)))
+	alpha %>% stats::na.omit(alpha) %>% dplyr::summarise(dplyr::across(dplyr::everything(), list(min = min, mean = mean, max = max, sd = sd, IQR = stats::IQR)))
 }

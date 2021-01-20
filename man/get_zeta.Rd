@@ -7,7 +7,7 @@
 get_zeta(
   rstr,
   raster_resolution = 9.015,
-  nbin = 50,
+  nbin = 20,
   .Hann = TRUE,
   .quantile_prob = c(0.9999),
   .prob = 0.999

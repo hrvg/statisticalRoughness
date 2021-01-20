@@ -4,17 +4,21 @@
 \alias{get_zeta_}
 \title{Internal function to derive the anisotropy exponent from two roughness exponents}
 \usage{
-get_zeta_(alpha_1, alpha_2)
+get_zeta_(alpha_1, alpha_2, IQR_1, IQR_2)
 }
 \arguments{
 \item{alpha_1}{\code{numeric}, a roughness coefficient}
 
 \item{alpha_2}{\code{numeric}, a roughness coefficient}
+
+\item{IQR_1}{\code{numeric}, an IQR}
+
+\item{IQR_2}{\code{numeric}, an IQR}
 }
 \value{
 a \code{numeric} anisotropy exponent
 }
 \description{
-Internal function to derive the anisotropy exponent from two roughness exponents
+If any IQR is higher than 0.225, this function returns \code{NA}. The threshold value of 0.225 is the IQR of a normal distribution with a standard deviation equals to 0.5/3, a three-sigma range between 0 and 1.
 }
 \keyword{zeta}

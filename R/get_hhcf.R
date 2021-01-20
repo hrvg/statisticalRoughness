@@ -32,7 +32,7 @@ get_hhcf <- function(mat, margin = 1, detrend = FALSE, get_autocorr = FALSE){
 				}
 				row <- row[ind]
 				ACF <- stats::acf(row, plot = FALSE, type = "correlation", lag.max = length(row) - 1)
-				return(ACF$lag[head(which(ACF$acf <= 1 / exp(1)), 1)])
+				return(ACF$lag[utils::head(which(ACF$acf <= 1 / exp(1)), 1)])
 			} else {
 				return(NA)
 			}

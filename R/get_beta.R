@@ -15,7 +15,7 @@ get_beta <- function(binned_power_spectrum, FT2D, do_plot = FALSE){
 		slope2 = segmented.fit$coefficients[2:3] %>% sum(),
 		adj.r.squared = summary(segmented.fit)$adj.r.squared
 	)
-	if(any(summary(segmented.fit)$Ttable[, 4] %>% na.omit() > 0.05)){
+	if(any(summary(segmented.fit)$Ttable[, 4] %>% stats::na.omit() > 0.05)){
 		beta <- data.frame(
 			change_point = NA,
 			slope1 = NA,
