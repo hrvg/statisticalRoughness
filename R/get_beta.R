@@ -4,7 +4,7 @@
 #' @param do_plot `logical`, plot the fit, default to `FALSE`
 #' @return a `data.frame`
 #' @export
-#' @keywords beta
+#' @keywords fft2d
 get_beta <- function(binned_power_spectrum, FT2D, do_plot = FALSE){
 	x <- binned_power_spectrum[, 1]
 	y <- binned_power_spectrum[, 2]
