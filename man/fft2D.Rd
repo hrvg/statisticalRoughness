@@ -13,7 +13,7 @@ fft2D(M, dx, dy, Hann = TRUE)
 
 \item{dy}{the spacing in the y direction in map units (usually meters)}
 
-\item{Hann}{\code{logical}, if \code{TRUE} performs a Hann windowing, default to \code{FALSE}}
+\item{Hann}{\code{logical}, if \code{TRUE} performs a Hann windowing, default to \code{TRUE}}
 }
 \value{
 a list with 4 elements: \code{spectral_power_matrix}, \code{radial_frequency_matrix}, \code{spectral_power_vector} and \code{radial_frequency_vector}.
