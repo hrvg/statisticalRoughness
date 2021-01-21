@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">statisticalRoughness</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0.0</span>
       </span>
     </div>
 
@@ -123,8 +123,9 @@
         </li>
       </ul>
     </li>
+    <li class="divider"></li>
     <li class="dropdown-submenu">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">-------</a>
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Estimating anisotropy</a>
       <ul class="dropdown-menu" role="menu">
         <li>
           <a href="../articles/zeta.html">Computing roughness and anisotropy exponents</a>
@@ -167,7 +168,7 @@
     <p>Filters the slope values of alpha returned by <code><a href='get_all_alpha.html'>get_all_alpha()</a></code> between zero and the 99.9% quantile of the initial slopes</p>
     </div>
 
-    <pre class="usage"><span class='fu'>filter_alpha</span><span class='op'>(</span><span class='va'>alpha</span>, prob <span class='op'>=</span> <span class='fl'>0.999</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>filter_alpha</span><span class='op'>(</span><span class='va'>alpha</span>, prob <span class='op'>=</span> <span class='fl'>0.999</span>, rsquared_filter <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -179,6 +180,10 @@
     <tr>
       <th>prob, </th>
       <td><p><code>numeric</code> the value of the probabilities passed to <code><a href='https://rdrr.io/r/stats/quantile.html'>quantile()</a></code></p></td>
+    </tr>
+    <tr>
+      <th>rsquared_filter, </th>
+      <td><p><code>logical</code>, if <code>TRUE</code>, filters out the <code>adj.r.squared</code> values lower than 0.99</p></td>
     </tr>
     </table>
 

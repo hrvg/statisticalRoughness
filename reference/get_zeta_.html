@@ -40,7 +40,7 @@
 
 
 <meta property="og:title" content="Internal function to derive the anisotropy exponent from two roughness exponents — get_zeta_" />
-<meta property="og:description" content="Internal function to derive the anisotropy exponent from two roughness exponents" />
+<meta property="og:description" content="If any IQR is higher than 0.225, this function returns NA. The threshold value of 0.225 is the IQR of a normal distribution with a standard deviation equals to 0.5/3, a three-sigma range between 0 and 1." />
 
 
 
@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">statisticalRoughness</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0.0</span>
       </span>
     </div>
 
@@ -123,8 +123,9 @@
         </li>
       </ul>
     </li>
+    <li class="divider"></li>
     <li class="dropdown-submenu">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">-------</a>
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Estimating anisotropy</a>
       <ul class="dropdown-menu" role="menu">
         <li>
           <a href="../articles/zeta.html">Computing roughness and anisotropy exponents</a>
@@ -164,10 +165,10 @@
     </div>
 
     <div class="ref-description">
-    <p>Internal function to derive the anisotropy exponent from two roughness exponents</p>
+    <p>If any IQR is higher than 0.225, this function returns <code>NA</code>. The threshold value of 0.225 is the IQR of a normal distribution with a standard deviation equals to 0.5/3, a three-sigma range between 0 and 1.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_zeta_</span><span class='op'>(</span><span class='va'>alpha_1</span>, <span class='va'>alpha_2</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>get_zeta_</span><span class='op'>(</span><span class='va'>alpha_1</span>, <span class='va'>alpha_2</span>, <span class='va'>IQR_1</span>, <span class='va'>IQR_2</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -179,6 +180,14 @@
     <tr>
       <th>alpha_2</th>
       <td><p><code>numeric</code>, a roughness coefficient</p></td>
+    </tr>
+    <tr>
+      <th>IQR_1</th>
+      <td><p><code>numeric</code>, an IQR</p></td>
+    </tr>
+    <tr>
+      <th>IQR_2</th>
+      <td><p><code>numeric</code>, an IQR</p></td>
     </tr>
     </table>
 

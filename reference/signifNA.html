@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get the angle of the 2D Fourier spectrum — get_fourier_angle • statisticalRoughness</title>
+<title>Internal function to gracefully handles NA in signif — signifNA • statisticalRoughness</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Get the angle of the 2D Fourier spectrum — get_fourier_angle" />
-<meta property="og:description" content="Get the angle of the 2D Fourier spectrum" />
+<meta property="og:title" content="Internal function to gracefully handles NA in signif — signifNA" />
+<meta property="og:description" content="Internal function to gracefully handles NA in signif" />
 
 
 
@@ -159,37 +159,26 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get the angle of the 2D Fourier spectrum</h1>
+    <h1>Internal function to gracefully handles NA in signif</h1>
     
-    <div class="hidden name"><code>get_fourier_angle.Rd</code></div>
+    <div class="hidden name"><code>signifNA.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Get the angle of the 2D Fourier spectrum</p>
+    <p>Internal function to gracefully handles NA in signif</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_fourier_angle</span><span class='op'>(</span><span class='va'>filtered_spectral_power_matrix</span>, <span class='va'>FT2D</span>, bandwidth <span class='op'>=</span> <span class='fl'>5</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>signifNA</span><span class='op'>(</span><span class='va'>value</span>, digits <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>filtered_spectral_power_matrix</th>
-      <td><p>truncated normalized power spectrum</p></td>
-    </tr>
-    <tr>
-      <th>FT2D</th>
-      <td><p><code>list</code>, results from <code>fft2d()</code> with objects radial frequency and spectral power matrices</p></td>
-    </tr>
-    <tr>
-      <th>bandwidth</th>
-      <td><p><code>numeric</code> the bandwidth for the kernel smoothing of the circular density calculation</p></td>
+      <th>digits</th>
+      <td><p><code>numeric</code> number of significant digits, default to 3</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>angle of the main component of the Fourier spectrum</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

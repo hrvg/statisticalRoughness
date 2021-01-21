@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">statisticalRoughness</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0.0</span>
       </span>
     </div>
 
@@ -82,8 +82,9 @@
         </li>
       </ul>
 </li>
+    <li class="divider">
     <li class="dropdown-submenu">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">-------</a>
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Estimating anisotropy</a>
       <ul class="dropdown-menu" role="menu">
 <li>
           <a href="../articles/zeta.html">Computing roughness and anisotropy exponents</a>
@@ -118,7 +119,7 @@
       <h1 data-toc-skip>A basic 2D Fourier analysis of topography</h1>
                         <h4 class="author">Hervé Guillon</h4>
                         
-            <h4 class="date">16 January 2021</h4>
+            <h4 class="date">21 January 2021</h4>
       
       
       <div class="hidden name"><code>basic_2dft.Rmd</code></div>
@@ -193,13 +194,13 @@
 <a href="#radial-power-spectrum" class="anchor"></a>Radial power spectrum</h1>
 <p>While produced with different underlying data, this plot passes the sanity check against <span class="citation">Perron, Kirchner, and Dietrich (2008)</span>’s example. We can assess the break point and sloeps with <code><a href="../reference/get_beta.html">get_beta()</a></code>. In the graph below, the solid line corresponds to 180 m as in <span class="citation">Perron, Kirchner, and Dietrich (2008)</span> while the dashed-line is the change point of a segmented regression on the binned power spectrum.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">nbin</span> <span class="op">&lt;-</span> <span class="fl">50</span>
+<code class="sourceCode R"><span class="va">nbin</span> <span class="op">&lt;-</span> <span class="fl">20</span>
 <span class="va">binned_power_spectrum</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bin.html">bin</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log10</a></span><span class="op">(</span><span class="va">FT2D</span><span class="op">$</span><span class="va">radial_frequency_vector</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log10</a></span><span class="op">(</span><span class="va">FT2D</span><span class="op">$</span><span class="va">spectral_power_vector</span><span class="op">)</span>, <span class="va">nbin</span><span class="op">)</span>
 <span class="va">binned_power_spectrum</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html">na.omit</a></span><span class="op">(</span><span class="va">binned_power_spectrum</span><span class="op">)</span>
 <span class="va">beta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_beta.html">get_beta</a></span><span class="op">(</span><span class="va">binned_power_spectrum</span>, <span class="va">FT2D</span><span class="op">)</span>
 <span class="va">beta</span>
 <span class="co">#&gt;   change_point    slope1    slope2 adj.r.squared</span>
-<span class="co">#&gt; x  0.004210226 -2.187938 -5.531858     0.9970638</span></code></pre></div>
+<span class="co">#&gt; x  0.003614729 -2.145887 -5.440886     0.9973282</span></code></pre></div>
 <p><img src="basic_2dft_files/figure-html/unnamed-chunk-7-1.png" width="768"></p>
 </div>
 <div id="references" class="section level1 unnumbered">

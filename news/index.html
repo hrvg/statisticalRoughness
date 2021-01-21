@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">statisticalRoughness</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0.0</span>
       </span>
     </div>
 
@@ -122,8 +122,9 @@
         </li>
       </ul>
     </li>
+    <li class="divider"></li>
     <li class="dropdown-submenu">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">-------</a>
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Estimating anisotropy</a>
       <ul class="dropdown-menu" role="menu">
         <li>
           <a href="../articles/zeta.html">Computing roughness and anisotropy exponents</a>
@@ -161,6 +162,43 @@
       
     </div>
 
+    <div id="statisticalroughness-03" class="section level1">
+<h1 class="page-header" data-toc-text="0.3">
+<a href="#statisticalroughness-03" class="anchor"></a>statisticalRoughness 0.3</h1>
+<p>New features</p>
+<ul>
+<li>The following functions were added to compute the height-height correlation function:
+<ul>
+<li><code><a href="../reference/get_hhcf.html">get_hhcf()</a></code></li>
+</ul>
+</li>
+<li>The following functions were added to compute roughness exponents:
+<ul>
+<li><code><a href="../reference/get_alpha.html">get_alpha()</a></code></li>
+<li><code><a href="../reference/alpha_plot.html">alpha_plot()</a></code></li>
+<li><code><a href="../reference/filter_alpha.html">filter_alpha()</a></code></li>
+<li><code><a href="../reference/summarise_alpha.html">summarise_alpha()</a></code></li>
+<li><code><a href="../reference/get_all_alpha.html">get_all_alpha()</a></code></li>
+</ul>
+</li>
+<li>The following functions were added to compute anisotropy exponents:
+<ul>
+<li><code><a href="../reference/get_zeta.html">get_zeta()</a></code></li>
+</ul>
+</li>
+<li>Some convenience functions:
+<ul>
+<li>
+<code><a href="../reference/signifNA.html">signifNA()</a></code> to better handle piping into <code><a href="https://rdrr.io/r/base/Round.html">signif()</a></code> in vignettes</li>
+</ul>
+</li>
+</ul>
+<p>Enhancements</p>
+<ul>
+<li>added one vignette describing the derivation of roughness and anisotropy exponents</li>
+<li>added one vignette comparing derivations of roughness and anisotropy exponents in three constrasting landscapes</li>
+</ul>
+</div>
     <div id="statisticalroughness-02" class="section level1">
 <h1 class="page-header" data-toc-text="0.2">
 <a href="#statisticalroughness-02" class="anchor"></a>statisticalRoughness 0.2</h1>
