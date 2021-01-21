@@ -1,0 +1,71 @@
+version: 2.1
+orbs:
+  gh-pages: sugarshin/gh-pages@0.0.6
+
+jobs:
+  build: # name of your job
+    machine: # executor type
+      image: ubuntu-2004:202010-01 # # recommended linux image - includes Ubuntu 20.04, docker 19.03.13, docker-compose 1.27.4
+
+    steps:
+      - checkout
+      - run: 
+          name: Install GIS libraries
+          command: |
+            sudo add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable
+            sudo apt-get -q update
+            sudo apt-get -y install libgdal-dev libgeos-dev libproj-dev 
+      - run: 
+          name: Install required libraries for R packages
+          command: |
+            sudo apt-get -y install libharfbuzz-dev libfribidi-dev
+            sudo apt-get -y install libmagick++-dev
+            sudo apt-get -y install libglu1-mesa-dev freeglut3-dev mesa-common-dev
+            sudo apt-get -y install libudunits2-dev
+      - run: 
+          name: Install required libraries to build R package
+          command: |
+            sudo apt-get -y install git libssl-dev ssh texlive-latex-base texlive-fonts-recommended libcurl4-openssl-dev libxml2-dev
+            sudo apt-get -y install pandoc pandoc-citeproc
+      - run:
+          name: Install R
+          command: |
+            sudo apt-get -y install r-base
+            sudo apt-get -y install r-cran-rgl
+      - run:
+          name: Create local library folder
+          command: |
+            R -e "dir.create(path = Sys.getenv('R_LIBS_USER'), showWarnings = FALSE, recursive = TRUE)"
+      - restore_cache:
+          keys: 
+          - cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
+      - run:
+          name: Install devtools and Roxygen
+          command: R -e "install.packages(c('devtools', 'roxygen2'), lib = Sys.getenv('R_LIBS_USER'))"
+      - run:
+          name: Install package dependencies
+          command: R -e "withr::with_libpaths(Sys.getenv('R_LIBS_USER'), devtools::install_deps(dep = TRUE))"
+      - save_cache:
+          key: cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "DESCRIPTION" }}
+          paths:
+            - ~/R   
+      - run:
+          name: Build package
+          command: R CMD build .
+      - run:
+          name: Check package
+          command: R CMD check *tar.gz
+      - run:
+          name: Install pkgdown
+          command: R -e "install.packages(c('pkgdown'), lib = Sys.getenv('R_LIBS_USER'))"
+      - run:
+          name: Build docs
+          command: R -e "pkgdown::build_site()"
+      - run:  
+          name: Install covr
+          command: R -e "install.packages(c('covr'), lib = Sys.getenv('R_LIBS_USER'))"
+      - run:  
+          name: Calculate code coverage
+          command: R -e "covr::codecov()"
+      - gh-pages/deploy:
+          build-dir: docs

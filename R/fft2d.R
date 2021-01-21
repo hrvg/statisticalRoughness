@@ -10,9 +10,11 @@ detrend_dem <- function(dem){
 	z <- raster::getValues(dem)
 	ind <- which(!is.na(z))
 
-	odr <- pracma::odregress(coord[ind, ], z[ind])
+	# odr <- pracma::odregress(coord[ind, ], z[ind])
+	# z_detrend[ind] <- z[ind] - odr$fitted
+	lmr <- stats::lm.fit(coord[ind, ], z[ind])
 	z_detrend <- z
-	z_detrend[ind] <- z[ind] - odr$fitted
+	z_detrend[ind] <- lmr$residuals
 
 	detrended_dem <- dem
 	detrended_dem <- raster::setValues(detrended_dem, z_detrend)
@@ -74,7 +76,7 @@ Hann2D <- function(M){
 #' @param M a `matrix`
 #' @param dx the spacing in the x direction in map units (usually meters) 
 #' @param dy the spacing in the y direction in map units (usually meters)
-#' @param Hann `logical`, if `TRUE` performs a Hann windowing, default to `FALSE`
+#' @param Hann `logical`, if `TRUE` performs a Hann windowing, default to `TRUE`
 #' @return a list with 4 elements: `spectral_power_matrix`, `radial_frequency_matrix`, `spectral_power_vector` and `radial_frequency_vector`.
 #' @export
 #' @keywords fft2d

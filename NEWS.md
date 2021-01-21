@@ -1,3 +1,25 @@
+# statisticalRoughness 0.3
+
+New features
+
+- The following functions were added to compute the height-height correlation function:
+	+ `get_hhcf()`
+- The following functions were added to compute roughness exponents:
+	+ `get_alpha()`
+	+ `alpha_plot()`
+	+ `filter_alpha()`
+	+ `summarise_alpha()`
+	+ `get_all_alpha()`
+- The following functions were added to compute anisotropy exponents:
+	+ `get_zeta()`
+- Some convenience functions:
+	+ `signifNA()` to better handle piping into `signif()` in vignettes
+
+Enhancements
+
+- added one vignette describing the derivation of roughness and anisotropy exponents
+- added one vignette comparing derivations of roughness and anisotropy exponents in three constrasting landscapes
+
 # statisticalRoughness 0.2
 
 New features

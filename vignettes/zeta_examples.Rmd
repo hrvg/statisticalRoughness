@@ -1,0 +1,239 @@
+---
+title: "Example of anisotropic landscapes"
+author:
+- name: Hervé Guillon
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Example of anisotropic landscapes}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: bibliography.bib
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7, 
+  fig.height = 7,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+# Purpose
+
+This vignette displays the calculation of anisotropy exponent for different landscapes: Gabilan Mesa, Yosemite Valley and Modoc Plateau.
+
+```{r, echo = FALSE}
+library("statisticalRoughness")
+library("rayshader")
+view_rotated_raster <- function(rstr, raster_resolution = 9.015, nbin = 50, .Hann = TRUE, .quantile_prob = c(0.9999)){
+	rstr <- rstr %>% detrend_dem() 
+	FT2D <- fft2D(raster::as.matrix(rstr), dx = raster_resolution, dy = raster_resolution, Hann = .Hann)
+	binned_power_spectrum <- bin(log10(FT2D$radial_frequency_vector), log10(FT2D$spectral_power_vector), nbin) %>% na.omit()
+	normalized_spectral_power_matrix <- get_normalized_spectral_power_matrix(binned_power_spectrum, FT2D)
+	filtered_spectral_power_matrix <- filter_spectral_power_matrix(normalized_spectral_power_matrix, FT2D, quantile_prob = .quantile_prob)
+	ang_fourier <- get_fourier_angle(filtered_spectral_power_matrix, FT2D)
+	rotated_raster <- rotate_raster(raster::as.matrix(rstr), ang_fourier)
+	matrix_for_rayshader(rotated_raster) %>%
+		sphere_shade(texture = "desert") %>%
+	    add_shadow(ray_shade(matrix_for_rayshader(rotated_raster), sunaltitude = 20), max_darken = 0.3) %>%  
+	    add_shadow(ambient_shade(matrix_for_rayshader(rotated_raster)), 0) %>%
+	    plot_map()
+}
+```
+
+# Gabilan Mesa
+
+Gabilan Mesa landscape is the same landscape that we used in other vignettes and the test bed of @Perron2008 methods.
+Using `get_zeta()` returns a `data.frame` with the variable of interest for the analysis of topographic roughness and anisotropy.
+
+```{r}
+gabilan_mesa <- raster::raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "gabilan_mesa.tif"))
+res_gabi <- get_zeta(gabilan_mesa)
+```
+
+Gabilan Mesa landscape has 
+a minimum elevation of `r raster::minValue(gabilan_mesa) %>% signifNA()` m,
+an average elevation of `r raster::cellStats(gabilan_mesa, stat = "mean") %>% signifNA()` m, 
+and a maximum elevation of `r raster::maxValue(gabilan_mesa) %>% signifNA()` m.
+The maximum relief is thus `r (raster::maxValue(gabilan_mesa) - raster::minValue(gabilan_mesa)) %>% signifNA()` m.
+
+The figure below showcases the landscape in its original form.
+The landscape was rotated so that in this original frame of reference,
+$\theta_x =$ `r res_gabi$theta %% 180 %>% signifNA()`$^\circ$ and
+$\theta_y =$ `r (res_gabi$theta %% 180 + 90) %>% signifNA()`$^\circ$.
+(In the rotated frame of reference, $\theta_x' = 0^\circ$ and $\theta_y' = 90^\circ$.)
+The segmented regression on the power spectrum identifies scalings with slope $\beta_1 =$ `r res_gabi$slope1.beta %>% signifNA()`, and $\beta_2 =$ `r res_gabi$slope2.beta %>% signifNA()`, before and after a cut-off lengthscale of $1/f_c =$ `r (1/res_gabi$change_point.beta) %>% signifNA()` m, respectively.
+As $\beta = 2H + d$, and $d = 2$, the Hurst coefficients $H$ corresponding to $\beta_1$ and $\beta_2$ are 
+`r ((abs(res_gabi$slope1.beta) - 2)/2) %>% signifNA()`, and
+`r ((abs(res_gabi$slope2.beta) - 2)/2) %>% signifNA()`, respectively.
+Before a cut-off lengthscale of
+`r mean(c(res_gabi$change_point_mean.x, res_gabi$change_point_mean.y)) %>% signifNA()` m,
+the roughness exponents in the $x$-- and $y$--directions are
+$\alpha_{1,x} =$ `r res_gabi$slope1_mean.x %>% signifNA()`, and
+$\alpha_{1,y} =$ `r res_gabi$slope1_mean.y %>% signifNA()`.
+Consequently, the anisotropy exponent is $\zeta_1 =$ `r res_gabi$zeta1 %>% signifNA()`.
+After cut-off lengthscale,
+the roughness exponents are lower and almost equal with
+$\alpha_{2,x} =$ `r res_gabi$slope2_mean.x %>% signifNA()`, and
+$\alpha_{2,y} =$ `r res_gabi$slope2_mean.y %>% signifNA()`.
+Consequently, the anisotropy exponent is $\zeta_2 =$ `r res_gabi$zeta2 %>% signifNA()`.
+The maximum cutoff lengthscale recorded for roughness exponents is $r_{max} =$ `r mean(c(res_gabi$max_point_mean.x, res_gabi$max_point_mean.y)) %>% signifNA()` m.
+
+
+The figure below showcases the landscape in its original form (left) and smoothed with a Gaussian kernel of  `r mean(c(res_gabi$change_point_mean.x, res_gabi$change_point_mean.y)) %/% 10` standard deviations to match the value of $r_c$ (right).
+
+```{r, echo = FALSE}
+par(mfrow = c(1,2))
+matrix_for_rayshader(raster::as.matrix(gabilan_mesa)) %>%
+	sphere_shade(texture = "desert") %>%
+    add_shadow(ray_shade(matrix_for_rayshader(raster::as.matrix(gabilan_mesa)), sunaltitude = 20), max_darken = 0.3) %>%  
+    add_shadow(ambient_shade(matrix_for_rayshader(raster::as.matrix(gabilan_mesa))), 0) %>%
+    plot_map()
+gabilan_mesa <- gabilan_mesa %>% spatialEco::raster.gaussian.smooth(
+		sigma = mean(c(res_gabi$change_point_mean.x, res_gabi$change_point_mean.y)) %/% 10
+	)
+matrix_for_rayshader(raster::as.matrix(gabilan_mesa)) %>%
+	sphere_shade(texture = "desert") %>%
+    add_shadow(ray_shade(matrix_for_rayshader(raster::as.matrix(gabilan_mesa)), sunaltitude = 20), max_darken = 0.3) %>%  
+    add_shadow(ambient_shade(matrix_for_rayshader(raster::as.matrix(gabilan_mesa))), 0) %>%
+    plot_map()
+```
+
+
+# Yosemite Valley
+
+```{r}
+yosemite <- raster::raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "yosemite.tif"))
+res_yose <- get_zeta(yosemite) 
+```
+
+Yosemite Valley landscape has 
+a minimum elevation of `r raster::minValue(yosemite) %>% signifNA()` m,
+an average elevation of `r raster::cellStats(yosemite, stat = "mean") %>% signifNA()` m, 
+and a maximum elevation of `r raster::maxValue(yosemite) %>% signifNA()` m.
+The maximum relief is thus `r (raster::maxValue(yosemite) - raster::minValue(yosemite)) %>% signifNA()` m.
+The figure below showcases the landscape in its original form.
+The landscape was rotated so that in this original frame of reference,
+$\theta_x =$ `r res_yose$theta %% 180 %>% signifNA()`$^\circ$ and
+$\theta_y =$ `r (res_yose$theta %% 180 + 90) %>% signifNA()`$^\circ$.
+(In the rotated frame of reference, $\theta_x' = 0^\circ$ and $\theta_y' = 90^\circ$.)
+The segmented regression on the power spectrum identifies scalings with slope $\beta_1 =$ `r res_yose$slope1.beta %>% signifNA()`, and $\beta_2 =$ `r res_yose$slope2.beta %>% signifNA()`, before and after a cut-off lengthscale of $1/f_c =$ `r (1/res_yose$change_point.beta) %>% signifNA()` m, respectively.
+As $\beta = 2H + d$, and $d = 2$, the Hurst coefficients $H$ corresponding to $\beta_1$ and $\beta_2$ are 
+`r ((abs(res_yose$slope1.beta) - 2)/2) %>% signifNA()`, and
+`r ((abs(res_yose$slope2.beta) - 2)/2) %>% signifNA()`.
+Before a cut-off lengthscale of
+`r mean(c(res_yose$change_point_mean.x, res_yose$change_point_mean.y)) %>% signifNA()` m,
+the roughness exponents in the $x$-- and $y$--directions are
+$\alpha_{1,x} =$ `r res_yose$slope1_mean.x %>% signifNA()`, and
+$\alpha_{1,y} =$ `r res_yose$slope1_mean.y %>% signifNA()`.
+Consequently, the anisotropy exponent is $\zeta_1 =$ `r res_yose$zeta1 %>% signifNA()`.
+After cut-off lengthscale,
+the roughness exponents are lower and almost equal with
+$\alpha_{2,x} =$ `r res_yose$slope2_mean.x %>% signifNA()`, and
+$\alpha_{2,y} =$ `r res_yose$slope2_mean.y %>% signifNA()`.
+Consequently, the anisotropy exponent is $\zeta_2 =$ `r res_yose$zeta2 %>% signifNA()`.
+The maximum cutoff lengthscale recorded for roughness exponents is $r_{max} =$ `r mean(c(res_yose$max_point_mean.x, res_yose$max_point_mean.y)) %>% signifNA()` m.
+
+The figure below showcases the landscape in its original form (left) and smoothed with a Gaussian kernel of  `r mean(c(res_yose$change_point_mean.x, res_yose$change_point_mean.y)) %/% 10` standard deviations to match the value of $r_c$ (right).
+
+```{r, echo = FALSE}
+par(mfrow = c(1,2))
+matrix_for_rayshader(raster::as.matrix(yosemite)) %>%
+	sphere_shade(texture = "desert") %>%
+    add_shadow(ray_shade(matrix_for_rayshader(raster::as.matrix(yosemite)), sunaltitude = 20), max_darken = 0.3) %>%  
+    add_shadow(ambient_shade(matrix_for_rayshader(raster::as.matrix(yosemite))), 0) %>%
+    plot_map()
+yosemite <- yosemite %>% spatialEco::raster.gaussian.smooth(
+		sigma = mean(c(res_yose$change_point_mean.x, res_yose$change_point_mean.y)) %/% 10
+	)
+matrix_for_rayshader(raster::as.matrix(yosemite)) %>%
+	sphere_shade(texture = "desert") %>%
+    add_shadow(ray_shade(matrix_for_rayshader(raster::as.matrix(yosemite)), sunaltitude = 20), max_darken = 0.3) %>%  
+    add_shadow(ambient_shade(matrix_for_rayshader(raster::as.matrix(yosemite))), 0) %>%
+    plot_map()
+```
+
+
+# Modoc Plateau
+
+```{r}
+modoc <- raster::raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "modoc.tif"))
+res_modo <- get_zeta(modoc) 
+```
+
+Modoc Plateau landscape has 
+a minimum elevation of `r raster::minValue(modoc) %>% signifNA()` m,
+an average elevation of `r raster::cellStats(modoc, stat = "mean") %>% signifNA()` m, 
+and a maximum elevation of `r raster::maxValue(modoc) %>% signifNA()` m.
+The maximum relief is thus `r (raster::maxValue(modoc) - raster::minValue(modoc)) %>% signifNA()` m.
+The landscape was rotated so that in this original frame of reference,
+$\theta_x =$ `r res_modo$theta %% 180 %>% signifNA()`$^\circ$ and
+$\theta_y =$ `r (res_modo$theta %% 180 + 90) %>% signifNA()`$^\circ$.
+(In the rotated frame of reference, $\theta_x' = 0^\circ$ and $\theta_y' = 90^\circ$.)
+The segmented regression on the power spectrum identifies scalings with slope $\beta_1 =$ `r res_modo$slope1.beta %>% signifNA()`, and $\beta_2 =$ `r res_modo$slope2.beta %>% signifNA()`, before and after a cut-off lengthscale of $1/f_c =$ `r (1/res_modo$change_point.beta) %>% signifNA()` m, respectively.
+As $\beta = 2H + d$, and $d = 2$, the Hurst coefficients $H$ corresponding to $\beta_1$ and $\beta_2$ are 
+`r ((abs(res_modo$slope1.beta) - 2)/2) %>% signifNA()`, and
+`r ((abs(res_modo$slope2.beta) - 2)/2) %>% signifNA()`.
+Before a cut-off lengthscale of
+`r mean(c(res_modo$change_point_mean.x, res_modo$change_point_mean.y)) %>% signifNA()` m,
+the roughness exponents in the $x$-- and $y$--directions are almost equal as
+$\alpha_{1,x} =$ `r res_modo$slope1_mean.x %>% signifNA()`, and
+$\alpha_{1,y} =$ `r res_modo$slope1_mean.y %>% signifNA()`.
+Consequently, the anisotropy exponent is $\zeta_1 =$ `r res_modo$zeta1 %>% signifNA()`.
+After cut-off lengthscale,
+the roughness exponents are more distinct as
+$\alpha_{2,x} =$ `r res_modo$slope2_mean.x %>% signifNA()`, and
+$\alpha_{2,y} =$ `r res_modo$slope2_mean.y %>% signifNA()`.
+However, the anisotropy exponent, $\zeta_2$, cannot be derived as at least one ofthe distribution of $\alpha_2$ has a large spread and its mean is an inconclusive description of centrality  
+($\alpha_{2,x} =$ `r res_modo$slope2_mean.x %>% signifNA()` $\pm$ `r res_modo$slope2_sd.x %>% signifNA()`, and
+ $\alpha_{2,y} =$ `r res_modo$slope2_mean.y %>% signifNA()` $\pm$ `r res_modo$slope2_sd.y %>% signifNA()`).
+The maximum cutoff lengthscale recorded for roughness exponents is $r_{max} =$ `r mean(c(res_modo$max_point_mean.x, res_modo$max_point_mean.y)) %>% signifNA()` m.
+
+
+ 
+
+The figure below showcases the landscape in its original form (left) and smoothed with a Gaussian kernel of  `r mean(c(res_modo$change_point_mean.x, res_modo$change_point_mean.y)) %/% 10` standard deviations to match the value of $r_c$ (right).
+
+
+```{r, echo = FALSE}
+par(mfrow = c(1,2))
+matrix_for_rayshader(raster::as.matrix(modoc)) %>%
+	sphere_shade(texture = "desert") %>%
+    add_shadow(ray_shade(matrix_for_rayshader(raster::as.matrix(modoc)), sunaltitude = 20), max_darken = 0.3) %>%  
+    add_shadow(ambient_shade(matrix_for_rayshader(raster::as.matrix(modoc))), 0) %>%
+    plot_map()
+modoc <- modoc %>% spatialEco::raster.gaussian.smooth(
+		sigma = mean(c(res_modo$change_point_mean.x, res_modo$change_point_mean.y)) %/% 10
+	)
+matrix_for_rayshader(raster::as.matrix(modoc)) %>%
+	sphere_shade(texture = "desert") %>%
+    add_shadow(ray_shade(matrix_for_rayshader(raster::as.matrix(modoc)), sunaltitude = 20), max_darken = 0.3) %>%  
+    add_shadow(ambient_shade(matrix_for_rayshader(raster::as.matrix(modoc))), 0) %>%
+    plot_map()
+```
+
+# Comparing Landscapes
+
+The following table summarizes the metrics for the three landscapes.
+
+| landscape       |                $\beta_1$                |                $\beta_2$                |                      $1/f_c$                      |              $\alpha_{1,x}$               |              $\alpha_{1,y}$               |            $\zeta_{1}$            |              $\alpha_{2,x}$               |              $\alpha_{2,y}$               |             $\zeta_2$             |                                         $r_c$                                          |                                    $r_{max}$                                     |                $\theta_x$                |                   $\theta_y$                    |
+|:----------------|:---------------------------------------:|:---------------------------------------:|:-------------------------------------------------:|:-----------------------------------------:|:-----------------------------------------:|:---------------------------------:|:-----------------------------------------:|:-----------------------------------------:|:---------------------------------:|:--------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------:|:----------------------------------------:|:-----------------------------------------------:|
+| Gabilan Mesa    | `r res_gabi$slope1.beta %>% signifNA()` | `r res_gabi$slope2.beta %>% signifNA()` | `r (1/res_gabi$change_point.beta) %>% signifNA()` | `r res_gabi$slope1_mean.x %>% signifNA()` | `r res_gabi$slope1_mean.y %>% signifNA()` | `r res_gabi$zeta1 %>% signifNA()` | `r res_gabi$slope2_mean.x %>% signifNA()` | `r res_gabi$slope2_mean.y %>% signifNA()` | `r res_gabi$zeta2 %>% signifNA()` | `r mean(c(res_gabi$change_point_mean.x, res_gabi$change_point_mean.y)) %>% signifNA()` | `r mean(c(res_gabi$max_point_mean.x, res_gabi$max_point_mean.y)) %>% signifNA()` | `r res_gabi$theta %% 180 %>% signifNA()` | `r (res_gabi$theta %% 180 + 90) %>% signifNA()` |
+| Yosemite Valley | `r res_yose$slope1.beta %>% signifNA()` | `r res_yose$slope2.beta %>% signifNA()` | `r (1/res_yose$change_point.beta) %>% signifNA()` | `r res_yose$slope1_mean.x %>% signifNA()` | `r res_yose$slope1_mean.y %>% signifNA()` | `r res_yose$zeta1 %>% signifNA()` | `r res_yose$slope2_mean.x %>% signifNA()` | `r res_yose$slope2_mean.y %>% signifNA()` | `r res_yose$zeta2 %>% signifNA()` | `r mean(c(res_yose$change_point_mean.x, res_yose$change_point_mean.y)) %>% signifNA()` | `r mean(c(res_yose$max_point_mean.x, res_yose$max_point_mean.y)) %>% signifNA()` | `r res_yose$theta %% 180 %>% signifNA()` | `r (res_yose$theta %% 180 + 90) %>% signifNA()` |
+| Modoc Plateau   | `r res_modo$slope1.beta %>% signifNA()` | `r res_modo$slope2.beta %>% signifNA()` | `r (1/res_modo$change_point.beta) %>% signifNA()` | `r res_modo$slope1_mean.x %>% signifNA()` | `r res_modo$slope1_mean.y %>% signifNA()` | `r res_modo$zeta1 %>% signifNA()` | `r res_modo$slope2_mean.x %>% signifNA()` | `r res_modo$slope2_mean.y %>% signifNA()` | `r res_modo$zeta2 %>% signifNA()` | `r mean(c(res_modo$change_point_mean.x, res_modo$change_point_mean.y)) %>% signifNA()` | `r mean(c(res_modo$max_point_mean.x, res_modo$max_point_mean.y)) %>% signifNA()` | `r res_modo$theta %% 180 %>% signifNA()` | `r (res_modo$theta %% 180 + 90) %>% signifNA()` |
+
+While the estimate of statistical roughness from $\beta$ and $\alpha$ values differ for the three landscapes, their interpretations are coherent.
+
+
+
+Gabilan Mesa landscape is weakly anisotropic and mainly correlated below `r mean(c(res_gabi$change_point_mean.x, res_gabi$change_point_mean.y)) %>% signifNA()` m, and isotropic and mainly anti-correlated above `r mean(c(res_gabi$change_point_mean.x, res_gabi$change_point_mean.y)) %>% signifNA()` m.
+Yosemite Valley landscape is anisotropic and mainly correlated below `r mean(c(res_yose$change_point_mean.x, res_yose$change_point_mean.y)) %>% signifNA()` m, and isotropic with no clear correlation above `r mean(c(res_yose$change_point_mean.x, res_yose$change_point_mean.y)) %>% signifNA()` m.
+Modoc Plateau landscape is isotropic and mainly correlated below `r mean(c(res_modo$change_point_mean.x, res_modo$change_point_mean.y)) %>% signifNA()` m, and with undetermined behaviour above `r mean(c(res_modo$change_point_mean.x, res_modo$change_point_mean.y)) %>% signifNA()` m.
+
+
+
+# References

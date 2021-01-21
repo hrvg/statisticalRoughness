@@ -25,6 +25,13 @@ navbar:
           href: articles/basic_2dft.html
         - text: Rotating rasters along 2DFT main components
           href: articles/rotating_rasters.html
+      - text: -------       
+      - text: Estimating anisotropy
+        menu:
+        - text: Computing roughness and anisotropy exponents
+          href: articles/zeta.html
+        - text: Example of anisotropic landscapes
+          href: articles/zeta_examples.html
 
 reference:
   - title: Hurst exponents calculation

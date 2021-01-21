@@ -39,7 +39,7 @@ gabilan_mesa <- raster(file.path(system.file("extdata/rasters/", package = "stat
 gabilan_mesa <- gabilan_mesa %>% detrend_dem() 
 raster_resolution <- 9.015
 FT2D <- fft2D(raster::as.matrix(gabilan_mesa), dx = raster_resolution, dy = raster_resolution, Hann = TRUE)
-nbin <- 50
+nbin <- 20
 binned_power_spectrum <- bin(log10(FT2D$radial_frequency_vector), log10(FT2D$spectral_power_vector), nbin)
 binned_power_spectrum <- na.omit(binned_power_spectrum)
 ```
