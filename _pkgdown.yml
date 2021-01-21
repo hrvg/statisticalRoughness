@@ -51,3 +51,6 @@ reference:
   - subtitle: Visualizations
   - contents:
     - has_keyword("fft2d_viz")
+  - subtitle: Roughness and anisotropy exponents
+  - contents:
+    - has_keyword("zeta")
