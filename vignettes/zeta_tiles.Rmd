@@ -1,11 +1,11 @@
 ---
-title: "Deriving the anisotropy exponent"
+title: "Running the workflow for tiles"
 author:
 - name: Hervé Guillon
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Deriving the anisotropy exponent}
+  %\VignetteIndexEntry{Running the workflow for tiles}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 bibliography: bibliography.bib
@@ -24,7 +24,7 @@ knitr::opts_chunk$set(
 
 # Purpose
 
-This vignette showcases the functions used to derive the roughness and anisotropy exponents from a rotated landscape.
+This vignette showcases the functions used to derive the roughness and anisotropy exponents for a collection of tiles over a landscape.
 
 # Loading data
 
@@ -47,6 +47,8 @@ This is done for simplicity here by using `terra::aggregate()`.
 tiles <- terra::aggregate(gabilan_mesa, fact = 100)
 ```
 
+# Tiled workflow
+
 Then, `get_zeta_df()` basically checks, conversions and parallelization to be able to efficiently run `get_zeta()`.
 It is also possible to directly to pass a polygon to `get_zeta_df()`.
 If passing a raster, the conversion from raster to polygons is handled internally.
@@ -67,6 +69,11 @@ zeta_raster <- get_zeta_raster(
   gabilan_mesa, tiles, 
   .zeta_df = zeta_df, crs_ref = terra::crs("EPSG:3310"), vertical_accuracy = 1.87
 )
-names(zeta_raster)
 ```
 
+For example here are the raster layers corresponding to $\alpha_{1,x}$ and $\alpha_{1,y}$.
+
+```{r visualization, echo = FALSE}
+sp::spplot(zeta_raster[["alpha1_mean.x"]])
+sp::spplot(zeta_raster[["alpha1_mean.y"]])
+```
