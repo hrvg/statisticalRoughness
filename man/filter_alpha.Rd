@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_alpha.R
 \name{filter_alpha}
 \alias{filter_alpha}
-\title{Filters the slope values of alpha returned by \code{get_all_alpha()} between zero and the 99.9\% quantile of the initial slopes}
+\title{Filters the alpha values of alpha returned by \code{get_all_alpha()} between zero and the 99.9\% quantile of the initial alphas}
 \usage{
 filter_alpha(alpha, prob = 0.999, rsquared_filter = TRUE)
 }
@@ -11,12 +11,12 @@ filter_alpha(alpha, prob = 0.999, rsquared_filter = TRUE)
 
 \item{prob, }{\code{numeric} the value of the probabilities passed to \code{quantile()}}
 
-\item{rsquared_filter, }{\code{logical}, if \code{TRUE}, filters out the \code{adj.r.squared} values lower than 0.99}
+\item{rsquared_filter, }{\code{logical}, if \code{TRUE}, filters out the \code{alpha.r2} values lower than 0.99}
 }
 \value{
 a \code{data.frame}
 }
 \description{
-Filters the slope values of alpha returned by \code{get_all_alpha()} between zero and the 99.9\% quantile of the initial slopes
+Filters the alpha values of alpha returned by \code{get_all_alpha()} between zero and the 99.9\% quantile of the initial alphas
 }
 \keyword{zeta}

@@ -89,7 +89,7 @@ beta
 ```
 
 ```{r, echo = FALSE}
-spectrum_plot(binned_power_spectrum, FT2D) + ggplot2::geom_vline(xintercept = 1/180) + ggplot2::geom_vline(xintercept = beta$change_point, lty = 2)
+spectrum_plot(binned_power_spectrum, FT2D) + ggplot2::geom_vline(xintercept = 1/180) + ggplot2::geom_vline(xintercept = beta$fc, lty = 2)
 ```
 
 # References

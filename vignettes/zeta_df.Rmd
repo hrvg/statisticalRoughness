@@ -34,12 +34,39 @@ First, we perform all the steps from [this vignette](articles/rotating_rasters.h
 library("statisticalRoughness")
 ```
 
+First, we load one of the DEM.
+
 ```{r reading rasters}
 gabilan_mesa <- terra::rast(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "gabilan_mesa.tif"))
-tiles <- terra::aggregate(gabilan_mesa, fact = 100) %>% terra::as.polygons(dissolve = FALSE)
 ```
 
-```{r get_zeta_df}
-zeta_df <- get_zeta_df(gabilan_mesa, tiles)
-zeta_df
+Next we create tiles over which we will calculate the roughness and anisotropy exponents.
+This is done for simplicity here by using `terra::aggregate()`.
+
+```{r tiles}
+tiles <- terra::aggregate(gabilan_mesa, fact = 100)
 ```
+
+Then, `get_zeta_df()` basically checks, conversions and parallelization to be able to efficiently run `get_zeta()`.
+It is also possible to directly to pass a polygon to `get_zeta_df()`.
+If passing a raster, the conversion from raster to polygons is handled internally.
+
+```{r get_zeta_df}
+zeta_df <- get_zeta_df(
+  gabilan_mesa, tiles, 
+  crs_ref = terra::crs("EPSG:3310"), vertical_accuracy = 1.87
+)
+```
+
+`get_zeta_df()` returns a `data.frame` with no spatial information.
+`get_zeta_raster()` takes care to re-introduce the spatial information from the initial raster (here, `gabilan_mesa`) and from the `tiles`.
+If the `.zeta_df` argument is set to `NULL`, `get_zeta_raster()` first runs `get_zeta()`
+
+```{r get_zeta_raster}
+zeta_raster <- get_zeta_raster(
+  gabilan_mesa, tiles, 
+  .zeta_df = zeta_df, crs_ref = terra::crs("EPSG:3310"), vertical_accuracy = 1.87
+)
+names(zeta_raster)
+```
+

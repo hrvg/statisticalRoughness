@@ -120,7 +120,7 @@ alpha_y <- get_all_alpha(hhcf_y, raster_resolution)
 alphas <- rbind(
   alpha_x %>% stats::na.omit() %>% dplyr::mutate(direction = 'x'),
   alpha_y %>% stats::na.omit() %>% dplyr::mutate(direction = 'y')
-  ) %>% reshape2::melt(measure.vars = c("slope1", "slope2"))
+  ) %>% reshape2::melt(measure.vars = c("alpha1", "alpha2"))
 p <- ggplot2::ggplot(alphas, ggplot2::aes(x = .data$value, group = .data$direction, color = .data$direction)) +
   ggplot2::geom_density(n = 512) +
   ggplot2::facet_grid(.data$variable ~ .) +
@@ -146,8 +146,8 @@ In a more human-readable format, we can summarize the entire landscape on `rotat
 
 |            |                             row-wise direction, $x$                             |                           column-wise direction, $y$                            |
 |:-----------|:-------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------:|
-| $\alpha_1$ | `r x_stats$slope1_mean %>% signif(2)` $\pm$ `r x_stats$slope1_sd %>% signif(2)` | `r y_stats$slope1_mean %>% signif(2)` $\pm$ `r y_stats$slope1_sd %>% signif(2)` |
-| $\alpha_2$ | `r x_stats$slope2_mean %>% signif(2)` $\pm$ `r x_stats$slope2_sd %>% signif(2)` | `r y_stats$slope2_mean %>% signif(2)` $\pm$ `r y_stats$slope2_sd %>% signif(2)` |
+| $\alpha_1$ | `r x_stats$alpha1_mean %>% signif(2)` $\pm$ `r x_stats$alpha1_sd %>% signif(2)` | `r y_stats$alpha1_mean %>% signif(2)` $\pm$ `r y_stats$alpha1_sd %>% signif(2)` |
+| $\alpha_2$ | `r x_stats$alpha2_mean %>% signif(2)` $\pm$ `r x_stats$alpha2_sd %>% signif(2)` | `r y_stats$alpha2_mean %>% signif(2)` $\pm$ `r y_stats$alpha2_sd %>% signif(2)` |
 
 These numbers mean that the topography is mainly correlated in a positive way below `r mean(c(x_stats$change_point_mean, y_stats$change_point_mean)) %>% signif(3)` meters and more correlated in the $x$-direction than in the $y$-direction as $\alpha_{1,x} > \alpha_{1,y} > 0.5$.
 Above `r mean(c(x_stats$change_point_mean, y_stats$change_point_mean)) %>% signif(3)` meters, the topography is negatively correlated and more so in the y-direction than in the $x$-direction $\alpha_{2,y} < \alpha_{2,x} < 0.5$.
@@ -172,5 +172,5 @@ For the current landscape:
 
 |           |                                          anisotropy exponent, $\zeta$                                          |
 |:----------|:--------------------------------------------------------------------------------------------------------------:|
-| $\zeta_1$ | `r get_zeta_(x_stats$slope1_mean, y_stats$slope1_mean, x_stats$slope1_IQR, y_stats$slope1_IQR) %>% signifNA()` |
-| $\zeta_2$ | `r get_zeta_(x_stats$slope2_mean, y_stats$slope2_mean, x_stats$slope2_IQR, y_stats$slope2_IQR) %>% signifNA()` |
+| $\zeta_1$ | `r get_zeta_(x_stats$alpha1_mean, y_stats$alpha1_mean, x_stats$alpha1_IQR, y_stats$alpha1_IQR) %>% signifNA()` |
+| $\zeta_2$ | `r get_zeta_(x_stats$alpha2_mean, y_stats$alpha2_mean, x_stats$alpha2_IQR, y_stats$alpha2_IQR) %>% signifNA()` |

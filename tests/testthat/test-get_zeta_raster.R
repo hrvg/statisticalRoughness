@@ -1,0 +1,11 @@
+test_that("get_zeta_raster works", {
+	test_path <- system.file("extdata/rasters/", package = "statisticalRoughness")
+	test_raster <- terra::rast(file.path(test_path, "gabilan_mesa.tif"))
+	test_tiles <- terra::aggregate(test_raster, fact = 100)
+	test_tiles_vect <- terra::as.polygons(test_tiles, dissolve = FALSE)
+	results <- get_zeta_df(test_raster, test_tiles)
+	expect_is(results, 'data.frame')
+	expect_error(get_zeta_raster(test_raster, test_tiles_vect, .zeta_df = results), "invalid class: tiles is not of class 'SpatRaster'")
+	expect_is(get_zeta_raster(test_raster, test_tiles, .zeta_df = results), 'SpatRaster')
+	expect_is(get_zeta_raster(test_raster, test_tiles), 'SpatRaster')
+})

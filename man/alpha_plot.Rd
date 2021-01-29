@@ -4,14 +4,14 @@
 \alias{alpha_plot}
 \title{Internal companion function to \code{get_alpha}.}
 \usage{
-alpha_plot(df, df_bin, change_point, xdecades = 3, ydecades = 3)
+alpha_plot(df, df_bin, rc, xdecades = 3, ydecades = 3)
 }
 \arguments{
 \item{df}{a \code{data.frame} with the non-binned data}
 
 \item{df_bin}{a \code{data.frame} with the binned data}
 
-\item{change_point}{\code{numeric}, the change point identified by \code{get_alpha}}
+\item{rc}{\code{numeric}, the change point identified by \code{get_alpha}}
 
 \item{xdecades}{\code{numeric}, how decades should be plotted in the x-direction}
 
