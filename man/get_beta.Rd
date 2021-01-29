@@ -19,4 +19,4 @@ a \code{data.frame}
 \description{
 Derive the slope of the binned power spectrum
 }
-\keyword{beta}
+\keyword{fft2d}

@@ -6,7 +6,9 @@
 #' @keywords zeta
 get_all_alpha <- function(hhcf, dr){
 	hhcf <- hhcf$hhcf
-	all_alpha <- lapply(seq_along(hhcf), function(k) get_alpha(hhcf[k, ], dr))
+	all_alpha <- lapply(seq_along(hhcf), function(k){
+		get_alpha(hhcf[k, ], dr)
+	})
 	all_alpha <- do.call(rbind, all_alpha)
 	return(all_alpha)
 }
@@ -39,13 +41,16 @@ get_alpha <- function(row, dr, do_plot = FALSE){
 		return(data.frame(slope1 = NA, slope2 = NA, change_point = NA, max_point = NA, adj.r.squared = NA))
 	} else {
 		df_filtered <- df[1:(ind_neg %>% utils::head(1)), ]
-		if (nrow(df_filtered) < 5){
+		if (nrow(df_filtered) < 10){
 			return(data.frame(slope1 = NA, slope2 = NA, change_point = NA, max_point = NA, adj.r.squared = NA))
 		}
 
 		x <- log10(df_filtered$dr)
 		y <- log10(df_filtered$hhcf)
-		segmented.fit <- segmented::segmented(lm(y ~ x, weights = 1 / x))
+		segmented.fit <- tryCatch(segmented::segmented(lm(y ~ x, weights = 1 / x)), error = function(e) e, warning = function(w) w)
+		if(is(segmented.fit, "warning")){
+			return(data.frame(slope1 = NA, slope2 = NA, change_point = NA, max_point = NA, adj.r.squared = NA))
+		}
 		alpha <- data.frame(
 			change_point = 10^segmented.fit$psi[1,2],
 			slope1 = segmented.fit$coefficients[2],

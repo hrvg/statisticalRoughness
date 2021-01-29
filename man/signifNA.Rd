@@ -7,6 +7,8 @@
 signifNA(value, digits = 3)
 }
 \arguments{
+\item{value}{value to be transformed}
+
 \item{digits}{\code{numeric} number of significant digits, default to 3}
 }
 \description{

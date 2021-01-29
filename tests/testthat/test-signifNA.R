@@ -1,0 +1,12 @@
+test_that("signifNA works", {
+  expect_error(signifNA(2.1, digits = "a"), "non-numeric argument to mathematical function")
+  expect_equal(as.character(signifNA(2.1, digits = NA)), as.character(NA))
+  expect_equal(as.character(signifNA(2.1, digits = 0)), "2")
+  expect_equal(as.character(signifNA(2.1, digits = 1)), "2")
+  expect_equal(as.character(signifNA(2.1, digits = 2)), "2.1")
+  expect_equal(as.character(signifNA(2.11, digits = 3)), "2.11")
+  expect_equal(as.character(signifNA(2.11, digits = 6)), "2.11")
+  expect_equal(as.character(signifNA(2.16, digits = 2)), "2.2")
+  expect_equal(as.character(signifNA(2.14, digits = 2)), "2.1")
+  expect_equal(as.character(signifNA(NA, digits = 2)), "-")
+})

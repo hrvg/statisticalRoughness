@@ -1,0 +1,45 @@
+---
+title: "Deriving the anisotropy exponent"
+author:
+- name: Hervé Guillon
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Deriving the anisotropy exponent}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: bibliography.bib
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 8, 
+  fig.height = 8,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+# Purpose
+
+This vignette showcases the functions used to derive the roughness and anisotropy exponents from a rotated landscape.
+
+# Loading data
+
+First, we perform all the steps from [this vignette](articles/rotating_rasters.html).
+
+```{r loading}
+library("statisticalRoughness")
+```
+
+```{r reading rasters}
+gabilan_mesa <- terra::rast(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "gabilan_mesa.tif"))
+tiles <- terra::aggregate(gabilan_mesa, fact = 100) %>% terra::as.polygons(dissolve = FALSE)
+```
+
+```{r get_zeta_df}
+zeta_df <- get_zeta_df(gabilan_mesa, tiles)
+zeta_df
+```

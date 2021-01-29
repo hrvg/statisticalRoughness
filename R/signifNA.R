@@ -1,5 +1,5 @@
 #' Internal function to gracefully handles NA in signif
-#' @param value
+#' @param value value to be transformed
 #' @param digits `numeric` number of significant digits, default to 3
 #' @export
 #' @keywords internal
