@@ -119,7 +119,7 @@
       <h1 data-toc-skip>Example of anisotropic landscapes</h1>
                         <h4 class="author">Hervé Guillon</h4>
                         
-            <h4 class="date">21 January 2021</h4>
+            <h4 class="date">30 January 2021</h4>
       
       
       <div class="hidden name"><code>zeta_examples.Rmd</code></div>
@@ -141,7 +141,7 @@
 <code class="sourceCode R"><span class="va">gabilan_mesa</span> <span class="op">&lt;-</span> <span class="fu">raster</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/raster/man/raster.html">raster</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata/rasters/"</span>, package <span class="op">=</span> <span class="st">"statisticalRoughness"</span><span class="op">)</span>, <span class="st">"gabilan_mesa.tif"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">res_gabi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_zeta.html">get_zeta</a></span><span class="op">(</span><span class="va">gabilan_mesa</span><span class="op">)</span></code></pre></div>
 <p>Gabilan Mesa landscape has a minimum elevation of 216 m, an average elevation of 310 m, and a maximum elevation of 381 m. The maximum relief is thus 166 m.</p>
-<p>The figure below showcases the landscape in its original form. The landscape was rotated so that in this original frame of reference, <span class="math inline">\(\theta_x =\)</span> 122<span class="math inline">\(^\circ\)</span> and <span class="math inline">\(\theta_y =\)</span> 212<span class="math inline">\(^\circ\)</span>. (In the rotated frame of reference, <span class="math inline">\(\theta_x' = 0^\circ\)</span> and <span class="math inline">\(\theta_y' = 90^\circ\)</span>.) The segmented regression on the power spectrum identifies scalings with slope <span class="math inline">\(\beta_1 =\)</span> -2.15, and <span class="math inline">\(\beta_2 =\)</span> -5.44, before and after a cut-off lengthscale of <span class="math inline">\(1/f_c =\)</span> 277 m, respectively. As <span class="math inline">\(\beta = 2H + d\)</span>, and <span class="math inline">\(d = 2\)</span>, the Hurst coefficients <span class="math inline">\(H\)</span> corresponding to <span class="math inline">\(\beta_1\)</span> and <span class="math inline">\(\beta_2\)</span> are 0.0729, and 1.72, respectively. Before a cut-off lengthscale of 119 m, the roughness exponents in the <span class="math inline">\(x\)</span>– and <span class="math inline">\(y\)</span>–directions are <span class="math inline">\(\alpha_{1,x} =\)</span> 0.858, and <span class="math inline">\(\alpha_{1,y} =\)</span> 0.804. Consequently, the anisotropy exponent is <span class="math inline">\(\zeta_1 =\)</span> 1.07. After cut-off lengthscale, the roughness exponents are lower and almost equal with <span class="math inline">\(\alpha_{2,x} =\)</span> 0.346, and <span class="math inline">\(\alpha_{2,y} =\)</span> 0.329. Consequently, the anisotropy exponent is <span class="math inline">\(\zeta_2 =\)</span> 1.05. The maximum cutoff lengthscale recorded for roughness exponents is <span class="math inline">\(r_{max} =\)</span> 386 m.</p>
+<p>The figure below showcases the landscape in its original form. The landscape was rotated so that in this original frame of reference, <span class="math inline">\(\theta_x =\)</span> 122<span class="math inline">\(^\circ\)</span> and <span class="math inline">\(\theta_y =\)</span> 212<span class="math inline">\(^\circ\)</span>. (In the rotated frame of reference, <span class="math inline">\(\theta_x' = 0^\circ\)</span> and <span class="math inline">\(\theta_y' = 90^\circ\)</span>.) The segmented regression on the power spectrum identifies scalings with slope <span class="math inline">\(\beta_1 =\)</span> -2.13, and <span class="math inline">\(\beta_2 =\)</span> -5.43, before and after a cut-off lengthscale of <span class="math inline">\(1/f_c =\)</span> 280 m, respectively. As <span class="math inline">\(\beta = 2H + d\)</span>, and <span class="math inline">\(d = 2\)</span>, the Hurst coefficients <span class="math inline">\(H\)</span> corresponding to <span class="math inline">\(\beta_1\)</span> and <span class="math inline">\(\beta_2\)</span> are 0.0661, and 1.72, respectively. Before a cut-off lengthscale of 119 m, the roughness exponents in the <span class="math inline">\(x\)</span>– and <span class="math inline">\(y\)</span>–directions are <span class="math inline">\(\alpha_{1,x} =\)</span> 0.858, and <span class="math inline">\(\alpha_{1,y} =\)</span> 0.804. Consequently, the anisotropy exponent is <span class="math inline">\(\zeta_1 =\)</span> 1.07. After cut-off lengthscale, the roughness exponents are lower and almost equal with <span class="math inline">\(\alpha_{2,x} =\)</span> 0.347, and <span class="math inline">\(\alpha_{2,y} =\)</span> 0.329. Consequently, the anisotropy exponent is <span class="math inline">\(\zeta_2 =\)</span> 1.05. The maximum cutoff lengthscale recorded for roughness exponents is <span class="math inline">\(r_{max} =\)</span> 387 m.</p>
 <p>The figure below showcases the landscape in its original form (left) and smoothed with a Gaussian kernel of 11 standard deviations to match the value of <span class="math inline">\(r_c\)</span> (right).</p>
 <p><img src="zeta_examples_files/figure-html/unnamed-chunk-4-1.png" width="672"></p>
 </div>
@@ -151,7 +151,7 @@
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">yosemite</span> <span class="op">&lt;-</span> <span class="fu">raster</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/raster/man/raster.html">raster</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata/rasters/"</span>, package <span class="op">=</span> <span class="st">"statisticalRoughness"</span><span class="op">)</span>, <span class="st">"yosemite.tif"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">res_yose</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_zeta.html">get_zeta</a></span><span class="op">(</span><span class="va">yosemite</span><span class="op">)</span> </code></pre></div>
-<p>Yosemite Valley landscape has a minimum elevation of 1220 m, an average elevation of 1710 m, and a maximum elevation of 2700 m. The maximum relief is thus 1480 m. The figure below showcases the landscape in its original form. The landscape was rotated so that in this original frame of reference, <span class="math inline">\(\theta_x =\)</span> 122<span class="math inline">\(^\circ\)</span> and <span class="math inline">\(\theta_y =\)</span> 212<span class="math inline">\(^\circ\)</span>. (In the rotated frame of reference, <span class="math inline">\(\theta_x' = 0^\circ\)</span> and <span class="math inline">\(\theta_y' = 90^\circ\)</span>.) The segmented regression on the power spectrum identifies scalings with slope <span class="math inline">\(\beta_1 =\)</span> -4.97, and <span class="math inline">\(\beta_2 =\)</span> -4.22, before and after a cut-off lengthscale of <span class="math inline">\(1/f_c =\)</span> 443 m, respectively. As <span class="math inline">\(\beta = 2H + d\)</span>, and <span class="math inline">\(d = 2\)</span>, the Hurst coefficients <span class="math inline">\(H\)</span> corresponding to <span class="math inline">\(\beta_1\)</span> and <span class="math inline">\(\beta_2\)</span> are 1.48, and 1.11. Before a cut-off lengthscale of 542 m, the roughness exponents in the <span class="math inline">\(x\)</span>– and <span class="math inline">\(y\)</span>–directions are <span class="math inline">\(\alpha_{1,x} =\)</span> 0.877, and <span class="math inline">\(\alpha_{1,y} =\)</span> 0.76. Consequently, the anisotropy exponent is <span class="math inline">\(\zeta_1 =\)</span> 1.15. After cut-off lengthscale, the roughness exponents are lower and almost equal with <span class="math inline">\(\alpha_{2,x} =\)</span> 0.522, and <span class="math inline">\(\alpha_{2,y} =\)</span> 0.52. Consequently, the anisotropy exponent is <span class="math inline">\(\zeta_2 =\)</span> 1. The maximum cutoff lengthscale recorded for roughness exponents is <span class="math inline">\(r_{max} =\)</span> 1220 m.</p>
+<p>Yosemite Valley landscape has a minimum elevation of 1220 m, an average elevation of 1710 m, and a maximum elevation of 2700 m. The maximum relief is thus 1480 m. The figure below showcases the landscape in its original form. The landscape was rotated so that in this original frame of reference, <span class="math inline">\(\theta_x =\)</span> 122<span class="math inline">\(^\circ\)</span> and <span class="math inline">\(\theta_y =\)</span> 212<span class="math inline">\(^\circ\)</span>. (In the rotated frame of reference, <span class="math inline">\(\theta_x' = 0^\circ\)</span> and <span class="math inline">\(\theta_y' = 90^\circ\)</span>.) The segmented regression on the power spectrum identifies scalings with slope <span class="math inline">\(\beta_1 =\)</span> -4.94, and <span class="math inline">\(\beta_2 =\)</span> -4.23, before and after a cut-off lengthscale of <span class="math inline">\(1/f_c =\)</span> 437 m, respectively. As <span class="math inline">\(\beta = 2H + d\)</span>, and <span class="math inline">\(d = 2\)</span>, the Hurst coefficients <span class="math inline">\(H\)</span> corresponding to <span class="math inline">\(\beta_1\)</span> and <span class="math inline">\(\beta_2\)</span> are 1.47, and 1.11. Before a cut-off lengthscale of 542 m, the roughness exponents in the <span class="math inline">\(x\)</span>– and <span class="math inline">\(y\)</span>–directions are <span class="math inline">\(\alpha_{1,x} =\)</span> 0.877, and <span class="math inline">\(\alpha_{1,y} =\)</span> 0.76. Consequently, the anisotropy exponent is <span class="math inline">\(\zeta_1 =\)</span> 1.15. After cut-off lengthscale, the roughness exponents are lower and almost equal with <span class="math inline">\(\alpha_{2,x} =\)</span> 0.522, and <span class="math inline">\(\alpha_{2,y} =\)</span> 0.52. Consequently, the anisotropy exponent is <span class="math inline">\(\zeta_2 =\)</span> 1. The maximum cutoff lengthscale recorded for roughness exponents is <span class="math inline">\(r_{max} =\)</span> 1220 m.</p>
 <p>The figure below showcases the landscape in its original form (left) and smoothed with a Gaussian kernel of 54 standard deviations to match the value of <span class="math inline">\(r_c\)</span> (right).</p>
 <p><img src="zeta_examples_files/figure-html/unnamed-chunk-6-1.png" width="672"></p>
 </div>
@@ -161,7 +161,7 @@
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">modoc</span> <span class="op">&lt;-</span> <span class="fu">raster</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/raster/man/raster.html">raster</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata/rasters/"</span>, package <span class="op">=</span> <span class="st">"statisticalRoughness"</span><span class="op">)</span>, <span class="st">"modoc.tif"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">res_modo</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_zeta.html">get_zeta</a></span><span class="op">(</span><span class="va">modoc</span><span class="op">)</span> </code></pre></div>
-<p>Modoc Plateau landscape has a minimum elevation of 1420 m, an average elevation of 1450 m, and a maximum elevation of 1480 m. The maximum relief is thus 55.2 m. The landscape was rotated so that in this original frame of reference, <span class="math inline">\(\theta_x =\)</span> 91.6<span class="math inline">\(^\circ\)</span> and <span class="math inline">\(\theta_y =\)</span> 182<span class="math inline">\(^\circ\)</span>. (In the rotated frame of reference, <span class="math inline">\(\theta_x' = 0^\circ\)</span> and <span class="math inline">\(\theta_y' = 90^\circ\)</span>.) The segmented regression on the power spectrum identifies scalings with slope <span class="math inline">\(\beta_1 =\)</span> -2.42, and <span class="math inline">\(\beta_2 =\)</span> -5.2, before and after a cut-off lengthscale of <span class="math inline">\(1/f_c =\)</span> 704 m, respectively. As <span class="math inline">\(\beta = 2H + d\)</span>, and <span class="math inline">\(d = 2\)</span>, the Hurst coefficients <span class="math inline">\(H\)</span> corresponding to <span class="math inline">\(\beta_1\)</span> and <span class="math inline">\(\beta_2\)</span> are 0.209, and 1.6. Before a cut-off lengthscale of 890 m, the roughness exponents in the <span class="math inline">\(x\)</span>– and <span class="math inline">\(y\)</span>–directions are almost equal as <span class="math inline">\(\alpha_{1,x} =\)</span> 0.893, and <span class="math inline">\(\alpha_{1,y} =\)</span> 0.891. Consequently, the anisotropy exponent is <span class="math inline">\(\zeta_1 =\)</span> 1. After cut-off lengthscale, the roughness exponents are more distinct as <span class="math inline">\(\alpha_{2,x} =\)</span> 0.653, and <span class="math inline">\(\alpha_{2,y} =\)</span> 0.802. However, the anisotropy exponent, <span class="math inline">\(\zeta_2\)</span>, cannot be derived as at least one ofthe distribution of <span class="math inline">\(\alpha_2\)</span> has a large spread and its mean is an inconclusive description of centrality<br>
+<p>Modoc Plateau landscape has a minimum elevation of 1420 m, an average elevation of 1450 m, and a maximum elevation of 1480 m. The maximum relief is thus 55.2 m. The landscape was rotated so that in this original frame of reference, <span class="math inline">\(\theta_x =\)</span> 91.6<span class="math inline">\(^\circ\)</span> and <span class="math inline">\(\theta_y =\)</span> 182<span class="math inline">\(^\circ\)</span>. (In the rotated frame of reference, <span class="math inline">\(\theta_x' = 0^\circ\)</span> and <span class="math inline">\(\theta_y' = 90^\circ\)</span>.) The segmented regression on the power spectrum identifies scalings with slope <span class="math inline">\(\beta_1 =\)</span> -2.39, and <span class="math inline">\(\beta_2 =\)</span> -5.22, before and after a cut-off lengthscale of <span class="math inline">\(1/f_c =\)</span> 703 m, respectively. As <span class="math inline">\(\beta = 2H + d\)</span>, and <span class="math inline">\(d = 2\)</span>, the Hurst coefficients <span class="math inline">\(H\)</span> corresponding to <span class="math inline">\(\beta_1\)</span> and <span class="math inline">\(\beta_2\)</span> are 0.194, and 1.61. Before a cut-off lengthscale of 890 m, the roughness exponents in the <span class="math inline">\(x\)</span>– and <span class="math inline">\(y\)</span>–directions are almost equal as <span class="math inline">\(\alpha_{1,x} =\)</span> 0.893, and <span class="math inline">\(\alpha_{1,y} =\)</span> 0.891. Consequently, the anisotropy exponent is <span class="math inline">\(\zeta_1 =\)</span> 1. After cut-off lengthscale, the roughness exponents are more distinct as <span class="math inline">\(\alpha_{2,x} =\)</span> 0.653, and <span class="math inline">\(\alpha_{2,y} =\)</span> 0.802. However, the anisotropy exponent, <span class="math inline">\(\zeta_2\)</span>, cannot be derived as at least one ofthe distribution of <span class="math inline">\(\alpha_2\)</span> has a large spread and its mean is an inconclusive description of centrality<br>
 (<span class="math inline">\(\alpha_{2,x} =\)</span> 0.653 <span class="math inline">\(\pm\)</span> 0.358, and <span class="math inline">\(\alpha_{2,y} =\)</span> 0.802 <span class="math inline">\(\pm\)</span> 0.42). The maximum cutoff lengthscale recorded for roughness exponents is <span class="math inline">\(r_{max} =\)</span> 1820 m.</p>
 <p>The figure below showcases the landscape in its original form (left) and smoothed with a Gaussian kernel of 89 standard deviations to match the value of <span class="math inline">\(r_c\)</span> (right).</p>
 <p><img src="zeta_examples_files/figure-html/unnamed-chunk-8-1.png" width="672"></p>
@@ -173,19 +173,19 @@
 <table class="table">
 <colgroup>
 <col width="2%">
-<col width="6%">
+<col width="5%">
+<col width="5%">
 <col width="6%">
 <col width="7%">
-<col width="6%">
-<col width="6%">
+<col width="7%">
 <col width="5%">
-<col width="6%">
-<col width="6%">
+<col width="7%">
+<col width="7%">
 <col width="5%">
-<col width="13%">
+<col width="11%">
 <col width="12%">
-<col width="6%">
 <col width="7%">
+<col width="8%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">landscape</th>
@@ -206,25 +206,25 @@
 <tbody>
 <tr class="odd">
 <td align="left">Gabilan Mesa</td>
-<td align="center">-2.15</td>
-<td align="center">-5.44</td>
-<td align="center">277</td>
+<td align="center">-2.13</td>
+<td align="center">-5.43</td>
+<td align="center">280</td>
 <td align="center">0.858</td>
 <td align="center">0.804</td>
 <td align="center">1.07</td>
-<td align="center">0.346</td>
+<td align="center">0.347</td>
 <td align="center">0.329</td>
 <td align="center">1.05</td>
 <td align="center">119</td>
-<td align="center">386</td>
+<td align="center">387</td>
 <td align="center">122</td>
 <td align="center">212</td>
 </tr>
 <tr class="even">
 <td align="left">Yosemite Valley</td>
-<td align="center">-4.97</td>
-<td align="center">-4.22</td>
-<td align="center">443</td>
+<td align="center">-4.94</td>
+<td align="center">-4.23</td>
+<td align="center">437</td>
 <td align="center">0.877</td>
 <td align="center">0.76</td>
 <td align="center">1.15</td>
@@ -238,9 +238,9 @@
 </tr>
 <tr class="odd">
 <td align="left">Modoc Plateau</td>
-<td align="center">-2.42</td>
-<td align="center">-5.2</td>
-<td align="center">704</td>
+<td align="center">-2.39</td>
+<td align="center">-5.22</td>
+<td align="center">703</td>
 <td align="center">0.893</td>
 <td align="center">0.891</td>
 <td align="center">1</td>

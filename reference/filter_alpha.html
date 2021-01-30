@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Filters the slope values of alpha returned by get_all_alpha() between zero and the 99.9% quantile of the initial slopes — filter_alpha • statisticalRoughness</title>
+<title>Filters the alpha values of alpha returned by get_all_alpha() between zero and the 99.9% quantile of the initial alphas — filter_alpha • statisticalRoughness</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Filters the slope values of alpha returned by get_all_alpha() between zero and the 99.9% quantile of the initial slopes — filter_alpha" />
-<meta property="og:description" content="Filters the slope values of alpha returned by get_all_alpha() between zero and the 99.9% quantile of the initial slopes" />
+<meta property="og:title" content="Filters the alpha values of alpha returned by get_all_alpha() between zero and the 99.9% quantile of the initial alphas — filter_alpha" />
+<meta property="og:description" content="Filters the alpha values of alpha returned by get_all_alpha() between zero and the 99.9% quantile of the initial alphas" />
 
 
 
@@ -159,13 +159,13 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Filters the slope values of alpha returned by <code>get_all_alpha()</code> between zero and the 99.9% quantile of the initial slopes</h1>
+    <h1>Filters the alpha values of alpha returned by <code>get_all_alpha()</code> between zero and the 99.9% quantile of the initial alphas</h1>
     
     <div class="hidden name"><code>filter_alpha.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Filters the slope values of alpha returned by <code><a href='get_all_alpha.html'>get_all_alpha()</a></code> between zero and the 99.9% quantile of the initial slopes</p>
+    <p>Filters the alpha values of alpha returned by <code><a href='get_all_alpha.html'>get_all_alpha()</a></code> between zero and the 99.9% quantile of the initial alphas</p>
     </div>
 
     <pre class="usage"><span class='fu'>filter_alpha</span><span class='op'>(</span><span class='va'>alpha</span>, prob <span class='op'>=</span> <span class='fl'>0.999</span>, rsquared_filter <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
@@ -183,7 +183,7 @@
     </tr>
     <tr>
       <th>rsquared_filter, </th>
-      <td><p><code>logical</code>, if <code>TRUE</code>, filters out the <code>adj.r.squared</code> values lower than 0.99</p></td>
+      <td><p><code>logical</code>, if <code>TRUE</code>, filters out the <code>alpha.r2</code> values lower than 0.99</p></td>
     </tr>
     </table>
 

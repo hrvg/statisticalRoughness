@@ -119,7 +119,7 @@
       <h1 data-toc-skip>Deriving the anisotropy exponent</h1>
                         <h4 class="author">Hervé Guillon</h4>
                         
-            <h4 class="date">21 January 2021</h4>
+            <h4 class="date">30 January 2021</h4>
       
       
       <div class="hidden name"><code>zeta.Rmd</code></div>
@@ -179,19 +179,19 @@
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/get_alpha.html">get_alpha</a></span><span class="op">(</span><span class="va">hhcf_x</span><span class="op">$</span><span class="va">hhcf</span><span class="op">[</span><span class="va">ind_x</span>, <span class="op">]</span>, <span class="va">raster_resolution</span>, do_plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p><img src="zeta_files/figure-html/example_x_1-1.png" width="768"></p>
-<pre><code>#&gt;   change_point    slope1    slope2 max_point adj.r.squared
-#&gt; x      112.492 0.8514611 0.3053454   243.405     0.9991539</code></pre>
+<pre><code>#&gt;        rc    alpha1    alpha2    rmax  alpha.r2
+#&gt; x 112.492 0.8514611 0.3053454 243.405 0.9991539</code></pre>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/get_alpha.html">get_alpha</a></span><span class="op">(</span><span class="va">hhcf_y</span><span class="op">$</span><span class="va">hhcf</span><span class="op">[</span><span class="va">ind_y</span>, <span class="op">]</span>, <span class="va">raster_resolution</span>, do_plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p><img src="zeta_files/figure-html/example_y_1-1.png" width="768"></p>
-<pre><code>#&gt;   change_point    slope1    slope2 max_point adj.r.squared
-#&gt; x     69.71757 0.8454504 0.2776742   243.405     0.9993926</code></pre>
+<pre><code>#&gt;         rc    alpha1    alpha2    rmax  alpha.r2
+#&gt; x 69.71757 0.8454504 0.2776742 243.405 0.9993926</code></pre>
 <p><code><a href="../reference/get_alpha.html">get_alpha()</a></code> includes a number of safeguard and the function will return <code>NA</code>. Here is an example the roughly follow a ridgeline, the middle column, with no statistically consistent scaling.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/get_alpha.html">get_alpha</a></span><span class="op">(</span><span class="va">hhcf_y</span><span class="op">$</span><span class="va">hhcf</span><span class="op">[</span><span class="va">ind_x</span>, <span class="op">]</span>, <span class="va">raster_resolution</span>, do_plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p><img src="zeta_files/figure-html/example_y_2-1.png" width="768"></p>
-<pre><code>#&gt;   change_point    slope1    slope2 max_point adj.r.squared
-#&gt; x     69.15329 0.7871953 0.2112622    126.21     0.9987383</code></pre>
+<pre><code>#&gt;         rc    alpha1    alpha2   rmax  alpha.r2
+#&gt; x 69.15329 0.7871953 0.2112622 126.21 0.9987383</code></pre>
 </div>
 <div id="computing-all-roughness-exponents" class="section level2">
 <h2 class="hasAnchor">
@@ -204,31 +204,23 @@
 <p>The resulting <code>data.frames</code> can easily be summarized with <code><a href="../reference/summarise_alpha.html">summarise_alpha()</a></code>. For example:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">alpha_x</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/summarise_alpha.html">summarise_alpha</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt;   slope1_min slope1_mean slope1_max  slope1_sd slope1_IQR slope2_min</span>
-<span class="co">#&gt; 1  0.7525691   0.8577007  0.9194875 0.02355525 0.02680059  0.1089438</span>
-<span class="co">#&gt;   slope2_mean slope2_max  slope2_sd slope2_IQR change_point_min</span>
-<span class="co">#&gt; 1   0.3460145   0.648869 0.08129036  0.1049195         41.78132</span>
-<span class="co">#&gt;   change_point_mean change_point_max change_point_sd change_point_IQR</span>
-<span class="co">#&gt; 1          116.7662         229.5888        25.77841         26.23797</span>
-<span class="co">#&gt;   max_point_min max_point_mean max_point_max max_point_sd max_point_IQR</span>
-<span class="co">#&gt; 1         72.12       401.5652        973.62     217.6076         180.3</span>
-<span class="co">#&gt;   adj.r.squared_min adj.r.squared_mean adj.r.squared_max adj.r.squared_sd</span>
-<span class="co">#&gt; 1         0.9932127          0.9989112           0.99965     0.0006963877</span>
-<span class="co">#&gt;   adj.r.squared_IQR</span>
-<span class="co">#&gt; 1      0.0004869319</span>
+<span class="co">#&gt;   alpha1_min alpha1_mean alpha1_max  alpha1_sd alpha1_IQR alpha2_min</span>
+<span class="co">#&gt; 1  0.7525691   0.8576394  0.9194875 0.02333023 0.02668279  0.1089438</span>
+<span class="co">#&gt;   alpha2_mean alpha2_max  alpha2_sd alpha2_IQR   rc_min  rc_mean   rc_max</span>
+<span class="co">#&gt; 1   0.3469332   0.648869 0.08089364  0.1061726 42.56599 117.3809 229.5888</span>
+<span class="co">#&gt;      rc_sd   rc_IQR rmax_min rmax_mean rmax_max  rmax_sd rmax_IQR alpha.r2_min</span>
+<span class="co">#&gt; 1 25.04692 26.14729    90.15  404.4445   973.62 216.4101    180.3    0.9932127</span>
+<span class="co">#&gt;   alpha.r2_mean alpha.r2_max  alpha.r2_sd alpha.r2_IQR</span>
+<span class="co">#&gt; 1     0.9989099      0.99965 0.0006989915 0.0004849006</span>
 <span class="va">alpha_y</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/summarise_alpha.html">summarise_alpha</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt;   slope1_min slope1_mean slope1_max  slope1_sd slope1_IQR slope2_min</span>
+<span class="co">#&gt;   alpha1_min alpha1_mean alpha1_max  alpha1_sd alpha1_IQR alpha2_min</span>
 <span class="co">#&gt; 1  0.4445179   0.8035647  0.9064168 0.06828347 0.05439905  0.1101542</span>
-<span class="co">#&gt;   slope2_mean slope2_max slope2_sd slope2_IQR change_point_min</span>
-<span class="co">#&gt; 1   0.3291653   1.002387 0.1200056  0.0899577         49.48651</span>
-<span class="co">#&gt;   change_point_mean change_point_max change_point_sd change_point_IQR</span>
-<span class="co">#&gt; 1          120.3672         1587.951        171.9672         28.32148</span>
-<span class="co">#&gt;   max_point_min max_point_mean max_point_max max_point_sd max_point_IQR</span>
-<span class="co">#&gt; 1       117.195       369.5543      2677.455     391.4812       207.345</span>
-<span class="co">#&gt;   adj.r.squared_min adj.r.squared_mean adj.r.squared_max adj.r.squared_sd</span>
-<span class="co">#&gt; 1         0.9760342          0.9981882         0.9997217      0.002859781</span>
-<span class="co">#&gt;   adj.r.squared_IQR</span>
-<span class="co">#&gt; 1      0.0006231902</span></code></pre></div>
+<span class="co">#&gt;   alpha2_mean alpha2_max alpha2_sd alpha2_IQR   rc_min  rc_mean   rc_max</span>
+<span class="co">#&gt; 1   0.3291653   1.002387 0.1200056  0.0899577 49.48651 120.3672 1587.951</span>
+<span class="co">#&gt;      rc_sd   rc_IQR rmax_min rmax_mean rmax_max  rmax_sd rmax_IQR alpha.r2_min</span>
+<span class="co">#&gt; 1 171.9672 28.32148  117.195  369.5543 2677.455 391.4812  207.345    0.9760342</span>
+<span class="co">#&gt;   alpha.r2_mean alpha.r2_max alpha.r2_sd alpha.r2_IQR</span>
+<span class="co">#&gt; 1     0.9981882    0.9997217 0.002859781 0.0006231902</span></code></pre></div>
 <p>In a more human-readable format, we can summarize the entire landscape on <code>rotated_raster</code> by:</p>
 <table class="table">
 <thead><tr class="header">
@@ -241,7 +233,7 @@
 <tbody>
 <tr class="odd">
 <td align="left"><span class="math inline">\(\alpha_1\)</span></td>
-<td align="center">0.86 <span class="math inline">\(\pm\)</span> 0.024</td>
+<td align="center">0.86 <span class="math inline">\(\pm\)</span> 0.023</td>
 <td align="center">0.8 <span class="math inline">\(\pm\)</span> 0.068</td>
 </tr>
 <tr class="even">
@@ -251,7 +243,7 @@
 </tr>
 </tbody>
 </table>
-<p>These numbers mean that the topography is mainly correlated in a positive way below 119 meters and more correlated in the <span class="math inline">\(x\)</span>-direction than in the <span class="math inline">\(y\)</span>-direction as <span class="math inline">\(\alpha_{1,x} &gt; \alpha_{1,y} &gt; 0.5\)</span>. Above 119 meters, the topography is negatively correlated and more so in the y-direction than in the <span class="math inline">\(x\)</span>-direction <span class="math inline">\(\alpha_{2,y} &lt; \alpha_{2,x} &lt; 0.5\)</span>. These results also mean that the <span class="math inline">\(x\)</span>-direction corresponds to the down-slope direction, <span class="math inline">\(\mathbf{e}_\parallel\)</span>, while the <span class="math inline">\(y\)</span>-direction corresponds to the across-slope direction, <span class="math inline">\(\mathbf{e}_\perp\)</span>. Further, the dominant slope in the <span class="math inline">\(x\)</span>-direction results in increased smoothing and higher values of roughness exponents. This is what we could have expected from a visual inspection of the landscape.</p>
+<p>These numbers mean that the topography is mainly correlated in a positive way below NA meters and more correlated in the <span class="math inline">\(x\)</span>-direction than in the <span class="math inline">\(y\)</span>-direction as <span class="math inline">\(\alpha_{1,x} &gt; \alpha_{1,y} &gt; 0.5\)</span>. Above NA meters, the topography is negatively correlated and more so in the y-direction than in the <span class="math inline">\(x\)</span>-direction <span class="math inline">\(\alpha_{2,y} &lt; \alpha_{2,x} &lt; 0.5\)</span>. These results also mean that the <span class="math inline">\(x\)</span>-direction corresponds to the down-slope direction, <span class="math inline">\(\mathbf{e}_\parallel\)</span>, while the <span class="math inline">\(y\)</span>-direction corresponds to the across-slope direction, <span class="math inline">\(\mathbf{e}_\perp\)</span>. Further, the dominant slope in the <span class="math inline">\(x\)</span>-direction results in increased smoothing and higher values of roughness exponents. This is what we could have expected from a visual inspection of the landscape.</p>
 </div>
 </div>
 <div id="anisotropy-exponent-zeta" class="section level1">
