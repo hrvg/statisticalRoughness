@@ -23,6 +23,7 @@ Imports:
     ggplot2,
     ggpubr,
     imager,
+    future,
     kableExtra,
     magick,
     magrittr,
