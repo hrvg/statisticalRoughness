@@ -20,6 +20,7 @@ get_all_alpha <- function(hhcf, dr){
 #' @param row array of hhcf values
 #' @param dr `numeric`, spacing of the values along the axis
 #' @param do_plot `logical`, plot the fit, default to `FALSE`
+#' @importFrom methods is
 #' @export
 #' @keywords zeta
 get_alpha <- function(row, dr, do_plot = FALSE){

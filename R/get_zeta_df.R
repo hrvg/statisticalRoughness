@@ -33,11 +33,12 @@ get_zeta_df <- function(DEM, tiles, crs_ref = terra::crs("EPSG:3310"), vertical_
 	}
 
 	# main
+	i <- NULL
 	zeta_dfs <-	foreach(i = seq_along(tiles), .combine = rbind, .inorder = TRUE) %dorng% {
 		cropped_DEM <- terra::crop(DEM, tiles[i, ])
 		cropped_DEM_values <- terra::values(cropped_DEM)
 		pct_non_na <- sum(is.finite(cropped_DEM_values)) / terra::ncell(cropped_DEM)
-		if ((pct_non_na > 1/3) & !(IQR(na.omit(cropped_DEM_values)) < vertical_accuracy)){ 
+		if ((pct_non_na > 1/3) & !(stats::IQR(stats::na.omit(cropped_DEM_values)) < vertical_accuracy)){ 
 			mean_res <- mean(terra::res(terra::project(cropped_DEM, as.character(crs_ref))))
 			cropped_DEM <- raster::raster(cropped_DEM)
 			zeta_df <- get_zeta(cropped_DEM, raster_resolution = mean_res)
