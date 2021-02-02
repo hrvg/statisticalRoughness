@@ -37,7 +37,7 @@ slice_clamp <- function(raster_list = NULL, att_names = NULL, selected = NULL, c
 		clamped_rasters <- lapply(clamped_rasters, function(lr){
 			lr <- lapply(lr, function(r) as(r, "Raster"))
 			s <- do.call(raster::stack, lr)
-			stars::st_as_stars(s) %>% stars::st_set_dimensions(3, values = NULL)
+			stars::st_as_stars(s) %>% stars::st_set_dimensions("band", values = NULL)
 		})
 		sliced_rasters <- clamped_rasters
 	}

@@ -1,0 +1,122 @@
+---
+title: "Visualizing and processing results"
+author:
+- name: Hervé Guillon
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Visualizing and processing results}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: bibliography.bib
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 8, 
+  fig.height = 8,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+# Purpose
+
+This vignette showcases the functions used to visualize and process the results of the tiled workflow.
+
+# Loading data
+
+```{r loading}
+# library("statisticalRoughness")
+devtools::load_all()
+```
+
+
+```{r raster reading}
+results_directory <- file.path(system.file("extdata/zeta_results/", package = "statisticalRoughness"))
+zeta_results <- read_zeta_raster(out_dir = results_directory, Lmax = 1E4, raster_resolution = 10, .len = 3)
+zeta_results
+```
+
+Note that `read_zeta_raster()` automatically uses `get_all_R_L()` to extract the values of the spatial scales.
+In our case, the spatial scales are wrong as the creation of the tiles followed the simple example in the tiled workflow vignette, that is that the tiles are created by aggregating the raster with different factors.
+We modify the `spatial_scales` to match this process.
+
+```{r adjusting scales}
+zeta_results$spatial_scales <- c(50, 60, 100) * 10
+zeta_results$spatial_scales
+```
+
+Each element of the list in `zeta_results$raster_list` has `r read.csv(file.path(results_directory, "band_names.csv")) %>% names() %>% length()` bands with the following names:
+
+```{r band names}
+band_names <- read.csv(file.path(results_directory, "band_names.csv")) %>% names()
+band_names
+```
+
+# Slicing and clamping
+
+While it is valuable to have this wealth of information, only part of it is relevant for visualization.
+Furthermore, additional steps are taken to remove outliers.
+These two steps are handled by `slice_clamp()` which selects the bands in its `selected` argument and uses the `clamp_params` `data.frame` to know how to clamp the values of the raster.
+In that `data.frame`, `n_sigma` controls the number of standard deviation to filter outlier, `lower` and `upper` are `logical` values controlling if the `lower` and `upper` outliers are filtered using `n_sigma`, and `lower_clamp` and `upper_clamp` are values to constrain the values to a given range.
+Leaving `Inf` values in the `*_clamp` will not constrain the distribution and if `lower` or `upper` are `TRUE` the `*_clamp` is overwritten using `n_sigma`.
+
+```{r clamp params}
+.selected <- c("alpha1_mean.x", "alpha1_mean.y", "alpha2_mean.x", "alpha2_mean.y", "zeta1", "zeta2")
+cparams <- data.frame(
+	selected = .selected,
+	n_sigma = rep(3, length(.selected)),
+	lower = c(FALSE, FALSE, FALSE, FALSE, FALSE, FALSE),
+	upper = c(FALSE, FALSE, FALSE, FALSE, FALSE, FALSE),
+	lower_clamp = c(0, 0, 0, 0, 1, 1),
+	upper_clamp = c(Inf, Inf, Inf, Inf, Inf, Inf)
+)
+```
+
+```{r, echo = FALSE}
+cparams %>% 
+knitr::kable("html") %>% 
+kableExtra::kable_styling(bootstrap_options = c("striped", "hover"),
+	position = "center",
+	full_width = FALSE)
+```
+
+```{r slicing}
+sliced_clamped_raster <- slice_clamp(
+	raster_list = zeta_results$raster_list,
+	att_names = band_names,
+	selected = .selected,
+	clamp_raster = TRUE, 
+	clamp_params = cparams)
+sliced_clamped_raster
+```
+
+# Visualization
+
+## Distribution plots
+
+```{r make plots}
+p_zeta <- make_all_plots(sliced_clamped_raster, zeta_results$spatial_scales, match("alpha1_mean.x", .selected), "alpha1_mean.x", begin = 0.1, end = 0.85, direction = 1, option = "inferno")
+p_zeta
+```
+
+## Map
+
+```{r map}
+raster_select(sliced_clamped_raster, band_id = match("alpha1_mean.x", .selected)) %>% 
+	make_leaflet_map(ttl = "alpha1_mean.x", groups = zeta_results$spatial_scales, style = "continuous")
+```
+
+# Cross-scale correlations
+
+```{r correlations}
+crossscale_correlations(
+	raster_list = sliced_clamped_raster,
+	att_names = band_names,
+	selected = .selected,
+	spatial_scales = zeta_results$spatial_scales,
+	corr_type = "spearman")
+```

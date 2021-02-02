@@ -93,7 +93,7 @@ make_all_plots <- function(raster_list, .spatial_scales, .band_id, .var_name, ..
 	  	ggplot2::theme(legend.key.width = ggplot2::unit(1, "in")),
 	  mode_plots$p_mode_scale + ggpubr::theme_pubr(base_size = 18)
 	)
-	layout_mat <- matrix(c(1, 1, 1, 1, 1, 2, 2, 2, 3, 3), byrow = FALSE, nrow = 5, ncol = 2)
-	gridExtra::grid.arrange(grobs = gb, layout_matrix = layout_mat)
+	# layout_mat <- matrix(c(1, 1, 1, 1, 1, 2, 2, 2, 3, 3), byrow = FALSE, nrow = 5, ncol = 2)
+	# gridExtra::grid.arrange(grobs = gb, layout_matrix = layout_mat)
 	return(gb)
 }

@@ -12,7 +12,7 @@ make_leaflet_map <- function(clamped, ttl = "values", n_class = 10, circular = F
 	groups <- sapply(groups, as.character)
 	ma <- NULL
 	ma <- leaflet::leaflet() %>% 
-		leaflet::addProviderTiles(leaflet::providers$Stamen.TonerLite, group = "Toner Lite") %>%
+		leaflet::addProviderTiles(leaflet::providers$Stamen.Terrain, group = "Terrain Background") %>%
 		leaflet::addTiles()
 	cInt <- classInt::classIntervals(clamped$values, n_class, style = "quantile")
 	brk <- cInt$brks
@@ -31,7 +31,6 @@ make_leaflet_map <- function(clamped, ttl = "values", n_class = 10, circular = F
 		}
 	}
 	for (ind_H in seq_along(clamped$rasters)){
-		# r <- dplyr::slice(clamped$rasters[[ind_H]], index = 6, along = "band")
 		r <- clamped$rasters[[ind_H]]
 		if(circular){
 			r <- as(r, "Raster") %>% raster::calc(function(x) ifelse(x > 180, x - 180, x)) %>% stars::st_as_stars()
@@ -41,7 +40,7 @@ make_leaflet_map <- function(clamped, ttl = "values", n_class = 10, circular = F
 	ma <- ma %>% 
 		leaflet::addLegend(pal = cols, values = clamped$values, title = ttl) %>%
 		leaflet::hideGroup(utils::tail(groups, -1)) %>%
-		leaflet::addLayersControl(baseGroups = c("Toner Lite"),
+		leaflet::addLayersControl(baseGroups = c("Terrain Background"),
 	    overlayGroups = groups,
 	    options = leaflet::layersControlOptions(collapsed = FALSE))
 	return(ma)

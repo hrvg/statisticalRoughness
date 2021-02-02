@@ -26,6 +26,8 @@ make_stacked_density_plot(
 \item{logscale}{\code{logical} if \code{TRUE} the x-axis is log-transformed}
 
 \item{spatial_scales}{\code{numeric}, the spatial scales corresponding to each raster in \code{raster_list}}
+
+\item{...}{passed to \code{ggplot2::scale_color_viridis_c()}}
 }
 \value{
 a \code{ggplot()} object
