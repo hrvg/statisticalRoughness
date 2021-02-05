@@ -14,7 +14,8 @@ make_stacked_density_plot <- function(raster_list, band_id = 1, var_name = "vari
 	..density.. <- .x <- x <- NULL
 	if(length(raster_list) != length(spatial_scales)) stop("Length of `spatial_scales` is not compatible with `raster_list`")
 	l.df <- lapply(seq_along(raster_list), function(i){
-		df <- data.frame(values = raster::getValues(as(raster_list[[i]], "Raster")[[band_id]]))
+		df <- data.frame(values = raster_list[[i]][[1]][,,band_id] %>% c())
+		# df <- data.frame(values = raster::getValues(as(raster_list[[i]], "Raster")[[band_id]]))
 		p <- ggplot2::ggplot(df, ggplot2::aes(x = values)) + 
 			ggplot2::geom_density(ggplot2::aes(y = ..density..))
 		if (logscale){

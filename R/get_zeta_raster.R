@@ -7,7 +7,7 @@
 #' @export
 get_zeta_raster <- function(DEM, tiles, .zeta_df = NULL, ...){
 	# class check
-	if(!class(tiles) %in% c("SpatRaster")) stop("invalid class: tiles is not of class 'SpatRaster'")
+	if(!class(tiles) %in% c("RasterLayer")) stop("invalid class: tiles is not of class 'RasterLayer'")
 	if (is.null(.zeta_df)){
 		.zeta_df <- get_zeta_df(DEM, tiles, ...)
 	}
@@ -17,7 +17,7 @@ get_zeta_raster <- function(DEM, tiles, .zeta_df = NULL, ...){
 		vals[which(!is.na(terra::values(.zeta_raster)))] <- unlist(.zeta_df[[i]])
 		.zeta_raster <- terra::setValues(.zeta_raster, vals)
 	})
-	zeta_raster <- do.call(c, zeta_raster)
+	zeta_raster <- do.call(raster::stack, zeta_raster)
 	names(zeta_raster) <- colnames(.zeta_df)
 	return(zeta_raster)
 }

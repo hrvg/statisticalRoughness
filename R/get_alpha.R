@@ -49,7 +49,7 @@ get_alpha <- function(row, dr, do_plot = FALSE){
 		x <- log10(df_filtered$dr)
 		y <- log10(df_filtered$hhcf)
 		segmented.fit <- tryCatch(segmented::segmented(lm(y ~ x, weights = 1 / x)), error = function(e) e, warning = function(w) w)
-		if(is(segmented.fit, "warning")){
+		if(is(segmented.fit, "warning") | is(segmented.fit, "error")){
 			return(data.frame(alpha1 = NA, alpha2 = NA, rc = NA, rmax = NA, alpha.r2 = NA))
 		}
 		alpha <- data.frame(

@@ -10,6 +10,7 @@
 #' @keywords zeta
 #' @export
 get_zeta_ <- function(alpha_1, alpha_2, IQR_1, IQR_2){
+	if(any(is.na(c(IQR_1, IQR_2)))) return(NA)
 	if(IQR_1 <= 0.225 & IQR_2 <= 0.225){
 		zeta <- max(c(alpha_1, alpha_2), na.rm = TRUE) / min(c(alpha_1, alpha_2), na.rm = TRUE)
 	} else {

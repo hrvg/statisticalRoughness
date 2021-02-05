@@ -36,8 +36,7 @@ devtools::load_all()
 
 ```{r raster reading}
 results_directory <- file.path(system.file("extdata/zeta_results/", package = "statisticalRoughness"))
-zeta_results <- read_zeta_raster(out_dir = results_directory, Lmax = 1E4, raster_resolution = 10, .len = 3)
-zeta_results
+zeta_results <- read_zeta_raster(out_dir = results_directory, Lmax = 1E3, raster_resolution = 10, .len = 10)
 ```
 
 Note that `read_zeta_raster()` automatically uses `get_all_R_L()` to extract the values of the spatial scales.
@@ -45,9 +44,12 @@ In our case, the spatial scales are wrong as the creation of the tiles followed 
 We modify the `spatial_scales` to match this process.
 
 ```{r adjusting scales}
-zeta_results$spatial_scales <- c(50, 60, 100) * 10
+Lmax <- 2E4 / 10
+allLR <- get_all_R_L(Lmax, 5, only = 12, len = 10)
+zeta_results$spatial_scales <- allLR$allL
 zeta_results$spatial_scales
 ```
+
 
 Each element of the list in `zeta_results$raster_list` has `r read.csv(file.path(results_directory, "band_names.csv")) %>% names() %>% length()` bands with the following names:
 
@@ -94,14 +96,8 @@ sliced_clamped_raster <- slice_clamp(
 sliced_clamped_raster
 ```
 
+
 # Visualization
-
-## Distribution plots
-
-```{r make plots}
-p_zeta <- make_all_plots(sliced_clamped_raster, zeta_results$spatial_scales, match("alpha1_mean.x", .selected), "alpha1_mean.x", begin = 0.1, end = 0.85, direction = 1, option = "inferno")
-p_zeta
-```
 
 ## Map
 
@@ -110,13 +106,27 @@ raster_select(sliced_clamped_raster, band_id = match("alpha1_mean.x", .selected)
 	make_leaflet_map(ttl = "alpha1_mean.x", groups = zeta_results$spatial_scales, style = "continuous")
 ```
 
+## Distribution plots
+
+```{r filter zeta results}
+ind <- four_values_check(sliced_clamped_raster)
+sliced_clamped_raster <- sliced_clamped_raster[ind]
+spatial_scales <- zeta_results$spatial_scales[ind]
+```
+
+```{r make plots}
+p_zeta <- make_all_plots(sliced_clamped_raster, spatial_scales, match("alpha1_mean.x", .selected), "alpha1_mean.x", begin = 0.1, end = 0.85, direction = 1, option = "inferno")
+p_zeta
+```
+
+
 # Cross-scale correlations
 
-```{r correlations}
+```{r correlations, eval = FALSE}
 crossscale_correlations(
 	raster_list = sliced_clamped_raster,
 	att_names = band_names,
 	selected = .selected,
-	spatial_scales = zeta_results$spatial_scales,
+	spatial_scales = spatial_scales,
 	corr_type = "spearman")
 ```

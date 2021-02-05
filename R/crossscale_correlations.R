@@ -15,7 +15,7 @@ crossscale_correlations <- function(raster_list = NULL, att_names = NULL, select
 	if(!length(raster_list) >= 1) stop("`raster_list` is empty.")
 	if(!all(sapply(raster_list, function(obj) any(class(obj) %in% c("RasterStack", "stars", "stars_proxy"))))) stop("`raster_list` does not contain only `stars` or `Raster` objects.")
 	if(class(selected) != "character") stop("`selected` is not a `character`.")
-	if(class(spatial_scales) != "numeric") stop("`spatial_scales` is not a `numeric`.")
+	if(!class(spatial_scales) %in% c("integer", "numeric")) stop("`spatial_scales` is not `integer` or `numeric`.")
 	if(length(unique(sapply(raster_list, function(obj) dim(obj)[3]))) != 1) stop("Not all rasters have the same number of bands.")
 	if(length(raster_list) != length(spatial_scales)) stop("`raster_list` and `spatial_scales` have different lengths.")
 	if(!all(selected %in% att_names)) stop("Some or all `selected` attributes are not contained in `att_names`.")

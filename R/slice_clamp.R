@@ -35,9 +35,11 @@ slice_clamp <- function(raster_list = NULL, att_names = NULL, selected = NULL, c
 		})
 		clamped_rasters <- do.call(function(...) Map(list, ...), clamped_rasters)
 		clamped_rasters <- lapply(clamped_rasters, function(lr){
-			lr <- lapply(lr, function(r) as(r, "Raster"))
-			s <- do.call(raster::stack, lr)
-			stars::st_as_stars(s) %>% stars::st_set_dimensions("band", values = NULL)
+			# lr <- lapply(lr, function(r) as(r, "Raster"))
+			# s <- do.call(raster::stack, lr)
+			do.call(c, c(lr, list(along = "band")))
+
+			# stars::st_as_stars(s) %>% stars::st_set_dimensions("band", values = NULL)
 		})
 		sliced_rasters <- clamped_rasters
 	}
@@ -56,7 +58,7 @@ slice_clamp <- function(raster_list = NULL, att_names = NULL, selected = NULL, c
 #' @param upper `logical`, if `TRUE` an upper clamp value is computed using the specified number of standard deviations
 #' @param lower_clamp `numeric`, a value for the lower clamp, default to `-Inf`
 #' @param upper_clamp `numeric`, a value for the upper clamp, default to `Inf`
-#' @param use_values logical. If `FALSE` values outside the clamping range become `NA`, if `TRUE`, they get the extreme values
+#' @param use_values logical. If `FALSE` values outside the clamping range become `NA`, if `TRUE`, they get the extreme values, default to `TRUE`
 #' @return a named `list` of with the clamped `stars` objects and the clamped values of all the rasters (from ploting purposes)
 #' @importFrom methods as
 #' @export
@@ -71,11 +73,17 @@ clamp_raster_sigmas <- function(raster_list, n_sigma = 3, band_id = 1, lower = T
 	if (lower) lower_clamp <- stats::quantile(all_values, probs = 1 - sigma_level)
 	if (upper) upper_clamp <- stats::quantile(all_values, probs = sigma_level)
 	clamped_rasters <- lapply(seq_along(raster_list), function(i){
-		band_index <- band_id
-		r <- dplyr::slice(raster_list[[i]], along = "band", index = band_id)
-		as(r, "Raster") %>% 
-		raster::clamp(lower = lower_clamp, upper = upper_clamp, useValues = use_values) %>% 
-		stars::st_as_stars()
+		# band_index <- band_id
+		# r <- dplyr::slice(raster_list[[i]], along = "band", index = band_id)
+		r <- raster_list[[i]][,,,band_id]
+		if(!(all(is.na(r$layer.1)))){
+			r$layer.1[r$layer.1 < lower_clamp] <- NA	
+			r$layer.1[r$layer.1 > upper_clamp] <- NA
+		}
+		# as(r, "Raster") %>% 
+		# raster::clamp(lower = lower_clamp, upper = upper_clamp, useValues = use_values) %>% 
+		# stars::st_as_stars()
+		return(r)
 	})
 	clamped_values <- all_values
 	clamped_values[clamped_values < lower_clamp] <- NA
