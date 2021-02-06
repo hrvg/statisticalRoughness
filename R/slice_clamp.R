@@ -76,9 +76,9 @@ clamp_raster_sigmas <- function(raster_list, n_sigma = 3, band_id = 1, lower = T
 		# band_index <- band_id
 		# r <- dplyr::slice(raster_list[[i]], along = "band", index = band_id)
 		r <- raster_list[[i]][,,,band_id]
-		if(!(all(is.na(r$layer.1)))){
-			r$layer.1[r$layer.1 < lower_clamp] <- NA	
-			r$layer.1[r$layer.1 > upper_clamp] <- NA
+		if(!(all(is.na(r[[1]])))){r
+			r[[1]][r[[1]] < lower_clamp] <- NA
+			r[[1]][r[[1]] > upper_clamp] <- NA
 		}
 		# as(r, "Raster") %>% 
 		# raster::clamp(lower = lower_clamp, upper = upper_clamp, useValues = use_values) %>% 

@@ -11,9 +11,7 @@
 make_leaflet_map <- function(clamped, ttl = "values", n_class = 10, circular = FALSE, style = "continuous", groups){
 	groups <- sapply(groups, as.character)
 	ma <- NULL
-	ma <- leaflet::leaflet() %>% 
-		leaflet::addProviderTiles(leaflet::providers$Stamen.Terrain, group = "Terrain Background") %>%
-		leaflet::addTiles()
+	ma <- leaflet::leaflet() 
 	cInt <- classInt::classIntervals(clamped$values, n_class, style = "quantile")
 	brk <- cInt$brks
 	if(circular){
@@ -40,6 +38,7 @@ make_leaflet_map <- function(clamped, ttl = "values", n_class = 10, circular = F
 	ma <- ma %>% 
 		leaflet::addLegend(pal = cols, values = clamped$values, title = ttl) %>%
 		leaflet::hideGroup(utils::tail(groups, -1)) %>%
+		leaflet::addProviderTiles(leaflet::providers$Stamen.TerrainBackground, group = "Terrain Background") %>%
 		leaflet::addLayersControl(baseGroups = c("Terrain Background"),
 	    overlayGroups = groups,
 	    options = leaflet::layersControlOptions(collapsed = FALSE))
