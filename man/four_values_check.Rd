@@ -7,7 +7,7 @@
 four_values_check(raster_list)
 }
 \arguments{
-\item{raster_list}{a \code{list} of \code{stars} or \code{RasterStack} objects}
+\item{raster_list}{a \code{list} of \code{RasterStack} objects}
 }
 \value{
 \code{logical}

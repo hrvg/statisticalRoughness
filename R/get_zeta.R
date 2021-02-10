@@ -26,21 +26,23 @@ get_zeta_ <- function(alpha_1, alpha_2, IQR_1, IQR_2){
 #' @param .Hann `logical`, if `TRUE` performs a Hann windowing, default to `TRUE`, passed to `fft2D()`
 #' @param .quantile_prob vector of quantile probabilities, default to `c(0.9999)`, passed to `filter_spectral_power_matrix()`
 #' @param .prob, `numeric` the value of the probabilities passed to `quantile()`, passed to `filter_alpha()`
+#' @param full, `logical` if `TRUE` all results are returned, else, the default, results of interest are returned
 #' @importFrom magrittr %>%
+#' @importFrom rlang .data
 #' @return a `data.frame`
 #' @export
 #' @keywords zeta
-get_zeta <- function(rstr, raster_resolution = 9.015, nbin = 20, .Hann = TRUE, .quantile_prob = c(0.9999), .prob = .999){
-	rstr <- rstr %>% detrend_dem() 
-	FT2D <- fft2D(raster::as.matrix(rstr), dx = raster_resolution, dy = raster_resolution, Hann = .Hann)
+get_zeta <- function(rstr, raster_resolution = 9.015, nbin = 20, .Hann = TRUE, .quantile_prob = c(0.9999), .prob = .999, full = FALSE){
+	FT2D <- rstr %>% detrend_dem() %>% raster::as.matrix() %>% 
+		fft2D(dx = raster_resolution, dy = raster_resolution, Hann = .Hann)
 	binned_power_spectrum <- bin(log10(FT2D$radial_frequency_vector), log10(FT2D$spectral_power_vector), nbin) %>% stats::na.omit()
 	beta <- get_beta(binned_power_spectrum, FT2D)
 	normalized_spectral_power_matrix <- get_normalized_spectral_power_matrix(binned_power_spectrum, FT2D)
 	filtered_spectral_power_matrix <- filter_spectral_power_matrix(normalized_spectral_power_matrix, FT2D, quantile_prob = .quantile_prob)
 	ang_fourier <- get_fourier_angle(filtered_spectral_power_matrix, FT2D)
-	rotated_raster <- rotate_raster(raster::as.matrix(rstr), ang_fourier)
-	hhcf_x <- get_hhcf(rotated_raster, margin = 1)
-	hhcf_y <- get_hhcf(rotated_raster, margin = 2)
+	rotated_raster <- rotate_raster(rstr, ang_fourier)
+	hhcf_x <- get_hhcf(rotated_raster, raster_resolution, margin = 1, get_autocorr = TRUE)
+	hhcf_y <- get_hhcf(rotated_raster, raster_resolution, margin = 2, get_autocorr = TRUE)
 	alpha_x <- get_all_alpha(hhcf_x, raster_resolution) %>% summarise_alpha()
 	colnames(alpha_x) <- paste0(colnames(alpha_x), ".x")
 	alpha_y <- get_all_alpha(hhcf_y, raster_resolution) %>% summarise_alpha()
@@ -51,10 +53,46 @@ get_zeta <- function(rstr, raster_resolution = 9.015, nbin = 20, .Hann = TRUE, .
 			zeta2 = get_zeta_(alpha_x$alpha2_mean.x, alpha_y$alpha2_mean.y, alpha_x$alpha2_IQR.x, alpha_y$alpha2_IQR.y),
 			theta = ang_fourier,
 			rc = mean(c(alpha_x$rc_mean.x, alpha_y$rc_mean.y)),
-			alpha1_perp = max(c(alpha_x$alpha1_mean.x, alpha_y$alpha1_mean.y)),
-			alpha2_perp = max(c(alpha_x$alpha2_mean.x, alpha_y$alpha2_mean.y)),
-			alpha1_par = min(c(alpha_x$alpha1_mean.x, alpha_y$alpha1_mean.y)),
-			alpha2_par = min(c(alpha_x$alpha2_mean.x, alpha_y$alpha2_mean.y))
+			w.x = mean(hhcf_x$rms, na.rm = TRUE),
+			w.y = mean(hhcf_y$rms, na.rm = TRUE),
+			w = mean(c(.data$w.x, .data$w.y)),
+			xi.x = mean(hhcf_x$autocorr_len, na.rm = TRUE),
+			xi.y = mean(hhcf_y$autocorr_len, na.rm = TRUE),
+			xi = mean(c(.data$xi.x, .data$xi.y))
+		)
+	if (full) return(res)
+	res <- res %>%
+		dplyr::rename(
+			alpha1.x = alpha1_mean.x,
+			alpha2.x = alpha2_mean.x,
+			alpha1.y = alpha1_mean.y,
+			alpha2.y = alpha2_mean.y
+		) %>%
+		dplyr::mutate(
+			alpha1 = mean(c(.data$alpha1.x, .data$alpha1.y)),
+			alpha2 = mean(c(.data$alpha2.x, .data$alpha2.y)),
+			inv.fc = 1/fc
+		) %>%
+		dplyr::select(
+			beta1,
+			beta2,
+			alpha1,
+			alpha1.x,
+			alpha1.y,
+			zeta1,
+			alpha2,
+			alpha2.x,
+			alpha2.y,
+			zeta2,
+			theta,
+			inv.fc,
+			rc,
+			xi,
+			xi.x,
+			xi.y,
+			w,
+			w.x,
+			w.y
 		)
 	return(res)
 }

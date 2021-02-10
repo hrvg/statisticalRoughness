@@ -10,7 +10,8 @@ get_zeta(
   nbin = 20,
   .Hann = TRUE,
   .quantile_prob = c(0.9999),
-  .prob = 0.999
+  .prob = 0.999,
+  full = FALSE
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ get_zeta(
 \item{.quantile_prob}{vector of quantile probabilities, default to \code{c(0.9999)}, passed to \code{filter_spectral_power_matrix()}}
 
 \item{.prob, }{\code{numeric} the value of the probabilities passed to \code{quantile()}, passed to \code{filter_alpha()}}
+
+\item{full, }{\code{logical} if \code{TRUE} all results are returned, else, the default, results of interest are returned}
 }
 \value{
 a \code{data.frame}

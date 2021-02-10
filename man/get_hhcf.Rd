@@ -4,14 +4,23 @@
 \alias{get_hhcf}
 \title{This wrapper function derives the one-dimensional \code{HHCF()} for all columns or rows of a matrix}
 \usage{
-get_hhcf(mat, margin = 1, detrend = FALSE, get_autocorr = FALSE)
+get_hhcf(
+  mat,
+  dr,
+  margin = 1,
+  detrend = TRUE,
+  get_autocorr = FALSE,
+  limlen = 30
+)
 }
 \arguments{
 \item{mat}{a \code{matrix}}
 
+\item{dr}{\code{numeric}, spacing of the values along the axis}
+
 \item{margin}{indicate the direction, 1 = row, 2 = column, passed to \code{apply}'s \code{MARGIN}}
 
-\item{detrend}{\code{logical} indicates if the data need to be detrended, default to \code{FALSE}}
+\item{detrend}{\code{logical} indicates if the data need to be detrended, default to \code{TRUE}}
 
 \item{get_autocorr}{\code{logical}, indicaites if the auto-correlation length is calculated}
 }

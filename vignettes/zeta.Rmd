@@ -36,10 +36,10 @@ devtools::load_all()
 library("rayshader")
 library("raster")
 
-gabilan_mesa <- raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "gabilan_mesa.tif"))
-gabilan_mesa <- gabilan_mesa %>% detrend_dem() 
+gabilan_mesa <- raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "yosemite.tif"))
 raster_resolution <- 9.015
-FT2D <- fft2D(raster::as.matrix(gabilan_mesa), dx = raster_resolution, dy = raster_resolution, Hann = TRUE)
+FT2D <- gabilan_mesa %>% detrend_dem() %>% raster::as.matrix() %>%
+  fft2D(dx = raster_resolution, dy = raster_resolution, Hann = TRUE)
 nbin <- 20
 binned_power_spectrum <- bin(log10(FT2D$radial_frequency_vector), log10(FT2D$spectral_power_vector), nbin)
 binned_power_spectrum <- na.omit(binned_power_spectrum)
@@ -47,10 +47,6 @@ normalized_spectral_power_matrix <- get_normalized_spectral_power_matrix(binned_
 filtered_spectral_power_matrix <- filter_spectral_power_matrix(normalized_spectral_power_matrix, FT2D, quantile_prob = c(0.9999))
 ang_fourier <- get_fourier_angle(filtered_spectral_power_matrix, FT2D)
 rotated_raster <- rotate_raster(gabilan_mesa, ang_fourier) 
-par(mfrow = c(1,2))
-plot(gabilan_mesa)
-plot(rotated_raster %>% raster())
-view_matrix(rotated_raster, ply = FALSE)
 ```
 
 On the figure below, the horizontal line is the middle row, the leftmost vertical line is the first third column and the rightmost vertical line is the middle column.
@@ -80,8 +76,16 @@ with $h$ the elevation, $x$ the spatial coordinate, $t$ the time coordinate, $r$
 With this definition, we can now calculate the HHCF for the `rotated_raster` in the row-wise (`margin = 1`) and column-wise directions (`margin = 2`) using `get_hhcf()`.
 
 ```{r hhcf}
-hhcf_x <- get_hhcf(rotated_raster, margin = 1)
-hhcf_y <- get_hhcf(rotated_raster, margin = 2)
+hhcf_x <- get_hhcf(rotated_raster, raster_resolution, margin = 1, get_autocorr = TRUE)
+hhcf_y <- get_hhcf(rotated_raster, raster_resolution, margin = 2, get_autocorr = TRUE)
+
+mean(hhcf_x$rms)
+2 * mean(hhcf_x$rms)^2
+mean(hhcf_x$autocorr_len)
+
+mean(hhcf_y$rms)
+2 * mean(hhcf_y$rms)^2
+mean(hhcf_y$autocorr_len)
 ```
 
 # Roughness exponent, $\alpha$
@@ -179,3 +183,13 @@ For the current landscape:
 |:----------|:--------------------------------------------------------------------------------------------------------------:|
 | $\zeta_1$ | `r get_zeta_(x_stats$alpha1_mean, y_stats$alpha1_mean, x_stats$alpha1_IQR, y_stats$alpha1_IQR) %>% signifNA()` |
 | $\zeta_2$ | `r get_zeta_(x_stats$alpha2_mean, y_stats$alpha2_mean, x_stats$alpha2_IQR, y_stats$alpha2_IQR) %>% signifNA()` |
+
+```{r}
+get_zeta(gabilan_mesa, full = TRUE) %>% dplyr::mutate_all(signifNA)
+
+```
+
+
+```{r}
+get_zeta(gabilan_mesa) %>% dplyr::mutate_all(signifNA)
+```

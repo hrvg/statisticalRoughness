@@ -30,7 +30,7 @@ clamp_raster_sigmas(
 
 \item{upper_clamp}{\code{numeric}, a value for the upper clamp, default to \code{Inf}}
 
-\item{use_values}{logical. If \code{FALSE} values outside the clamping range become \code{NA}, if \code{TRUE}, they get the extreme values}
+\item{use_values}{logical. If \code{FALSE} values outside the clamping range become \code{NA}, if \code{TRUE}, they get the extreme values, default to \code{TRUE}}
 }
 \value{
 a named \code{list} of with the clamped \code{stars} objects and the clamped values of all the rasters (from ploting purposes)

@@ -37,14 +37,14 @@ library("statisticalRoughness")
 First, we load one of the DEM.
 
 ```{r reading rasters}
-gabilan_mesa <- terra::rast(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "gabilan_mesa.tif"))
+gabilan_mesa <- raster::raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "gabilan_mesa.tif"))
 ```
 
 Next we create tiles over which we will calculate the roughness and anisotropy exponents.
-This is done for simplicity here by using `terra::aggregate()`.
+This is done for simplicity here by using `raster::aggregate()`.
 
 ```{r tiles}
-tiles <- terra::aggregate(gabilan_mesa, fact = 100)
+tiles <- raster::aggregate(gabilan_mesa, fact = 100)
 ```
 
 # Tiled workflow
@@ -74,6 +74,6 @@ zeta_raster <- get_zeta_raster(
 For example here are the raster layers corresponding to $\alpha_{1,x}$ and $\alpha_{1,y}$.
 
 ```{r visualization, echo = FALSE}
-sp::spplot(zeta_raster[["alpha1_mean.x"]])
-sp::spplot(zeta_raster[["alpha1_mean.y"]])
+sp::spplot(zeta_raster[["alpha1.x"]])
+sp::spplot(zeta_raster[["alpha1.y"]])
 ```

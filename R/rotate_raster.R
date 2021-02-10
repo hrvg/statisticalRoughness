@@ -72,7 +72,7 @@ get_normalized_spectral_power_matrix <- function(B, FT2D){
 #' @param filtered_spectral_power_matrix truncated normalized power spectrum
 #' @param FT2D `list`, results from `fft2d()` with objects radial frequency and spectral power matrices
 #' @param bandwidth `numeric` the bandwidth for the kernel smoothing of the circular density calculation
-#' @return angle of the main component of the Fourier spectrum
+#' @return angle of the main component of the Fourier spectrum, counted counter-clockwise
 #' @export
 #' @keywords rotate_raster
 get_fourier_angle <- function(filtered_spectral_power_matrix, FT2D, bandwidth = 5){
@@ -91,8 +91,8 @@ get_fourier_angle <- function(filtered_spectral_power_matrix, FT2D, bandwidth = 
 	power_ww <-power_ww^2
 	power_ww <- power_ww / sum(power_ww)
 
-	coord_polar <- useful::cart2pol(coord$Var2, coord$Var1, degree = TRUE)
-	cDens_fourier <- spatstat::circdensity(coord_polar$theta, weights = power_ww, bw = bandwidth)
+	coord_polar <- useful::cart2pol(coord$Var2, coord$Var1, degree = TRUE) # counted counter-clockwise
+	cDens_fourier <- spatstat::circdensity(coord_polar$theta, weights = power_ww, bw = bandwidth) # counted counter-clockwise
 
 	ang_fourier <- cDens_fourier$x[which.max(cDens_fourier$y)]
 	return(ang_fourier)
@@ -100,25 +100,20 @@ get_fourier_angle <- function(filtered_spectral_power_matrix, FT2D, bandwidth = 
 
 #' Rotates the detrended DEM according to the main direction of the Fourier spectrum
 #' @param rstr a `RasterLayer`
-#' @param ang_fourier `numeric`, angle of the main component of the 2D Fourier spectrum
+#' @param ang_fourier `numeric`, angle of the main component of the 2D Fourier spectrum; the rotation is clockwise
 #' @return a `matrix` corresponding to the DEM rotated in the main direction of the Fourier spectrum
 #' @export
 #' @keywords rotate_raster
+#' @examples
+#' r <- raster::ncell(ncol = 3, nrow = 3)
+#' raster::values(r) <- 1:raster::ncell(r)
+#' raster::as.matrix(r)
+#' raster::as.matrix(rotate_raster(r, 45))
 rotate_raster <- function(rstr, ang_fourier){
-	# mm.max <- max(mm, na.rm = TRUE)
-	# mm.min <- .9 * min(mm, na.rm = TRUE)
-	# mm <- (mm - mm.min) / (mm.max - mm.min)
-	# im <- imager::as.cimg(mm)
-	# im.r <- imager::imrotate(im, - ang_fourier, interpolation = 0)
-	# mm <- as.matrix(im.r)
-	# dim(mm) <- NULL
-	# mm[mm == 0] <- NA
-	# mm <- mm * (mm.max - mm.min) + mm.min
-	# mm <- matrix(mm, nrow = dim(im.r)[1], ncol = dim(im.r)[2])
 	rstr <- rstr %>% 
 		raster::calc(fun = function(x) x + 1e4) %>% 
 		imager::as.cimg() %>% 
-		imager::imrotate(ang_fourier, interpolation = 0) %>% 
+		imager::imrotate(ang_fourier, interpolation = 0) %>%  # default to clockwise rotation
 		as.matrix() %>% 
 		t() %>% 
 		raster::raster() %>% 

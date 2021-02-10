@@ -4,17 +4,23 @@
 \alias{rotate_raster}
 \title{Rotates the detrended DEM according to the main direction of the Fourier spectrum}
 \usage{
-rotate_raster(mm, ang_fourier)
+rotate_raster(rstr, ang_fourier)
 }
 \arguments{
-\item{mm}{a \code{RasterLayer}}
+\item{rstr}{a \code{RasterLayer}}
 
-\item{ang_fourier}{\code{numeric}, angle of the main component of the 2D Fourier spectrum}
+\item{ang_fourier}{\code{numeric}, angle of the main component of the 2D Fourier spectrum; the rotation is clockwise}
 }
 \value{
 a \code{matrix} corresponding to the DEM rotated in the main direction of the Fourier spectrum
 }
 \description{
 Rotates the detrended DEM according to the main direction of the Fourier spectrum
+}
+\examples{
+r <- raster::ncell(ncol = 3, nrow = 3)
+raster::values(r) <- 1:raster::ncell(r)
+raster::as.matrix(r)
+raster::as.matrix(rotate_raster(r, 45))
 }
 \keyword{rotate_raster}
