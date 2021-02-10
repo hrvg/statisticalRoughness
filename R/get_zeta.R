@@ -49,7 +49,12 @@ get_zeta <- function(rstr, raster_resolution = 9.015, nbin = 20, .Hann = TRUE, .
 		dplyr::mutate(
 			zeta1 = get_zeta_(alpha_x$alpha1_mean.x, alpha_y$alpha1_mean.y, alpha_x$alpha1_IQR.x, alpha_y$alpha1_IQR.y),
 			zeta2 = get_zeta_(alpha_x$alpha2_mean.x, alpha_y$alpha2_mean.y, alpha_x$alpha2_IQR.x, alpha_y$alpha2_IQR.y),
-			theta = ang_fourier
+			theta = ang_fourier,
+			rc = mean(c(alpha_x$rc_mean.x, alpha_y$rc_mean.y)),
+			alpha1_perp = max(c(alpha_x$alpha1_mean.x, alpha_y$alpha1_mean.y)),
+			alpha2_perp = max(c(alpha_x$alpha2_mean.x, alpha_y$alpha2_mean.y)),
+			alpha1_par = min(c(alpha_x$alpha1_mean.x, alpha_y$alpha1_mean.y)),
+			alpha2_par = min(c(alpha_x$alpha2_mean.x, alpha_y$alpha2_mean.y))
 		)
 	return(res)
 }

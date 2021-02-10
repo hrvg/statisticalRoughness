@@ -31,7 +31,8 @@ This vignette showcases the functions used to derive the roughness and anisotrop
 First, we perform all the steps from [this vignette](articles/rotating_rasters.html).
 
 ```{r loading}
-library("statisticalRoughness")
+# library("statisticalRoughness")
+devtools::load_all()
 library("rayshader")
 library("raster")
 
@@ -45,7 +46,11 @@ binned_power_spectrum <- na.omit(binned_power_spectrum)
 normalized_spectral_power_matrix <- get_normalized_spectral_power_matrix(binned_power_spectrum, FT2D)
 filtered_spectral_power_matrix <- filter_spectral_power_matrix(normalized_spectral_power_matrix, FT2D, quantile_prob = c(0.9999))
 ang_fourier <- get_fourier_angle(filtered_spectral_power_matrix, FT2D)
-rotated_raster <- rotate_raster(raster::as.matrix(gabilan_mesa), ang_fourier)
+rotated_raster <- rotate_raster(gabilan_mesa, ang_fourier) 
+par(mfrow = c(1,2))
+plot(gabilan_mesa)
+plot(rotated_raster %>% raster())
+view_matrix(rotated_raster, ply = FALSE)
 ```
 
 On the figure below, the horizontal line is the middle row, the leftmost vertical line is the first third column and the rightmost vertical line is the middle column.

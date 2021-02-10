@@ -1,0 +1,197 @@
+---
+title: "Visualizing and processing results"
+author:
+- name: Hervé Guillon
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+vignette: >
+  %\VignetteIndexEntry{Visualizing and processing results}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: bibliography.bib
+---
+
+```{r}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 8, 
+  fig.height = 8,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+# `r .name`
+
+
+```{r}
+results_directory <- file.path(system.file(paste0("extdata/zeta_results/", .name), package = "statisticalRoughness"))
+zeta_results <- read_zeta_raster(out_dir = results_directory, Lmax = 1E3, raster_resolution = 10, .len = 10)
+```
+
+Note that `read_zeta_raster()` automatically uses `get_all_R_L()` to extract the values of the spatial scales.
+In our case, the spatial scales are wrong as the creation of the tiles followed the simple example in the tiled workflow vignette, that is that the tiles are created by aggregating the raster with different factors.
+We modify the `spatial_scales` to match this process.
+
+```{r}
+rstr <- raster::raster(file.path(system.file("extdata/big_rasters/", package = "statisticalRoughness"), paste0(.name, ".tif")))
+Lmax <- min(head(dim(rstr), 2))
+spatial_scales <- get_factors(Lmax) %>% tail(length(zeta_results$raster_list))
+spatial_scales <- spatial_scales[spatial_scales >= 40]
+zeta_results$spatial_scales <- spatial_scales
+zeta_results$spatial_scales
+```
+
+
+Each element of the list in `zeta_results$raster_list` has `r read.csv(file.path(results_directory, "band_names.csv")) %>% names() %>% length()` bands with the following names:
+
+```{r}
+band_names <- read.csv(file.path(results_directory, "band_names.csv")) %>% names()
+band_names
+```
+
+## Slicing and clamping
+
+While it is valuable to have this wealth of information, only part of it is relevant for visualization.
+Furthermore, additional steps are taken to remove outliers.
+These two steps are handled by `slice_clamp()` which selects the bands in its `selected` argument and uses the `clamp_params` `data.frame` to know how to clamp the values of the raster.
+In that `data.frame`, `n_sigma` controls the number of standard deviation to filter outlier, `lower` and `upper` are `logical` values controlling if the `lower` and `upper` outliers are filtered using `n_sigma`, and `lower_clamp` and `upper_clamp` are values to constrain the values to a given range.
+Leaving `Inf` values in the `*_clamp` will not constrain the distribution and if `lower` or `upper` are `TRUE` the `*_clamp` is overwritten using `n_sigma`.
+
+```{r}
+.selected <- c("theta", "alpha1_mean.x", "alpha1_mean.y", "alpha2_mean.x", "alpha2_mean.y", "zeta1", "zeta2")
+cparams <- data.frame(
+	selected = .selected,
+	n_sigma = rep(2, length(.selected)),
+	lower = c(FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE),
+	upper = c(FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE),
+	lower_clamp = c(-Inf, 0, 0, 0, 0, 1, 1),
+	upper_clamp = c(Inf, Inf, Inf, Inf, Inf, Inf, Inf)
+)
+```
+
+```{r}
+cparams %>% 
+knitr::kable("html") %>% 
+kableExtra::kable_styling(bootstrap_options = c("striped", "hover"),
+	position = "center",
+	full_width = FALSE)
+```
+
+```{r}
+sliced_clamped_raster <- slice_clamp(
+	raster_list = zeta_results$raster_list,
+	att_names = band_names,
+	selected = .selected,
+	clamp_raster = TRUE, 
+	clamp_params = cparams)
+sliced_clamped_raster %>% head(3)
+```
+
+
+## Visualization
+
+### Map {.tabset}
+
+#### $\alpha_{1,x}$
+
+
+```{r}
+raster_select(sliced_clamped_raster, band_id = match("alpha1_mean.x", .selected)) %>% 
+	make_leaflet_map(ttl = "alpha1_mean.x", groups = zeta_results$spatial_scales, style = "continuous")
+```
+
+#### $\alpha_{1,y}$
+
+```{r}
+raster_select(sliced_clamped_raster, band_id = match("alpha1_mean.y", .selected)) %>% 
+	make_leaflet_map(ttl = "alpha1_mean.y", groups = zeta_results$spatial_scales, style = "continuous")
+```
+
+#### $\zeta_{1}$
+
+```{r}
+raster_select(sliced_clamped_raster, band_id = match("zeta1", .selected)) %>% 
+	make_leaflet_map(ttl = "zeta1", groups = zeta_results$spatial_scales, style = "continuous")
+```
+
+#### $\alpha_{2,x}$
+
+
+```{r}
+raster_select(sliced_clamped_raster, band_id = match("alpha2_mean.x", .selected)) %>% 
+	make_leaflet_map(ttl = "alpha2_mean.x", groups = zeta_results$spatial_scales, style = "continuous")
+```
+
+#### $\alpha_{2,y}$
+
+```{r}
+raster_select(sliced_clamped_raster, band_id = match("alpha2_mean.y", .selected)) %>% 
+	make_leaflet_map(ttl = "alpha2_mean.y", groups = zeta_results$spatial_scales, style = "continuous")
+```
+
+#### $\zeta_{2}$
+
+```{r}
+raster_select(sliced_clamped_raster, band_id = match("zeta2", .selected)) %>% 
+	make_leaflet_map(ttl = "zeta2", groups = zeta_results$spatial_scales, style = "continuous")
+```
+
+### Distribution plots {.tabset}
+
+```{r}
+ind <- four_values_check(sliced_clamped_raster)
+sliced_clamped_raster <- sliced_clamped_raster[ind]
+spatial_scales <- zeta_results$spatial_scales[ind]
+```
+
+#### $\alpha_{1,x}$
+
+```{r}
+make_all_plots(sliced_clamped_raster, spatial_scales, match("alpha1_mean.x", .selected), "alpha1_mean.x", begin = 0.1, end = 0.85, direction = 1, option = "viridis")
+```
+
+#### $\alpha_{1,y}$
+
+```{r}
+make_all_plots(sliced_clamped_raster, spatial_scales, match("alpha1_mean.y", .selected), "alpha1_mean.y", begin = 0.1, end = 0.85, direction = 1, option = "viridis")
+```
+
+#### $\zeta_{1}$
+
+```{r}
+make_all_plots(sliced_clamped_raster, spatial_scales, match("zeta1", .selected), "zeta1", begin = 0.1, end = 0.85, direction = 1, option = "inferno")
+```
+
+#### $\alpha_{2,x}$
+
+```{r}
+make_all_plots(sliced_clamped_raster, spatial_scales, match("alpha2_mean.x", .selected), "alpha2_mean.x", begin = 0.1, end = 0.85, direction = 1, option = "viridis")
+```
+
+#### $\alpha_{2,y}$
+
+```{r}
+make_all_plots(sliced_clamped_raster, spatial_scales, match("alpha2_mean.y", .selected), "alpha2_mean.y", begin = 0.1, end = 0.85, direction = 1, option = "viridis")
+```
+
+#### $\zeta_{2}$
+
+```{r}
+make_all_plots(sliced_clamped_raster, spatial_scales, match("zeta2", .selected), "zeta2", begin = 0.1, end = 0.85, direction = 1, option = "inferno")
+```
+
+## Cross-scale correlations
+
+```{r}
+crossscale_correlations(
+	raster_list = sliced_clamped_raster,
+	att_names = band_names,
+	selected = .selected,
+	spatial_scales = spatial_scales,
+	corr_type = "pearson")
+```

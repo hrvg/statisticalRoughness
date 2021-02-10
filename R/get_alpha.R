@@ -160,5 +160,5 @@ filter_alpha <- function(alpha, prob = .999, rsquared_filter = TRUE){
 #' @keywords zeta
 #' @importFrom rlang .data
 summarise_alpha <- function(alpha){
-	alpha %>% stats::na.omit(alpha) %>% dplyr::summarise(dplyr::across(dplyr::everything(), list(min = min, mean = mean, max = max, sd = sd, IQR = stats::IQR)))
+	alpha %>% stats::na.omit(alpha) %>% dplyr::summarise(dplyr::across(dplyr::everything(), list(min = min, mean = mean, max = max, sd = sd, IQR = stats::IQR, mode = modeest::parzen)))
 }

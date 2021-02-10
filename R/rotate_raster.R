@@ -99,21 +99,31 @@ get_fourier_angle <- function(filtered_spectral_power_matrix, FT2D, bandwidth = 
 }
 
 #' Rotates the detrended DEM according to the main direction of the Fourier spectrum
-#' @param mm a `RasterLayer`
+#' @param rstr a `RasterLayer`
 #' @param ang_fourier `numeric`, angle of the main component of the 2D Fourier spectrum
 #' @return a `matrix` corresponding to the DEM rotated in the main direction of the Fourier spectrum
 #' @export
 #' @keywords rotate_raster
-rotate_raster <- function(mm, ang_fourier){
-	mm.max <- max(mm, na.rm = TRUE)
-	mm.min <- .9 * min(mm, na.rm = TRUE)
-	mm <- (mm - mm.min) / (mm.max - mm.min)
-	im <- imager::as.cimg(mm)
-	im.r <- imager::imrotate(im, - ang_fourier, interpolation = 0)
-	mm <- as.matrix(im.r)
-	dim(mm) <- NULL
-	mm[mm == 0] <- NA
-	mm <- mm * (mm.max - mm.min) + mm.min
-	mm <- matrix(mm, nrow = dim(im.r)[1], ncol = dim(im.r)[2])
-	return(mm)
+rotate_raster <- function(rstr, ang_fourier){
+	# mm.max <- max(mm, na.rm = TRUE)
+	# mm.min <- .9 * min(mm, na.rm = TRUE)
+	# mm <- (mm - mm.min) / (mm.max - mm.min)
+	# im <- imager::as.cimg(mm)
+	# im.r <- imager::imrotate(im, - ang_fourier, interpolation = 0)
+	# mm <- as.matrix(im.r)
+	# dim(mm) <- NULL
+	# mm[mm == 0] <- NA
+	# mm <- mm * (mm.max - mm.min) + mm.min
+	# mm <- matrix(mm, nrow = dim(im.r)[1], ncol = dim(im.r)[2])
+	rstr <- rstr %>% 
+		raster::calc(fun = function(x) x + 1e4) %>% 
+		imager::as.cimg() %>% 
+		imager::imrotate(ang_fourier, interpolation = 0) %>% 
+		as.matrix() %>% 
+		t() %>% 
+		raster::raster() %>% 
+		raster::reclassify(matrix(c(-Inf, 0, NA))) %>%
+		raster::calc(fun = function(x) x - 1e4) %>% 
+		raster::as.matrix()
+	return(rstr)
 }

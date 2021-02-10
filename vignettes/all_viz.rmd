@@ -1,0 +1,49 @@
+---
+title: "Visualizing and processing results"
+author:
+- name: Hervé Guillon
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    code_folding: hide
+vignette: >
+  %\VignetteIndexEntry{Visualizing and processing results}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: bibliography.bib
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 8, 
+  fig.height = 8,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+# Purpose
+
+This vignette showcases the functions used to visualize and process the results of the tiled workflow.
+
+# Loading library
+
+```{r loading}
+# library("statisticalRoughness")
+devtools::load_all()
+```
+
+
+```{r, echo = FALSE, results = 'asis'}
+region_names <- c("yosemite", "modoc", "gabilan_mesa")
+res <- lapply(region_names, function(.name) {
+  knitr::knit_child(
+    'vis_template.rmd', envir = environment(), quiet = TRUE
+  )
+})
+cat(unlist(res), sep = '\n')
+```
