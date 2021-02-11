@@ -160,5 +160,14 @@ filter_alpha <- function(alpha, prob = .999, rsquared_filter = TRUE){
 #' @keywords zeta
 #' @importFrom rlang .data
 summarise_alpha <- function(alpha){
-	alpha %>% stats::na.omit(alpha) %>% dplyr::summarise(dplyr::across(dplyr::everything(), list(min = min, mean = mean, max = max, sd = sd, IQR = stats::IQR, mode = modeest::parzen)))
+	alpha <- alpha %>% stats::na.omit(alpha)
+	.list = list(min = min, mean = mean, max = max, sd = sd, IQR = stats::IQR, mode = modeest::parzen)
+	if (nrow(alpha) > 1){
+		alpha <- alpha %>% dplyr::summarise(dplyr::across(dplyr::everything(), .list))
+	} else {
+		cnames <- outer(colnames(alpha), names(.list), paste, sep = "_") %>% t() %>% c()
+		alpha <- matrix(NA, ncol = length(cnames), nrow = 1) %>% as.data.frame()
+		colnames(alpha) <- cnames
+	}
+	return(alpha)
 }
