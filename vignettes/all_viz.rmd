@@ -30,16 +30,83 @@ knitr::opts_chunk$set(
 
 This vignette showcases the functions used to visualize and process the results of the tiled workflow.
 
-# Loading library
+# Initializing
+
+## Loading library
 
 ```{r loading}
 # library("statisticalRoughness")
 devtools::load_all()
 ```
 
+## Reading results
+
+```{r}
+region_names <- c("gabilan_mesa", "yosemite", "modoc")
+.name <- region_names[1]
+results_directory <- file.path(system.file(paste0("extdata/zeta_results/", .name), package = "statisticalRoughness"))
+zeta_results <- read_zeta_raster(out_dir = results_directory, Lmax = 1E3, raster_resolution = 10, .len = 10)
+```
+
+Note that `read_zeta_raster()` automatically uses `get_all_R_L()` to extract the values of the spatial scales.
+In our case, the spatial scales are wrong as the creation of the tiles followed the simple example in the tiled workflow vignette, that is that the tiles are created by aggregating the raster with different factors.
+We modify the `spatial_scales` to match this process.
+
+```{r}
+rstr <- raster::raster(file.path(system.file("extdata/big_rasters/", package = "statisticalRoughness"), paste0(.name, ".tif")))
+Lmax <- min(head(dim(rstr), 2))
+spatial_scales <- get_factors(Lmax) %>% head(-1) %>% tail(length(zeta_results$raster_list)) * 10
+zeta_results$spatial_scales <- spatial_scales
+zeta_results$spatial_scales
+```
+
+Each element of the list in `zeta_results$raster_list` has `r read.csv(file.path(results_directory, "band_names.csv")) %>% names() %>% length()` bands with the following names:
+
+```{r}
+band_names <- read.csv(file.path(results_directory, "band_names.csv")) %>% names()
+band_names
+```
+
+## Slicing and clamping
+
+While it is valuable to have this wealth of information, only part of it is relevant for visualization.
+Furthermore, additional steps are taken to remove outliers.
+These two steps are handled by `slice_clamp()` which selects the bands in its `selected` argument and uses the `clamp_params` `data.frame` to know how to clamp the values of the raster.
+In that `data.frame`, `n_sigma` controls the number of standard deviation to filter outlier, `lower` and `upper` are `logical` values controlling if the `lower` and `upper` outliers are filtered using `n_sigma`, and `lower_clamp` and `upper_clamp` are values to constrain the values to a given range.
+Leaving `Inf` values in the `*_clamp` will not constrain the distribution and if `lower` or `upper` are `TRUE` the `*_clamp` is overwritten using `n_sigma`.
+
+```{r}
+.selected <- c("beta1", "beta2", "alpha1.x", "alpha1.y", "alpha2.x", "alpha2.y", "zeta1", "zeta2", "w.x", "w.y", "inv.fc", "rc", "xi")
+cparams <- data.frame(
+  selected = .selected,
+  n_sigma = rep(2, length(.selected)),
+  lower = rep(FALSE, length(.selected)),
+  upper = rep(FALSE, length(.selected)),
+  lower_clamp = rep(-Inf, length(.selected)),
+  upper_clamp = rep(Inf, length(.selected))
+)
+if ("theta" %in% .selected) zeta_results$raster_list <- zeta_results$raster_list %>% make_angular(match("theta", band_names))
+```
+
+```{r}
+cparams %>% 
+knitr::kable("html") %>% 
+kableExtra::kable_styling(bootstrap_options = c("striped", "hover"),
+  position = "center",
+  full_width = FALSE)
+```
+
+```{r, include = FALSE}
+pretty_region_name <- function(x){
+  switch(x,
+    "modoc" = "Modoc Plateau",
+    "yosemite" = "Yosemite Valley",
+    "gabilan_mesa" = "Gabilan Mesa"
+  )
+}
+```
 
 ```{r, echo = FALSE, results = 'asis'}
-region_names <- c("yosemite", "modoc", "gabilan_mesa")
 res <- lapply(region_names, function(.name) {
   knitr::knit_child(
     'vis_template.rmd', envir = environment(), quiet = TRUE

@@ -79,22 +79,21 @@ modes_from_stacked_density <- function(plot_object, spatial_scales = NULL, var_n
 #' @param .spatial_scales `numeric`, the spatial scales corresponding to each raster in `raster_list`
 #' @param .band_id `numeric`, identifier of the band of the `stars` object
 #' @param .var_name `character`, used for the title of the graph
+#' @param .base_size `numeric`, base size for the font, passed to `ggpubr::theme_pubr()`
 #' @param ... passed to `make_stacked_density_plot()` and  `modes_from_stacked_density()` 
 #' @return a list of grobs to be used by `gridExtra::grid.arrange()`
 #' @export
-make_all_plots <- function(raster_list, .spatial_scales, .band_id, .var_name, ...){
+make_all_plots <- function(raster_list, .spatial_scales, .band_id, .var_name, .base_size = 12, ...){
 	stacked_density_plot <- make_stacked_density_plot(raster_list, spatial_scales = .spatial_scales, band_id = .band_id, var_name = .var_name, ...)
 	mode_plots <- modes_from_stacked_density(stacked_density_plot, spatial_scales = .spatial_scales, var_name = .var_name, ...)
 	gb <- list(
 	  mode_plots$p_density_with_mode +
-		  ggpubr::theme_pubr(base_size = 18) +
-		  ggplot2::theme(legend.key.width = ggplot2::unit(1, "in")),
+		  ggpubr::theme_pubr(base_size = .base_size) +
+		  ggplot2::theme(legend.key.width = ggplot2::unit(.5, "in")),
 	  mode_plots$p_mode_density  + 
-	  	ggpubr::theme_pubr(base_size = 18) +
-	  	ggplot2::theme(legend.key.width = ggplot2::unit(1, "in")),
-	  mode_plots$p_mode_scale + ggpubr::theme_pubr(base_size = 18)
+	  	ggpubr::theme_pubr(base_size = .base_size) +
+	  	ggplot2::theme(legend.key.width = ggplot2::unit(.5, "in")),
+	  mode_plots$p_mode_scale + ggpubr::theme_pubr(base_size = .base_size)
 	)
-	# layout_mat <- matrix(c(1, 1, 1, 1, 1, 2, 2, 2, 3, 3), byrow = FALSE, nrow = 5, ncol = 2)
-	# gridExtra::grid.arrange(grobs = gb, layout_matrix = layout_mat)
 	return(gb)
 }

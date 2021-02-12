@@ -38,7 +38,7 @@ devtools::load_all()
 
 
 ```{r raster reading}
-.name <- "modoc"
+.name <- "gabilan_mesa"
 results_directory <- file.path(system.file(paste0("extdata/zeta_results/", .name), package = "statisticalRoughness"))
 zeta_results <- read_zeta_raster(out_dir = results_directory, Lmax = 1E3, raster_resolution = 10, .len = 10)
 ```
@@ -50,8 +50,7 @@ We modify the `spatial_scales` to match this process.
 ```{r adjusting scales}
 rstr <- raster::raster(file.path(system.file("extdata/big_rasters/", package = "statisticalRoughness"), paste0(.name, ".tif")))
 Lmax <- min(head(dim(rstr), 2))
-spatial_scales <- get_factors(Lmax) %>% tail(length(zeta_results$raster_list))
-spatial_scales <- spatial_scales[spatial_scales >= 40]
+spatial_scales <- get_factors(Lmax) %>% head(-1) %>% tail(length(zeta_results$raster_list))
 zeta_results$spatial_scales <- spatial_scales
 zeta_results$spatial_scales
 ```
@@ -73,15 +72,16 @@ In that `data.frame`, `n_sigma` controls the number of standard deviation to fil
 Leaving `Inf` values in the `*_clamp` will not constrain the distribution and if `lower` or `upper` are `TRUE` the `*_clamp` is overwritten using `n_sigma`.
 
 ```{r clamp params}
-.selected <- c("alpha1_mean.x", "alpha1_mean.y", "alpha2_mean.x", "alpha2_mean.y", "zeta1", "zeta2")
+.selected <- c("theta", "alpha1.x", "alpha1.y", "alpha2.x", "alpha2.y", "zeta1", "zeta2", "w.x", "w.y")
 cparams <- data.frame(
 	selected = .selected,
 	n_sigma = rep(2, length(.selected)),
-	lower = c(FALSE, FALSE, FALSE, FALSE, FALSE, FALSE),
-	upper = c(TRUE, TRUE, TRUE, TRUE, TRUE, TRUE),
-	lower_clamp = c(0, 0, 0, 0, 1, 1),
-	upper_clamp = c(Inf, Inf, Inf, Inf, Inf, Inf)
+	lower = c(TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE),
+	upper = c(TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE),
+	lower_clamp = c(-Inf, 0, 0, 0, 0, 1, 1, -Inf, -Inf),
+	upper_clamp = c(Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf)
 )
+if ("theta" %in% .selected) zeta_results$raster_list <- zeta_results$raster_list %>% make_angular(match("theta", band_names))
 ```
 
 ```{r, echo = FALSE}
@@ -105,51 +105,52 @@ sliced_clamped_raster %>% head(3)
 
 # Visualization
 
+## Comparing $x-$ and $y-$ variables
+
+```{r, echo = FALSE}
+is_band1_gte_band2 <- function(band1, band2, rasters, .selected, spatial_scales){
+	allx <- raster_select(rasters, band_id = match(band1, .selected))$rasters
+	ally <- raster_select(rasters, band_id = match(band2, .selected))$rasters
+	xy <- foreach(x = allx, y = ally, .combine = rbind) %do% {
+		x <- as(x, "Raster")
+		y <- as(y, "Raster")
+		s <- raster::stack(x, y)
+		raster::calc(s, fun = function(x){x[1] >= x[2]}) %>% raster::getValues() %>% rstatix::freq_table() %>% dplyr::filter(group == "TRUE") %>% dplyr::select(-group)
+	}
+	rownames(xy) <- spatial_scales
+	xy  %>% 
+	knitr::kable("html", caption = paste0("Is ", band1, " greater than or equal to ", band2, "?")) %>% 
+	kableExtra::kable_styling(bootstrap_options = c("striped", "hover"),
+		position = "center",
+		full_width = TRUE)
+}
+```
+
+```{r, echo = FALSE, results = "asis"}
+vars <- .selected[grepl(".x", .selected)]
+res <- foreach(var = vars) %do% {
+	is_band1_gte_band2(var, gsub(".x", ".y", var), sliced_clamped_raster, .selected, spatial_scales)
+}
+cat(unlist(res), sep = '\n')
+```
+
 ## Map {.tabset}
 
-### $\alpha_{1,x}$
-
-
-```{r}
-raster_select(sliced_clamped_raster, band_id = match("alpha1_mean.x", .selected)) %>% 
-	make_leaflet_map(ttl = "alpha1_mean.x", groups = zeta_results$spatial_scales, style = "continuous")
+```{r, echo = FALSE, results = 'asis'}
+res <- lapply(.selected, function(x) {
+  knitr::knit_child(text = c(
+    '### `r x`',
+    '',
+    '```{r}',
+    'raster_select(sliced_clamped_raster, band_id = match(x, .selected)) %>% 
+	make_leaflet_map(ttl = x, groups = zeta_results$spatial_scales, style = "continuous")',
+    '```',
+    ''
+  ), envir = environment(), quiet = TRUE)
+})
+cat(unlist(res), sep = '\n')
 ```
 
-### $\alpha_{1,y}$
-
-```{r}
-raster_select(sliced_clamped_raster, band_id = match("alpha1_mean.y", .selected)) %>% 
-	make_leaflet_map(ttl = "alpha1_mean.y", groups = zeta_results$spatial_scales, style = "continuous")
-```
-
-### $\zeta_{1}$
-
-```{r}
-raster_select(sliced_clamped_raster, band_id = match("zeta1", .selected)) %>% 
-	make_leaflet_map(ttl = "zeta1", groups = zeta_results$spatial_scales, style = "continuous")
-```
-
-### $\alpha_{2,x}$
-
-
-```{r}
-raster_select(sliced_clamped_raster, band_id = match("alpha2_mean.x", .selected)) %>% 
-	make_leaflet_map(ttl = "alpha2_mean.x", groups = zeta_results$spatial_scales, style = "continuous")
-```
-
-### $\alpha_{2,y}$
-
-```{r}
-raster_select(sliced_clamped_raster, band_id = match("alpha2_mean.y", .selected)) %>% 
-	make_leaflet_map(ttl = "alpha2_mean.y", groups = zeta_results$spatial_scales, style = "continuous")
-```
-
-### $\zeta_{2}$
-
-```{r}
-raster_select(sliced_clamped_raster, band_id = match("zeta2", .selected)) %>% 
-	make_leaflet_map(ttl = "zeta2", groups = zeta_results$spatial_scales, style = "continuous")
-```
 
 ## Distribution plots {.tabset}
 
@@ -159,45 +160,23 @@ sliced_clamped_raster <- sliced_clamped_raster[ind]
 spatial_scales <- zeta_results$spatial_scales[ind]
 ```
 
-### $\alpha_{1,x}$
-
-```{r}
-make_all_plots(sliced_clamped_raster, spatial_scales, match("alpha1_mean.x", .selected), "alpha1_mean.x", begin = 0.1, end = 0.85, direction = 1, option = "viridis")
-```
-
-### $\alpha_{1,y}$
-
-```{r}
-make_all_plots(sliced_clamped_raster, spatial_scales, match("alpha1_mean.y", .selected), "alpha1_mean.y", begin = 0.1, end = 0.85, direction = 1, option = "viridis")
-```
-
-### $\zeta_{1}$
-
-```{r}
-make_all_plots(sliced_clamped_raster, spatial_scales, match("zeta1", .selected), "zeta1", begin = 0.1, end = 0.85, direction = 1, option = "inferno")
-```
-
-### $\alpha_{2,x}$
-
-```{r}
-make_all_plots(sliced_clamped_raster, spatial_scales, match("alpha2_mean.x", .selected), "alpha2_mean.x", begin = 0.1, end = 0.85, direction = 1, option = "viridis")
-```
-
-### $\alpha_{2,y}$
-
-```{r}
-make_all_plots(sliced_clamped_raster, spatial_scales, match("alpha2_mean.y", .selected), "alpha2_mean.y", begin = 0.1, end = 0.85, direction = 1, option = "viridis")
-```
-
-### $\zeta_{2}$
-
-```{r make plots}
-make_all_plots(sliced_clamped_raster, spatial_scales, match("zeta2", .selected), "zeta2", begin = 0.1, end = 0.85, direction = 1, option = "inferno")
+```{r, echo = FALSE, results = 'asis'}
+res <- lapply(.selected, function(x) {
+  knitr::knit_child(text = c(
+    '### `r x`',
+    '',
+    '```{r}',
+    'make_all_plots(sliced_clamped_raster, spatial_scales, match(x, .selected), x, begin = 0.1, end = 0.85, direction = 1, option = "viridis")',
+    '```',
+    ''
+  ), envir = environment(), quiet = TRUE)
+})
+cat(unlist(res), sep = '\n')
 ```
 
 # Cross-scale correlations
 
-```{r correlations, eval = TRUE}
+```{r correlations, eval = FALSE}
 crossscale_correlations(
 	raster_list = sliced_clamped_raster,
 	att_names = band_names,

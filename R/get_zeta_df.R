@@ -29,7 +29,7 @@ get_zeta_df <- function(DEM, tiles, crs_ref = terra::crs("EPSG:3310"), vertical_
 	if (length(tiles) < availableCores() %/% 2){
 		plan(sequential)
 	} else {
-		plan(multicore, workers = availableCores() %/% 2)
+		plan(multicore, workers = availableCores() - 2)
 	}
 
 	# main
@@ -41,6 +41,9 @@ get_zeta_df <- function(DEM, tiles, crs_ref = terra::crs("EPSG:3310"), vertical_
 		if ((pct_non_na > 1/3) & !(stats::IQR(stats::na.omit(cropped_DEM_values)) < vertical_accuracy)){ 
 			mean_res <- mean(raster::res(raster::projectRaster(cropped_DEM, crs = crs_ref)))
 			zeta_df <- get_zeta(cropped_DEM, raster_resolution = mean_res)
+		} else {
+			zeta_df <- matrix(NA, nrow = 1, ncol = 19) %>% as.data.frame()
+			colnames(zeta_df) <- c("beta1", "beta2", "alpha1", "alpha1.x", "alpha1.y", "zeta1", "alpha2", "alpha2.x", "alpha2.y", "zeta2", "theta", "inv.fc", "rc", "xi", "xi.x", "xi.y", "w", "w.x", "w.y")
 		}
 		zeta_df
 	}
