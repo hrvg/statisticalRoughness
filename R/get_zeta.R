@@ -43,9 +43,16 @@ get_zeta <- function(rstr, raster_resolution = 9.015, nbin = 20, .Hann = TRUE, .
 	rotated_raster <- rotate_raster(rstr, ang_fourier)
 	hhcf_x <- get_hhcf(rotated_raster, raster_resolution, margin = 1, get_autocorr = TRUE)
 	hhcf_y <- get_hhcf(rotated_raster, raster_resolution, margin = 2, get_autocorr = TRUE)
-	alpha_x <- get_all_alpha(hhcf_x, raster_resolution) %>% summarise_alpha()
+	w_x <- mean(hhcf_x$rms, na.rm = TRUE)
+	w_y <- mean(hhcf_y$rms, na.rm = TRUE)
+	if(w_x > w_y){
+		alpha_x <- get_all_alpha(hhcf_x, raster_resolution) %>% summarise_alpha()
+		alpha_y <- get_all_alpha(hhcf_y, raster_resolution) %>% summarise_alpha()
+	} else { # invert
+		alpha_x <- get_all_alpha(hhcf_y, raster_resolution) %>% summarise_alpha()
+		alpha_y <- get_all_alpha(hhcf_x, raster_resolution) %>% summarise_alpha()
+	}
 	colnames(alpha_x) <- paste0(colnames(alpha_x), ".x")
-	alpha_y <- get_all_alpha(hhcf_y, raster_resolution) %>% summarise_alpha()
 	colnames(alpha_y) <- paste0(colnames(alpha_y), ".y")
 	res <- dplyr::bind_cols(beta, alpha_x, alpha_y) %>% 
 		dplyr::mutate(
@@ -53,8 +60,8 @@ get_zeta <- function(rstr, raster_resolution = 9.015, nbin = 20, .Hann = TRUE, .
 			zeta2 = get_zeta_(alpha_x$alpha2_mean.x, alpha_y$alpha2_mean.y, alpha_x$alpha2_IQR.x, alpha_y$alpha2_IQR.y),
 			theta = ang_fourier,
 			rc = mean(c(alpha_x$rc_mean.x, alpha_y$rc_mean.y)),
-			w.x = mean(hhcf_x$rms, na.rm = TRUE),
-			w.y = mean(hhcf_y$rms, na.rm = TRUE),
+			w.x = w_x,
+			w.y = w_y,
 			w = mean(c(.data$w.x, .data$w.y)),
 			xi.x = mean(hhcf_x$autocorr_len, na.rm = TRUE),
 			xi.y = mean(hhcf_y$autocorr_len, na.rm = TRUE),

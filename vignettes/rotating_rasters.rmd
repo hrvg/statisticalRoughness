@@ -35,7 +35,7 @@ library("statisticalRoughness")
 library("rayshader")
 library("raster")
 
-gabilan_mesa <- raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "gabilan_mesa.tif"))
+gabilan_mesa <- raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "modoc.tif"))
 gabilan_mesa <- gabilan_mesa %>% detrend_dem() 
 raster_resolution <- 9.015
 FT2D <- fft2D(raster::as.matrix(gabilan_mesa), dx = raster_resolution, dy = raster_resolution, Hann = TRUE)
@@ -131,7 +131,7 @@ gabilan_mesa %>%
 Notice how the main valleys are now oriented North-South because they are perpendicular to the main East-West undulations we identified.
 
 ```{r, echo = FALSE}
-rotated_raster <- rotate_raster(raster::as.matrix(gabilan_mesa), ang_fourier)
+rotated_raster <- rotate_raster(gabilan_mesa, ang_fourier)
 matrix_for_rayshader(rotated_raster) %>%
 	sphere_shade(texture = "desert") %>%
     add_shadow(ray_shade(matrix_for_rayshader(rotated_raster), sunaltitude = 20), max_darken = 0.3) %>%  

@@ -88,7 +88,7 @@ get_fourier_angle <- function(filtered_spectral_power_matrix, FT2D, bandwidth = 
 	coord <- reshape2::melt(coord) %>% stats::na.omit()
 
 	power_ww <- coord$value
-	power_ww <-power_ww^2
+	power_ww <- power_ww^2
 	power_ww <- power_ww / sum(power_ww)
 
 	coord_polar <- useful::cart2pol(coord$Var2, coord$Var1, degree = TRUE) # counted counter-clockwise

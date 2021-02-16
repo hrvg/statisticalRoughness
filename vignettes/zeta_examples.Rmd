@@ -215,8 +215,8 @@ The following table summarizes the metrics for the three landscapes.
 
 ```{r}
 res <- rbind(res_gabi, res_yose, res_modo) %>% 
-  dplyr::select(-c("w", "xi", "alpha1", "alpha2")) %>%
-  dplyr::add_rownames(c("Gabilan Mesa", "Yosemite Valley", "Modoc Plateau"))
+  dplyr::select(-c("w", "xi", "alpha1", "alpha2"))
+rownames(res) <- c("Gabilan Mesa", "Yosemite Valley", "Modoc Plateau")
 ```
 
 ```{r, echo = FALSE}

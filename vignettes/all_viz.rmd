@@ -59,7 +59,6 @@ spatial_scales <- get_factors(Lmax) %>% head(-1) %>% tail(length(zeta_results$ra
 zeta_results$spatial_scales <- spatial_scales
 zeta_results$spatial_scales
 ```
-
 Each element of the list in `zeta_results$raster_list` has `r read.csv(file.path(results_directory, "band_names.csv")) %>% names() %>% length()` bands with the following names:
 
 ```{r}
@@ -76,16 +75,15 @@ In that `data.frame`, `n_sigma` controls the number of standard deviation to fil
 Leaving `Inf` values in the `*_clamp` will not constrain the distribution and if `lower` or `upper` are `TRUE` the `*_clamp` is overwritten using `n_sigma`.
 
 ```{r}
-.selected <- c("beta1", "beta2", "alpha1.x", "alpha1.y", "alpha2.x", "alpha2.y", "zeta1", "zeta2", "w.x", "w.y", "inv.fc", "rc", "xi")
+.selected <- c("beta2", "alpha1.x", "alpha1.y", "alpha2.x", "alpha2.y", "zeta1", "zeta2", "w.x", "w.y", "inv.fc", "rc", "xi", "theta")
 cparams <- data.frame(
   selected = .selected,
   n_sigma = rep(2, length(.selected)),
-  lower = rep(FALSE, length(.selected)),
-  upper = rep(FALSE, length(.selected)),
+  lower = rep(TRUE, length(.selected)),
+  upper = rep(TRUE, length(.selected)),
   lower_clamp = rep(-Inf, length(.selected)),
   upper_clamp = rep(Inf, length(.selected))
 )
-if ("theta" %in% .selected) zeta_results$raster_list <- zeta_results$raster_list %>% make_angular(match("theta", band_names))
 ```
 
 ```{r}
