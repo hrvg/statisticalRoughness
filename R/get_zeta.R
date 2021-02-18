@@ -48,9 +48,15 @@ get_zeta <- function(rstr, raster_resolution = 9.015, nbin = 20, .Hann = TRUE, .
 	if(w_x > w_y){
 		alpha_x <- get_all_alpha(hhcf_x, raster_resolution) %>% summarise_alpha()
 		alpha_y <- get_all_alpha(hhcf_y, raster_resolution) %>% summarise_alpha()
-	} else { # invert
+		xi_x <- mean(hhcf_x$autocorr_len, na.rm = TRUE)
+		xi_y <- mean(hhcf_y$autocorr_len, na.rm = TRUE)
+	} else { # invert so that x has the highest rms
 		alpha_x <- get_all_alpha(hhcf_y, raster_resolution) %>% summarise_alpha()
 		alpha_y <- get_all_alpha(hhcf_x, raster_resolution) %>% summarise_alpha()
+		xi_x <- mean(hhcf_y$autocorr_len, na.rm = TRUE)
+		xi_y <- mean(hhcf_x$autocorr_len, na.rm = TRUE)
+		w_x <- mean(hhcf_y$rms, na.rm = TRUE)
+		w_y <- mean(hhcf_x$rms, na.rm = TRUE)
 	}
 	colnames(alpha_x) <- paste0(colnames(alpha_x), ".x")
 	colnames(alpha_y) <- paste0(colnames(alpha_y), ".y")
@@ -63,8 +69,8 @@ get_zeta <- function(rstr, raster_resolution = 9.015, nbin = 20, .Hann = TRUE, .
 			w.x = w_x,
 			w.y = w_y,
 			w = mean(c(.data$w.x, .data$w.y)),
-			xi.x = mean(hhcf_x$autocorr_len, na.rm = TRUE),
-			xi.y = mean(hhcf_y$autocorr_len, na.rm = TRUE),
+			xi.x = xi_x,
+			xi.y = xi_y,
 			xi = mean(c(.data$xi.x, .data$xi.y))
 		)
 	if (full) return(res)

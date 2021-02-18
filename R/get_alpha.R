@@ -161,7 +161,7 @@ filter_alpha <- function(alpha, prob = .999, rsquared_filter = TRUE){
 #' @importFrom rlang .data
 summarise_alpha <- function(alpha){
 	alpha <- alpha %>% stats::na.omit(alpha)
-	.list = list(min = min, mean = mean, max = max, sd = sd, IQR = stats::IQR, mode = modeest::parzen)
+	.list = list(min = min, mean = mean, max = max, sd = sd, IQR = stats::IQR)
 	if (nrow(alpha) > 1){
 		alpha <- alpha %>% dplyr::summarise(dplyr::across(dplyr::everything(), .list))
 	} else {

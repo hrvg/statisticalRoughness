@@ -29,7 +29,11 @@ get_zeta_df <- function(DEM, tiles, crs_ref = terra::crs("EPSG:3310"), vertical_
 	if (length(tiles) < availableCores() %/% 2){
 		plan(sequential)
 	} else {
-		plan(multicore, workers = availableCores() - 2)
+		if(.Platform$OS.type == "unix"){
+			plan(multicore, workers = availableCores() - 1)
+		} else {
+			plan(multisession, workers = availableCores() - 1)
+		}
 	}
 
 	# main

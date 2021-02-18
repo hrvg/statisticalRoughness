@@ -75,12 +75,12 @@ In that `data.frame`, `n_sigma` controls the number of standard deviation to fil
 Leaving `Inf` values in the `*_clamp` will not constrain the distribution and if `lower` or `upper` are `TRUE` the `*_clamp` is overwritten using `n_sigma`.
 
 ```{r}
-.selected <- c("beta2", "alpha1.x", "alpha1.y", "alpha2.x", "alpha2.y", "zeta1", "zeta2", "w.x", "w.y", "inv.fc", "rc", "xi", "theta")
+.selected <- c("beta2", "alpha1.x", "alpha1.y", "alpha2.x", "alpha2.y", "zeta1", "zeta2", "w.x", "w.y", "inv.fc", "rc", "xi")
 cparams <- data.frame(
   selected = .selected,
-  n_sigma = rep(2, length(.selected)),
-  lower = rep(TRUE, length(.selected)),
-  upper = rep(TRUE, length(.selected)),
+  n_sigma = rep(3, length(.selected)),
+  lower = rep(FALSE, length(.selected)),
+  upper = rep(FALSE, length(.selected)),
   lower_clamp = rep(-Inf, length(.selected)),
   upper_clamp = rep(Inf, length(.selected))
 )
@@ -105,7 +105,7 @@ pretty_region_name <- function(x){
 ```
 
 ```{r, echo = FALSE, results = 'asis'}
-res <- lapply(region_names, function(.name) {
+res <- lapply(region_names, function(region) {
   knitr::knit_child(
     'vis_template.rmd', envir = environment(), quiet = TRUE
   )
