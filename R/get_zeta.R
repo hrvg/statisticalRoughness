@@ -45,7 +45,9 @@ get_zeta <- function(rstr, raster_resolution = 9.015, nbin = 20, .Hann = TRUE, .
 	hhcf_y <- get_hhcf(rotated_raster, raster_resolution, margin = 2, get_autocorr = TRUE)
 	w_x <- mean(hhcf_x$rms, na.rm = TRUE)
 	w_y <- mean(hhcf_y$rms, na.rm = TRUE)
-	if(w_x > w_y){
+	flag <- w_x > w_y
+	if(is.na(flag)) flag <- TRUE
+	if(flag){
 		alpha_x <- get_all_alpha(hhcf_x, raster_resolution) %>% summarise_alpha()
 		alpha_y <- get_all_alpha(hhcf_y, raster_resolution) %>% summarise_alpha()
 		xi_x <- mean(hhcf_x$autocorr_len, na.rm = TRUE)

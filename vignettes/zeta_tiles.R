@@ -1,6 +1,6 @@
 devtools::load_all()
 library(tictoc)
-.name <- "gabilan_mesa"
+.name <- "yosemite"
 
 rstr <- raster::raster(file.path("./inst/extdata/big_rasters/", paste0(.name, ".tif")))
 out_dir <- file.path(file.path("./inst/extdata/zeta_results"), .name)

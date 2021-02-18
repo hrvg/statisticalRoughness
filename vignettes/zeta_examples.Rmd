@@ -209,14 +209,70 @@ matrix_for_rayshader(raster::as.matrix(modoc)) %>%
     plot_map()
 ```
 
+# Marble Canyon
+
+
+
+```{r}
+marble_canyon <- raster::raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "marble_canyon.tif"))
+marble_canyon <- raster::aggregate(marble_canyon, fact = 9) # 90 m to match Pastor-Satorras
+res_mrbl <- get_zeta(marble_canyon) %>% dplyr::mutate_all(signifNA)
+```
+
+Gabilan Mesa landscape has 
+a minimum elevation of `r raster::minValue(marble_canyon)` m,
+an average elevation of `r raster::cellStats(marble_canyon, stat = "mean")` m, 
+and a maximum elevation of `r raster::maxValue(marble_canyon)` m.
+The maximum relief is thus `r (raster::maxValue(marble_canyon) - raster::minValue(marble_canyon))` m.
+
+The figure below showcases the landscape in its original form.
+The landscape was rotated so that in this original frame of reference,
+$\theta_x =$ `r res_mrbl$theta %% 180`$^\circ$ and
+$\theta_y =$ `r (res_mrbl$theta %% 180 + 90)`$^\circ$.
+(In the rotated frame of reference, $\theta_x' = 0^\circ$ and $\theta_y' = 90^\circ$.)
+The segmented regression on the power spectrum identifies scalings with slope $\beta_1 =$ `r res_mrbl$beta1`, and $\beta_2 =$ `r res_mrbl$beta2`, before and after a cut-off lengthscale of $1/f_c =$ `r (res_mrbl$inv.fc)` m, respectively.
+As $\beta = 2H + d$, and $d = 2$, the Hurst coefficients $H$ corresponding to $\beta_1$ and $\beta_2$ are 
+`r ((abs(res_mrbl$beta1) - 2)/2)`, and
+`r ((abs(res_mrbl$beta2) - 2)/2)`, respectively.
+Before a cut-off lengthscale of
+`r res_mrbl$rc` m,
+the roughness exponents in the $x$-- and $y$--directions are
+$\alpha_{1,x} =$ `r res_mrbl$alpha1.x`, and
+$\alpha_{1,y} =$ `r res_mrbl$alpha1.y`.
+Consequently, the anisotropy exponent is $\zeta_1 =$ `r res_mrbl$zeta1`.
+After cut-off lengthscale,
+the roughness exponents are lower and almost equal with
+$\alpha_{2,x} =$ `r res_mrbl$alpha2.x`, and
+$\alpha_{2,y} =$ `r res_mrbl$alpha2.y`.
+Consequently, the anisotropy exponent is $\zeta_2 =$ `r res_mrbl$zeta2`.
+
+The figure below showcases the landscape in its original form (left) and smoothed with a Gaussian kernel of  `r res_mrbl$rc %/% 10` standard deviations to match the value of $r_c$ (right).
+
+```{r, echo = FALSE}
+par(mfrow = c(1,2))
+matrix_for_rayshader(raster::as.matrix(marble_canyon)) %>%
+  sphere_shade(texture = "desert") %>%
+    add_shadow(ray_shade(matrix_for_rayshader(raster::as.matrix(marble_canyon)), sunaltitude = 20), max_darken = 0.3) %>%  
+    add_shadow(ambient_shade(matrix_for_rayshader(raster::as.matrix(marble_canyon))), 0) %>%
+    plot_map()
+marble_canyon <- marble_canyon %>% spatialEco::raster.gaussian.smooth(
+    sigma = res_gabi$rc %/% 10
+  )
+matrix_for_rayshader(raster::as.matrix(marble_canyon)) %>%
+  sphere_shade(texture = "desert") %>%
+    add_shadow(ray_shade(matrix_for_rayshader(raster::as.matrix(marble_canyon)), sunaltitude = 20), max_darken = 0.3) %>%  
+    add_shadow(ambient_shade(matrix_for_rayshader(raster::as.matrix(marble_canyon))), 0) %>%
+    plot_map()
+```
+
 # Comparing Landscapes
 
 The following table summarizes the metrics for the three landscapes.
 
 ```{r}
-res <- rbind(res_gabi, res_yose, res_modo) %>% 
+res <- rbind(res_gabi, res_yose, res_modo, res_mrbl) %>% 
   dplyr::select(-c("w", "xi", "alpha1", "alpha2"))
-rownames(res) <- c("Gabilan Mesa", "Yosemite Valley", "Modoc Plateau")
+rownames(res) <- c("Gabilan Mesa", "Yosemite Valley", "Modoc Plateau", "Marble Canyon")
 ```
 
 ```{r, echo = FALSE}

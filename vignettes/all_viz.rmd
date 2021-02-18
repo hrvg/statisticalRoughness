@@ -75,7 +75,7 @@ In that `data.frame`, `n_sigma` controls the number of standard deviation to fil
 Leaving `Inf` values in the `*_clamp` will not constrain the distribution and if `lower` or `upper` are `TRUE` the `*_clamp` is overwritten using `n_sigma`.
 
 ```{r}
-.selected <- c("beta2", "alpha1.x", "alpha1.y", "alpha2.x", "alpha2.y", "zeta1", "zeta2", "w.x", "w.y", "inv.fc", "rc", "xi")
+.selected <- c("beta2", "alpha1.y", "alpha1.x", "alpha2.y", "alpha2.x", "zeta1", "zeta2", "w.y", "w.x", "inv.fc", "rc", "xi.y", "xi.x")
 cparams <- data.frame(
   selected = .selected,
   n_sigma = rep(3, length(.selected)),
