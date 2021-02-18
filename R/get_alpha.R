@@ -160,7 +160,7 @@ filter_alpha <- function(alpha, prob = .999, rsquared_filter = TRUE){
 #' @keywords zeta
 #' @importFrom rlang .data
 summarise_alpha <- function(alpha){
-	alpha <- alpha %>% stats::na.omit(alpha)
+	alpha <- alpha %>% dplyr::filter_all(dplyr::all_vars(is.finite(.)))
 	.list = list(min = min, mean = mean, max = max, sd = sd, IQR = stats::IQR)
 	if (nrow(alpha) > 1){
 		alpha <- alpha %>% dplyr::summarise(dplyr::across(dplyr::everything(), .list))
