@@ -32,7 +32,7 @@ get_zeta_ <- function(alpha_1, alpha_2, IQR_1, IQR_2){
 #' @return a `data.frame`
 #' @export
 #' @keywords zeta
-get_zeta <- function(rstr, raster_resolution = 9.015, nbin = 20, .Hann = TRUE, .quantile_prob = c(0.9999), .prob = .999, full = FALSE){
+get_zeta <- function(rstr, raster_resolution, nbin = 20, .Hann = TRUE, .quantile_prob = c(0.9999), .prob = .999, full = FALSE){
 	FT2D <- rstr %>% detrend_dem() %>% raster::as.matrix() %>% 
 		fft2D(dx = raster_resolution, dy = raster_resolution, Hann = .Hann)
 	binned_power_spectrum <- bin(log10(FT2D$radial_frequency_vector), log10(FT2D$spectral_power_vector), nbin) %>% stats::na.omit()
@@ -41,20 +41,20 @@ get_zeta <- function(rstr, raster_resolution = 9.015, nbin = 20, .Hann = TRUE, .
 	filtered_spectral_power_matrix <- filter_spectral_power_matrix(normalized_spectral_power_matrix, FT2D, quantile_prob = .quantile_prob)
 	ang_fourier <- get_fourier_angle(filtered_spectral_power_matrix, FT2D)
 	rotated_raster <- rotate_raster(rstr, ang_fourier)
-	hhcf_x <- get_hhcf(rotated_raster, raster_resolution, margin = 1, get_autocorr = TRUE)
-	hhcf_y <- get_hhcf(rotated_raster, raster_resolution, margin = 2, get_autocorr = TRUE)
+	hhcf_x <- get_hhcf_(rotated_raster, raster_resolution, margin = 1)
+	hhcf_y <- get_hhcf_(rotated_raster, raster_resolution, margin = 2)
 	w_x <- mean(hhcf_x$rms, na.rm = TRUE)
 	w_y <- mean(hhcf_y$rms, na.rm = TRUE)
 	flag <- w_x > w_y
 	if(is.na(flag)) flag <- TRUE
 	if(flag){
-		alpha_x <- get_all_alpha(hhcf_x, raster_resolution) %>% summarise_alpha()
-		alpha_y <- get_all_alpha(hhcf_y, raster_resolution) %>% summarise_alpha()
+		alpha_x <- get_all_alpha_(hhcf_x, raster_resolution) %>% summarise_alpha()
+		alpha_y <- get_all_alpha_(hhcf_y, raster_resolution) %>% summarise_alpha()
 		xi_x <- mean(hhcf_x$autocorr_len, na.rm = TRUE)
 		xi_y <- mean(hhcf_y$autocorr_len, na.rm = TRUE)
 	} else { # invert so that x has the highest rms
-		alpha_x <- get_all_alpha(hhcf_y, raster_resolution) %>% summarise_alpha()
-		alpha_y <- get_all_alpha(hhcf_x, raster_resolution) %>% summarise_alpha()
+		alpha_x <- get_all_alpha_(hhcf_y, raster_resolution) %>% summarise_alpha()
+		alpha_y <- get_all_alpha_(hhcf_x, raster_resolution) %>% summarise_alpha()
 		xi_x <- mean(hhcf_y$autocorr_len, na.rm = TRUE)
 		xi_y <- mean(hhcf_x$autocorr_len, na.rm = TRUE)
 		w_x <- mean(hhcf_y$rms, na.rm = TRUE)

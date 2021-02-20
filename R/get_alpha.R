@@ -23,7 +23,7 @@ get_all_alpha <- function(hhcf, dr){
 #' @importFrom methods is
 #' @export
 #' @keywords zeta
-get_alpha <- function(row, dr, do_plot = FALSE){
+get_alpha <- function(row, dr, unused, do_plot = FALSE){
 	if (length(stats::na.omit(log10(unlist(row)))) < 30){
 		return(data.frame(alpha1 = NA, alpha2 = NA, rc = NA, rmax = NA, alpha.r2 = NA))
 	}
@@ -170,4 +170,119 @@ summarise_alpha <- function(alpha){
 		colnames(alpha) <- cnames
 	}
 	return(alpha)
+}
+
+#' Wrapper to extract all roughness exponents from the HHCFs
+#' @param hhcf `list` from `get_hhcf()`
+#' @param dr `numeric`, spacing of the values along the axis
+#' @return a `data.frame`
+#' @export
+#' @keywords zeta
+get_all_alpha_ <- function(hhcf, dr){
+	xi <- hhcf$autocorr_len
+	hhcf <- hhcf$hhcf
+	all_alpha <- lapply(seq_along(hhcf), function(k){
+		get_alpha_(hhcf[k, ], dr, xi[k])
+	})
+	all_alpha <- do.call(rbind, all_alpha)
+	return(all_alpha)
+}
+
+#' Estimates the roughness exponent from the HHCF from spline fit.
+#' 
+#' This function will return `NA` if the HHFC is monotically increasing.
+#' 
+#' @param row array of hhcf values
+#' @param dr `numeric`, spacing of the values along the axis
+#' @param do_plot `logical`, plot the fit, default to `FALSE`
+#' @importFrom methods is
+#' @export
+#' @keywords zeta
+get_alpha_ <- function(row, dr, xi, do_plot = FALSE){
+	if (length(stats::na.omit(log10(unlist(row)))) < 30){
+		return(data.frame(alpha1 = NA, alpha2 = NA, rc = NA, rmax = NA, alpha.r2 = NA))
+	}
+	df <- data.frame(dr = seq_along(row) * dr, hhcf = unlist(row))
+	# binned_hhcf <- bin(log10(df$dr), log10(df$hhcf), 60)
+	# if (nrow(stats::na.omit(binned_hhcf)) < 30){
+	# 	return(data.frame(alpha1 = NA, alpha2 = NA, rc = NA, rmax = NA))
+	# }
+	# df_bin <- data.frame(dr = 10^binned_hhcf[, 1], hhcf = 10^binned_hhcf[, 2])
+
+	hhcf_fun1 <- stats::splinefun(x = log10(df$dr), y = log10(df$hhcf))
+	d_hhcf_dr <- hhcf_fun1(log10(df$dr), deriv = 1)
+
+	ind_neg <- which(d_hhcf_dr < 0)
+	if (length(ind_neg) < 1){
+		return(data.frame(alpha1 = NA, alpha2 = NA, rc = NA, rmax = NA, alpha.r2 = NA))
+	} else {
+		df_filtered <- df[1:(ind_neg %>% utils::head(1)), ]
+		if (nrow(df_filtered) < 10){
+			return(data.frame(alpha1 = NA, alpha2 = NA, rc = NA, rmax = NA, alpha.r2 = NA))
+		}
+
+		x <- log10(df_filtered$dr)[which(df_filtered$dr <= xi)]
+		y <- log10(df_filtered$hhcf)[which(df_filtered$dr <= xi)]
+		tss <- sum((y - mean(y))^2)
+		fit1 <- tryCatch(.lm.fit(cbind(rep(1,length(x)), x), y), error = function(e) e, warning = function(w) w)
+		if(is(fit1, "warning") | is(fit1, "error")){
+			return(data.frame(alpha1 = NA, alpha2 = NA, rc = NA, rmax = NA, alpha.r2 = NA))
+		}
+		r2 <- ifelse(tss == 0, 1, 1 - sum(fit1$residuals^2) / tss)
+
+		x <- log10(df_filtered$dr)[which(df_filtered$dr > xi)]
+		y <- log10(df_filtered$hhcf)[which(df_filtered$dr > xi)]
+		fit2 <- tryCatch(.lm.fit(cbind(rep(1,length(x)), x), y), error = function(e) e, warning = function(w) w)
+		if(is(fit2, "warning") | is(fit2, "error")){
+			return(data.frame(alpha1 = NA, alpha2 = NA, rc = NA, rmax = NA, alpha.r2 = NA))
+		}
+
+		# segmented.fit <- tryCatch(segmented::segmented(lm(y ~ x, weights = 1 / x), fixed.psi = log10(xi)), error = function(e) e, warning = function(w) w)
+		# if(is(segmented.fit, "warning") | is(segmented.fit, "error")){
+		# 	return(data.frame(alpha1 = NA, alpha2 = NA, rc = NA, rmax = NA, alpha.r2 = NA))
+		# }
+		alpha <- data.frame(
+			rc = xi,
+			alpha1 = fit1$coefficients[2],
+			alpha2 = fit2$coefficients[2],
+			rmax = xi,
+			alpha.r2 = r2
+		)
+		if(alpha$alpha.r2 < 0.95 | alpha$alpha1 == 0){
+			alpha <- data.frame(
+				rc = NA,
+				alpha1 = NA,
+				alpha2 = NA,
+				rmax = NA,
+				alpha.r2 = NA
+			)
+		}
+
+		# min_dr <- stats::stats::na.omit(df_bin) %>% dplyr::pull(.data$dr) %>% min()
+		# df_bin <- df %>% dplyr::filter(.data$dr < min_dr)
+		# df_bin <- dplyr::bind_rows(df %>% dplyr::filter(.data$dr < min_dr), stats::na.omit(df_bin))
+
+		# binned_hhcf <- bin(log10(df_filtered$dr), log10(df_filtered$hhcf), 30)
+		# if (nrow(stats::na.omit(binned_hhcf)) < 5){
+		# 	return(data.frame(alpha1 = NA, alpha2 = NA, rc = NA, rmax = NA, alpha.r2 = NA))
+		# }
+		# df_bin <- data.frame(dr = 10^binned_hhcf[, 1], hhcf = 10^binned_hhcf[, 2]) %>% stats::na.omit()
+
+		# hhcf_fun2 <- stats::splinefun(x = log10(df_bin$dr), y = log10(df_bin$hhcf))
+		# dd_hhcf_dr <- hhcf_fun2(log10(df_bin$dr), deriv = 2)
+
+		# ind_neg <- which(dd_hhcf_dr < 0)
+		# if (length(ind_neg) < 1){
+		# 	return(data.frame(alpha1 = NA, alpha2 = NA, rc = NA, rmax = NA))
+		# } else {
+		# 	rc <- df_bin$dr[ind_neg %>% utils::head(1)]
+		# 	alpha_1 <- hhcf_fun1(log10(df_filtered$dr)[which(df_filtered$dr <= rc)], deriv = 1) %>% median()
+		# 	alpha_2 <- hhcf_fun1(log10(df_filtered$dr)[which(df_filtered$dr >= rc)], deriv = 1) %>% median()
+		if(do_plot){
+			p <- alpha_plot(df, df_filtered, alpha$rc)
+			print(p)
+		} 
+			# return(data.frame(alpha1 = alpha_1, alpha2 = alpha_2, rc = rc, rmax = max(df_filtered$dr, na.rm = TRUE)))
+		return(alpha)
+	}
 }

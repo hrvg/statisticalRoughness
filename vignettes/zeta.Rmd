@@ -36,9 +36,12 @@ devtools::load_all()
 library("rayshader")
 library("raster")
 
-gabilan_mesa <- raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "yosemite.tif"))
-raster_resolution <- 9.015
-FT2D <- gabilan_mesa %>% detrend_dem() %>% raster::as.matrix() %>%
+rstr <- raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "submarine_canyon.tif"))
+# raster_resolution <- 10
+raster_resolution <- 50
+# rstr <- raster::aggregate(rstr, fact = 9) # 90 m to match Pastor-Satorras
+# raster_resolution <- 90
+FT2D <- rstr %>% detrend_dem() %>% raster::as.matrix() %>%
   fft2D(dx = raster_resolution, dy = raster_resolution, Hann = TRUE)
 nbin <- 20
 binned_power_spectrum <- bin(log10(FT2D$radial_frequency_vector), log10(FT2D$spectral_power_vector), nbin)
@@ -46,7 +49,7 @@ binned_power_spectrum <- na.omit(binned_power_spectrum)
 normalized_spectral_power_matrix <- get_normalized_spectral_power_matrix(binned_power_spectrum, FT2D)
 filtered_spectral_power_matrix <- filter_spectral_power_matrix(normalized_spectral_power_matrix, FT2D, quantile_prob = c(0.9999))
 ang_fourier <- get_fourier_angle(filtered_spectral_power_matrix, FT2D)
-rotated_raster <- rotate_raster(gabilan_mesa, ang_fourier) 
+rotated_raster <- rotate_raster(rstr, ang_fourier) 
 ```
 
 On the figure below, the horizontal line is the middle row, the leftmost vertical line is the first third column and the rightmost vertical line is the middle column.
@@ -60,10 +63,10 @@ ind_y <- ncol(rotated_raster) %/% 3
 .rotated_raster[, ind_x] <- NA
 
 matrix_for_rayshader(.rotated_raster) %>%
-	sphere_shade(texture = "desert") %>%
-    add_shadow(ray_shade(matrix_for_rayshader(.rotated_raster), sunaltitude = 20), max_darken = 0.3) %>%  
-    add_shadow(ambient_shade(matrix_for_rayshader(.rotated_raster)), 0) %>%
-    plot_map()
+	sphere_shade(texture = "imhof4") %>%
+  add_shadow(ray_shade(matrix_for_rayshader(.rotated_raster), sunaltitude = 20), max_darken = 0.3) %>%  
+  add_shadow(ambient_shade(matrix_for_rayshader(.rotated_raster)), 0) %>%
+  plot_map()
 ```
 
 # Height-height correlation functions
@@ -76,16 +79,8 @@ with $h$ the elevation, $x$ the spatial coordinate, $t$ the time coordinate, $r$
 With this definition, we can now calculate the HHCF for the `rotated_raster` in the row-wise (`margin = 1`) and column-wise directions (`margin = 2`) using `get_hhcf()`.
 
 ```{r hhcf}
-hhcf_x <- get_hhcf(rotated_raster, raster_resolution, margin = 1, get_autocorr = TRUE)
-hhcf_y <- get_hhcf(rotated_raster, raster_resolution, margin = 2, get_autocorr = TRUE)
-
-mean(hhcf_x$rms)
-2 * mean(hhcf_x$rms)^2
-mean(hhcf_x$autocorr_len)
-
-mean(hhcf_y$rms)
-2 * mean(hhcf_y$rms)^2
-mean(hhcf_y$autocorr_len)
+hhcf_x <- get_hhcf_(rotated_raster, raster_resolution, margin = 1)
+hhcf_y <- get_hhcf_(rotated_raster, raster_resolution, margin = 2)
 ```
 
 # Roughness exponent, $\alpha$
@@ -102,18 +97,18 @@ The option `do_plot = TRUE` provides a graphical display of the step-wise binned
 As the regression is a piecewise regression, for each direction, two slopes are returned, for example: $\alpha_{1,x}$ and $\alpha_{2,x}$.
 
 ```{r example_x_1}
-get_alpha(hhcf_x$hhcf[ind_x, ], raster_resolution, do_plot = TRUE)
+get_alpha_(hhcf_x$hhcf[ind_x, ], raster_resolution, hhcf_x$autocorr_len[ind_x], do_plot = TRUE)
 ```
 
 ```{r example_y_1}
-get_alpha(hhcf_y$hhcf[ind_y, ], raster_resolution, do_plot = TRUE)
+get_alpha_(hhcf_y$hhcf[ind_y, ], raster_resolution, hhcf_y$autocorr_len[ind_y], do_plot = TRUE)
 ```
 
 `get_alpha()` includes a number of safeguard and the function will return `NA`.
 Here is an example the roughly follow a ridgeline, the middle column, with no statistically consistent scaling.
 
 ```{r example_y_2}
-get_alpha(hhcf_y$hhcf[ind_x, ], raster_resolution, do_plot = TRUE)
+get_alpha_(hhcf_y$hhcf[ind_x, ], raster_resolution, hhcf_y$autocorr_len[ind_x], do_plot = TRUE)
 ```
 
 ## Computing all roughness exponents
@@ -121,8 +116,8 @@ get_alpha(hhcf_y$hhcf[ind_x, ], raster_resolution, do_plot = TRUE)
 Provided a list of HHCF from `get_hhcf()`, the function `get_all_alpha()` computes all step-wise regressions.
 
 ```{r all_alpha}
-alpha_x <- get_all_alpha(hhcf_x, raster_resolution)
-alpha_y <- get_all_alpha(hhcf_y, raster_resolution)
+alpha_x <- get_all_alpha_(hhcf_x, raster_resolution)
+alpha_y <- get_all_alpha_(hhcf_y, raster_resolution)
 ```
 
 ```{r, echo = FALSE}
@@ -185,11 +180,11 @@ For the current landscape:
 | $\zeta_2$ | `r get_zeta_(x_stats$alpha2_mean, y_stats$alpha2_mean, x_stats$alpha2_IQR, y_stats$alpha2_IQR) %>% signifNA()` |
 
 ```{r}
-get_zeta(gabilan_mesa, full = TRUE) %>% dplyr::mutate_all(signifNA)
+get_zeta(rstr, raster_resolution, full = TRUE) %>% dplyr::mutate_all(signifNA)
 
 ```
 
 
 ```{r}
-get_zeta(gabilan_mesa) %>% dplyr::mutate_all(signifNA)
+get_zeta(rstr,raster_resolution) %>% dplyr::mutate_all(signifNA)
 ```

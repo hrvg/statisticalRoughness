@@ -89,3 +89,41 @@ RMS_roughness <- function(row, dr){
 	w <- sum((row - avg)^2, na.rm = FALSE) / (len - 1) # this is faster than mean()
 	return(sqrt(w))
 }
+
+
+#' This wrapper function derives the one-dimensional `HHCF()` for all columns or rows of a matrix
+#' @param mat a `matrix`
+#' @param dr `numeric`, spacing of the values along the axis
+#' @param margin indicate the direction, 1 = row, 2 = column, passed to `apply`'s `MARGIN`
+#' @param limlen `numeric` the minimum length of data
+#' @export
+#' @keywords zeta
+get_hhcf_ <- function(mat, dr, margin = 1, limlen = 30){
+	hhcf <- plyr::alply(mat, .margins = margin, .fun = function(row){
+		ind <- which(!is.na(row))
+		if (length(ind) > limlen) {
+			x <- seq_along(row) * dr
+			len <- length(row)
+			fit <- lm(row ~ x)
+			row <- row - fit$fitted.values
+			ACV <- stats::acf(row, plot = FALSE, type = "covariance", demean = FALSE, lag.max = length(row) - 1, na.action = na.pass)
+			W <- ACV$acf[1]
+			HHCF <- sqrt(2 * W - 2 * ACV$acf)[-1]
+			ACF <- ACV$acf / W
+			xi <- ACV$lag[utils::head(which(ACF <= 1 / exp(1)), 1)]
+			return(list(hhcf = HHCF, w = sqrt(W), xi = xi))
+		} else {
+			return(NA)
+		}
+	})
+	ind <- which(is.na(hhcf))
+	if (length(ind) > 1) {
+		hhcf <- rlist::list.remove(hhcf, ind)
+	}
+	w <- sapply(hhcf, function(elmt) elmt[[2]])
+	xi <- sapply(hhcf, function(elmt) elmt[[3]]) * dr
+	hhcf <- lapply(hhcf, function(elmt) elmt[[1]])
+	hhcf <- do.call(rbind, hhcf) # one hhcf per line
+	hhcf <- data.frame(hhcf)
+	return(list(hhcf = hhcf, autocorr_len = xi, rms = w))
+}

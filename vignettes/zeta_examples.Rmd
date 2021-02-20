@@ -40,7 +40,7 @@ view_rotated_raster <- function(rstr, raster_resolution = 9.015, nbin = 50, .Han
 	ang_fourier <- get_fourier_angle(filtered_spectral_power_matrix, FT2D)
 	rotated_raster <- rotate_raster(raster::as.matrix(rstr), ang_fourier)
 	matrix_for_rayshader(rotated_raster) %>%
-		sphere_shade(texture = "desert") %>%
+		sphere_shade(texture = "imhof4") %>%
 	    add_shadow(ray_shade(matrix_for_rayshader(rotated_raster), sunaltitude = 20), max_darken = 0.3) %>%  
 	    add_shadow(ambient_shade(matrix_for_rayshader(rotated_raster)), 0) %>%
 	    plot_map()
@@ -53,8 +53,9 @@ Gabilan Mesa landscape is the same landscape that we used in other vignettes and
 Using `get_zeta()` returns a `data.frame` with the variable of interest for the analysis of topographic roughness and anisotropy.
 
 ```{r}
+raster_resolution <- 10
 gabilan_mesa <- raster::raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "gabilan_mesa.tif"))
-res_gabi <- get_zeta(gabilan_mesa) %>% dplyr::mutate_all(signifNA)
+res_gabi <- get_zeta(gabilan_mesa, raster_resolution) %>% dplyr::mutate_all(signifNA)
 ```
 
 Gabilan Mesa landscape has 
@@ -84,20 +85,20 @@ $\alpha_{2,x} =$ `r res_gabi$alpha2.x`, and
 $\alpha_{2,y} =$ `r res_gabi$alpha2.y`.
 Consequently, the anisotropy exponent is $\zeta_2 =$ `r res_gabi$zeta2`.
 
-The figure below showcases the landscape in its original form (left) and smoothed with a Gaussian kernel of  `r res_gabi$rc %/% 10` standard deviations to match the value of $r_c$ (right).
+The figure below showcases the landscape in its original form (left) and smoothed with a Gaussian kernel of  `r res_gabi$rc %/% raster_resolution` standard deviations to match the value of $r_c$ (right).
 
 ```{r, echo = FALSE}
 par(mfrow = c(1,2))
 matrix_for_rayshader(raster::as.matrix(gabilan_mesa)) %>%
-	sphere_shade(texture = "desert") %>%
+	sphere_shade(texture = "imhof4") %>%
     add_shadow(ray_shade(matrix_for_rayshader(raster::as.matrix(gabilan_mesa)), sunaltitude = 20), max_darken = 0.3) %>%  
     add_shadow(ambient_shade(matrix_for_rayshader(raster::as.matrix(gabilan_mesa))), 0) %>%
     plot_map()
 gabilan_mesa <- gabilan_mesa %>% spatialEco::raster.gaussian.smooth(
-		sigma = res_gabi$rc %/% 10
+		sigma = res_gabi$rc %/% raster_resolution
 	)
 matrix_for_rayshader(raster::as.matrix(gabilan_mesa)) %>%
-	sphere_shade(texture = "desert") %>%
+	sphere_shade(texture = "imhof4") %>%
     add_shadow(ray_shade(matrix_for_rayshader(raster::as.matrix(gabilan_mesa)), sunaltitude = 20), max_darken = 0.3) %>%  
     add_shadow(ambient_shade(matrix_for_rayshader(raster::as.matrix(gabilan_mesa))), 0) %>%
     plot_map()
@@ -107,8 +108,9 @@ matrix_for_rayshader(raster::as.matrix(gabilan_mesa)) %>%
 # Yosemite Valley
 
 ```{r}
+raster_resolution <- 10
 yosemite <- raster::raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "yosemite.tif"))
-res_yose <- get_zeta(yosemite) %>% dplyr::mutate_all(signifNA)
+res_yose <- get_zeta(yosemite, raster_resolution) %>% dplyr::mutate_all(signifNA)
 ```
 
 Yosemite Valley landscape has 
@@ -137,20 +139,20 @@ $\alpha_{2,x} =$ `r res_yose$alpha2.x`, and
 $\alpha_{2,y} =$ `r res_yose$alpha2.y`.
 Consequently, the anisotropy exponent is $\zeta_2 =$ `r res_yose$zeta2`.
 
-The figure below showcases the landscape in its original form (left) and smoothed with a Gaussian kernel of  `r res_yose$rc %/% 10` standard deviations to match the value of $r_c$ (right).
+The figure below showcases the landscape in its original form (left) and smoothed with a Gaussian kernel of  `r res_yose$rc %/% raster_resolution` standard deviations to match the value of $r_c$ (right).
 
 ```{r, echo = FALSE}
 par(mfrow = c(1,2))
 matrix_for_rayshader(raster::as.matrix(yosemite)) %>%
-	sphere_shade(texture = "desert") %>%
+	sphere_shade(texture = "imhof4") %>%
     add_shadow(ray_shade(matrix_for_rayshader(raster::as.matrix(yosemite)), sunaltitude = 20), max_darken = 0.3) %>%  
     add_shadow(ambient_shade(matrix_for_rayshader(raster::as.matrix(yosemite))), 0) %>%
     plot_map()
 yosemite <- yosemite %>% spatialEco::raster.gaussian.smooth(
-		sigma = res_yose$rc %/% 10
+		sigma = res_yose$rc %/% raster_resolution
 	)
 matrix_for_rayshader(raster::as.matrix(yosemite)) %>%
-	sphere_shade(texture = "desert") %>%
+	sphere_shade(texture = "imhof4") %>%
     add_shadow(ray_shade(matrix_for_rayshader(raster::as.matrix(yosemite)), sunaltitude = 20), max_darken = 0.3) %>%  
     add_shadow(ambient_shade(matrix_for_rayshader(raster::as.matrix(yosemite))), 0) %>%
     plot_map()
@@ -160,8 +162,9 @@ matrix_for_rayshader(raster::as.matrix(yosemite)) %>%
 # Modoc Plateau
 
 ```{r}
+raster_resolution <- 10
 modoc <- raster::raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "modoc.tif"))
-res_modo <- get_zeta(modoc) %>% dplyr::mutate_all(signifNA)
+res_modo <- get_zeta(modoc, raster_resolution) %>% dplyr::mutate_all(signifNA)
 ```
 
 Modoc Plateau landscape has 
@@ -189,21 +192,21 @@ $\alpha_{2,x} =$ `r res_modo$alpha2.x`, and
 $\alpha_{2,y} =$ `r res_modo$alpha2.y`.
 However, the anisotropy exponent, $\zeta_2$, cannot be derived as at least one ofthe distribution of $\alpha_2$ has a large spread and its mean is an inconclusive description of centrality.
 
-The figure below showcases the landscape in its original form (left) and smoothed with a Gaussian kernel of  `r res_modo$rc %/% 10` standard deviations to match the value of $r_c$ (right).
+The figure below showcases the landscape in its original form (left) and smoothed with a Gaussian kernel of  `r res_modo$rc %/% raster_resolution` standard deviations to match the value of $r_c$ (right).
 
 
 ```{r, echo = FALSE}
 par(mfrow = c(1,2))
 matrix_for_rayshader(raster::as.matrix(modoc)) %>%
-	sphere_shade(texture = "desert") %>%
+	sphere_shade(texture = "imhof4") %>%
     add_shadow(ray_shade(matrix_for_rayshader(raster::as.matrix(modoc)), sunaltitude = 20), max_darken = 0.3) %>%  
     add_shadow(ambient_shade(matrix_for_rayshader(raster::as.matrix(modoc))), 0) %>%
     plot_map()
 modoc <- modoc %>% spatialEco::raster.gaussian.smooth(
-		sigma = res_modo$rc %/% 10
+		sigma = res_modo$rc %/% raster_resolution
 	)
 matrix_for_rayshader(raster::as.matrix(modoc)) %>%
-	sphere_shade(texture = "desert") %>%
+	sphere_shade(texture = "imhof4") %>%
     add_shadow(ray_shade(matrix_for_rayshader(raster::as.matrix(modoc)), sunaltitude = 20), max_darken = 0.3) %>%  
     add_shadow(ambient_shade(matrix_for_rayshader(raster::as.matrix(modoc))), 0) %>%
     plot_map()
@@ -214,12 +217,13 @@ matrix_for_rayshader(raster::as.matrix(modoc)) %>%
 
 
 ```{r}
+raster_resolution <- 90
 marble_canyon <- raster::raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "marble_canyon.tif"))
 marble_canyon <- raster::aggregate(marble_canyon, fact = 9) # 90 m to match Pastor-Satorras
-res_mrbl <- get_zeta(marble_canyon) %>% dplyr::mutate_all(signifNA)
+res_mrbl <- get_zeta(marble_canyon, raster_resolution) %>% dplyr::mutate_all(signifNA)
 ```
 
-Gabilan Mesa landscape has 
+Marble Canyon landscape has 
 a minimum elevation of `r raster::minValue(marble_canyon)` m,
 an average elevation of `r raster::cellStats(marble_canyon, stat = "mean")` m, 
 and a maximum elevation of `r raster::maxValue(marble_canyon)` m.
@@ -246,22 +250,76 @@ $\alpha_{2,x} =$ `r res_mrbl$alpha2.x`, and
 $\alpha_{2,y} =$ `r res_mrbl$alpha2.y`.
 Consequently, the anisotropy exponent is $\zeta_2 =$ `r res_mrbl$zeta2`.
 
-The figure below showcases the landscape in its original form (left) and smoothed with a Gaussian kernel of  `r res_mrbl$rc %/% 10` standard deviations to match the value of $r_c$ (right).
+The figure below showcases the landscape in its original form (left) and smoothed with a Gaussian kernel of  `r res_mrbl$rc %/% raster_resolution` standard deviations to match the value of $r_c$ (right).
 
 ```{r, echo = FALSE}
 par(mfrow = c(1,2))
 matrix_for_rayshader(raster::as.matrix(marble_canyon)) %>%
-  sphere_shade(texture = "desert") %>%
+  sphere_shade(texture = "imhof4") %>%
     add_shadow(ray_shade(matrix_for_rayshader(raster::as.matrix(marble_canyon)), sunaltitude = 20), max_darken = 0.3) %>%  
     add_shadow(ambient_shade(matrix_for_rayshader(raster::as.matrix(marble_canyon))), 0) %>%
     plot_map()
 marble_canyon <- marble_canyon %>% spatialEco::raster.gaussian.smooth(
-    sigma = res_gabi$rc %/% 10
+    sigma = res_gabi$rc %/% raster_resolution
   )
 matrix_for_rayshader(raster::as.matrix(marble_canyon)) %>%
-  sphere_shade(texture = "desert") %>%
+  sphere_shade(texture = "imhof4") %>%
     add_shadow(ray_shade(matrix_for_rayshader(raster::as.matrix(marble_canyon)), sunaltitude = 20), max_darken = 0.3) %>%  
     add_shadow(ambient_shade(matrix_for_rayshader(raster::as.matrix(marble_canyon))), 0) %>%
+    plot_map()
+```
+
+# Submarine Canyon
+
+```{r}
+raster_resolution <- 50
+submarine_canyon <- raster::raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "submarine_canyon.tif"))
+res_subm <- get_zeta(submarine_canyon, raster_resolution) %>% dplyr::mutate_all(signifNA)
+```
+
+Submarine Canyon landscape has 
+a minimum elevation of `r raster::minValue(submarine_canyon)` m,
+an average elevation of `r raster::cellStats(submarine_canyon, stat = "mean")` m, 
+and a maximum elevation of `r raster::maxValue(submarine_canyon)` m.
+The maximum relief is thus `r (raster::maxValue(submarine_canyon) - raster::minValue(submarine_canyon))` m.
+
+The figure below showcases the landscape in its original form.
+The landscape was rotated so that in this original frame of reference,
+$\theta_x =$ `r res_subm$theta %% 180`$^\circ$ and
+$\theta_y =$ `r (res_subm$theta %% 180 + 90)`$^\circ$.
+(In the rotated frame of reference, $\theta_x' = 0^\circ$ and $\theta_y' = 90^\circ$.)
+The segmented regression on the power spectrum identifies scalings with slope $\beta_1 =$ `r res_subm$beta1`, and $\beta_2 =$ `r res_subm$beta2`, before and after a cut-off lengthscale of $1/f_c =$ `r (res_subm$inv.fc)` m, respectively.
+As $\beta = 2H + d$, and $d = 2$, the Hurst coefficients $H$ corresponding to $\beta_1$ and $\beta_2$ are 
+`r ((abs(res_subm$beta1) - 2)/2)`, and
+`r ((abs(res_subm$beta2) - 2)/2)`, respectively.
+Before a cut-off lengthscale of
+`r res_subm$rc` m,
+the roughness exponents in the $x$-- and $y$--directions are
+$\alpha_{1,x} =$ `r res_subm$alpha1.x`, and
+$\alpha_{1,y} =$ `r res_subm$alpha1.y`.
+Consequently, the anisotropy exponent is $\zeta_1 =$ `r res_subm$zeta1`.
+After cut-off lengthscale,
+the roughness exponents are lower and almost equal with
+$\alpha_{2,x} =$ `r res_subm$alpha2.x`, and
+$\alpha_{2,y} =$ `r res_subm$alpha2.y`.
+Consequently, the anisotropy exponent is $\zeta_2 =$ `r res_subm$zeta2`.
+
+The figure below showcases the landscape in its original form (left) and smoothed with a Gaussian kernel of  `r res_subm$rc %/% raster_resolution` standard deviations to match the value of $r_c$ (right).
+
+```{r, echo = FALSE}
+par(mfrow = c(1,2))
+matrix_for_rayshader(raster::as.matrix(submarine_canyon)) %>%
+  sphere_shade(texture = "imhof4") %>%
+    add_shadow(ray_shade(matrix_for_rayshader(raster::as.matrix(submarine_canyon)), sunaltitude = 20), max_darken = 0.3) %>%  
+    add_shadow(ambient_shade(matrix_for_rayshader(raster::as.matrix(submarine_canyon))), 0) %>%
+    plot_map()
+submarine_canyon <- submarine_canyon %>% spatialEco::raster.gaussian.smooth(
+    sigma = res_gabi$rc %/% raster_resolution
+  )
+matrix_for_rayshader(raster::as.matrix(submarine_canyon)) %>%
+  sphere_shade(texture = "imhof4") %>%
+    add_shadow(ray_shade(matrix_for_rayshader(raster::as.matrix(submarine_canyon)), sunaltitude = 20), max_darken = 0.3) %>%  
+    add_shadow(ambient_shade(matrix_for_rayshader(raster::as.matrix(submarine_canyon))), 0) %>%
     plot_map()
 ```
 
@@ -270,9 +328,9 @@ matrix_for_rayshader(raster::as.matrix(marble_canyon)) %>%
 The following table summarizes the metrics for the three landscapes.
 
 ```{r}
-res <- rbind(res_gabi, res_yose, res_modo, res_mrbl) %>% 
+res <- rbind(res_gabi, res_yose, res_modo, res_mrbl, res_subm) %>% 
   dplyr::select(-c("w", "xi", "alpha1", "alpha2"))
-rownames(res) <- c("Gabilan Mesa", "Yosemite Valley", "Modoc Plateau", "Marble Canyon")
+rownames(res) <- c("Gabilan Mesa", "Yosemite Valley", "Modoc Plateau", "Marble Canyon", "Submarine Canyon")
 ```
 
 ```{r, echo = FALSE}
