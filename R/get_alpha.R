@@ -199,7 +199,7 @@ get_all_alpha_ <- function(hhcf, dr){
 #' @export
 #' @keywords zeta
 get_alpha_ <- function(row, dr, xi, do_plot = FALSE){
-	if (length(stats::na.omit(log10(unlist(row)))) < 30){
+	if (length(stats::na.omit(log10(unlist(row)))) < 30 | is.na(xi)){
 		return(data.frame(alpha1 = NA, alpha2 = NA, rc = NA, rmax = NA, alpha.r2 = NA))
 	}
 	df <- data.frame(dr = seq_along(row) * dr, hhcf = unlist(row))

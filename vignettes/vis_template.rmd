@@ -107,9 +107,9 @@ is_band1_gt_band2 <- function(band1, band2, rasters, .selected, spatial_scales){
 		s <- raster::stack(x, y)
 		raster::calc(s, fun = function(x){x[1] > x[2]}) %>% raster::getValues() %>% rstatix::freq_table() %>% dplyr::filter(group == "TRUE") %>% dplyr::select(-group)
 	}
-	rownames(xy) <- spatial_scales
+	# rownames(xy) <- spatial_scales
   mean_xy <- xy %>% dplyr::summarize(n = mean(n), prop = mean(prop))
-  rownames(mean_xy) <- "mean"
+  # rownames(mean_xy) <- "mean"
   xy <- rbind(xy, mean_xy)
 	xy  %>% 
 	knitr::kable("html", caption = paste0("Is ", band1, " greater than ", band2, "?")) %>% 

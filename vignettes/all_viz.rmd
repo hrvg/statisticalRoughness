@@ -42,7 +42,7 @@ devtools::load_all()
 ## Reading results
 
 ```{r}
-region_names <- c("gabilan_mesa", "yosemite", "modoc")
+region_names <- c("yosemite", "gabilan_mesa", "modoc")
 .name <- region_names[1]
 results_directory <- file.path(system.file(paste0("extdata/zeta_results/", .name), package = "statisticalRoughness"))
 zeta_results <- read_zeta_raster(out_dir = results_directory, Lmax = 1E3, raster_resolution = 10, .len = 10)

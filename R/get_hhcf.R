@@ -105,7 +105,7 @@ get_hhcf_ <- function(mat, dr, margin = 1, limlen = 30){
 			x <- seq_along(row) * dr
 			len <- length(row)
 			fit <- lm(row ~ x)
-			row <- row - fit$fitted.values
+			row[ind] <- fit$residuals
 			ACV <- stats::acf(row, plot = FALSE, type = "covariance", demean = FALSE, lag.max = length(row) - 1, na.action = na.pass)
 			W <- ACV$acf[1]
 			HHCF <- sqrt(2 * W - 2 * ACV$acf)[-1]
@@ -120,9 +120,10 @@ get_hhcf_ <- function(mat, dr, margin = 1, limlen = 30){
 	if (length(ind) > 1) {
 		hhcf <- rlist::list.remove(hhcf, ind)
 	}
-	w <- sapply(hhcf, function(elmt) elmt[[2]])
-	xi <- sapply(hhcf, function(elmt) elmt[[3]]) * dr
-	hhcf <- lapply(hhcf, function(elmt) elmt[[1]])
+	w <- sapply(hhcf, function(elmt) ifelse(length(elmt$w) != 0, elmt$w, NA)) %>% unname()
+	xi <- sapply(hhcf, function(elmt) ifelse(length(elmt$xi) != 0, elmt$xi, NA)) %>% unlist() %>% unname()
+	xi <- xi * dr
+	hhcf <- lapply(hhcf, function(elmt) elmt$hhcf)
 	hhcf <- do.call(rbind, hhcf) # one hhcf per line
 	hhcf <- data.frame(hhcf)
 	return(list(hhcf = hhcf, autocorr_len = xi, rms = w))

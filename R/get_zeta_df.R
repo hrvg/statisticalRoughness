@@ -14,7 +14,7 @@ get_zeta_df <- function(DEM, tiles, raster_resolution, vertical_accuracy = 1.87)
 	if(!class(DEM) == "RasterLayer") stop("invalid class: DEM is not of class 'RasterLayer'")
 	if(!class(tiles) %in% c("RasterLayer", "SpatialPolygonsDataFrame")) stop("invalid class: tiles is not of class 'RasterLayer' or 'SpatialPolygonsDataFrame'")
 	if(!class(vertical_accuracy) == 'numeric') stop("invalid class: vertical_accuracy is not of class 'numeric'")
-	if(!class(crs_ref) == 'CRS') stop("invalid class: crs_ref is not of class 'CRS'")
+	if(!class(raster_resolution) == 'numeric') stop("invalid class: raster_resolution is not of class 'numeric'")
 	
 	# coercion
 	if (class(tiles) == "RasterLayer") tiles <- raster::rasterToPolygons(tiles, dissolve = FALSE)

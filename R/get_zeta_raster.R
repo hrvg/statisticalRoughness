@@ -2,7 +2,7 @@
 #' @param DEM an elevation raster
 #' @param tiles a `RasterLayer` or a `SpatialPolygons` to tiles `DEM`
 #' @param .zeta_df null or a data.frame with column zeta and a number of rows equals to the number of cells of tiles
-#' @param ... to pass the `crs_ref` and `vertical_accuracy` argument to `get_zeta_df()`
+#' @param ... to pass the `raster_resolution` and `vertical_accuracy` argument to `get_zeta_df()`
 #' @return stack of raster of size tiles with anisotropy exponent values and a number of layers equals to the number of column in .zeta_df
 #' @export
 get_zeta_raster <- function(DEM, tiles, .zeta_df = NULL, ...){
