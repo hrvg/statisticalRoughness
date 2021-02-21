@@ -13,7 +13,7 @@ for (.name in region_names){
 
 	Lmax <- min(head(dim(rstr), 2))
 	spatial_scales <- get_factors(Lmax) %>% head(-1)
-	spatial_scales <- spatial_scales[spatial_scales >= 24]
+	spatial_scales <- spatial_scales[spatial_scales >= 30]
 
 	for (n in rev(spatial_scales)){
 		tic()

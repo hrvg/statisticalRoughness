@@ -42,18 +42,19 @@ band_names <- read.csv(file.path(results_directory, "band_names.csv")) %>% names
 
 if ("theta" %in% .selected) zeta_results$raster_list <- zeta_results$raster_list %>% make_angular(match("theta", band_names))
 
-sliced_clamped_raster <- slice_clamp(
-	raster_list = zeta_results$raster_list,
-	att_names = band_names,
-	selected = .selected,
-	clamp_raster = FALSE, 
-	clamp_params = cparams)
-sliced_clamped_raster %>% head(3)
 
-sliced_clamped_raster <- reduce_spatial_noise(sliced_clamped_raster)
 ```
 
-## Maps {.tabset}
+## Maps - raw {.tabset}
+
+```{r}
+sliced_clamped_raster <- slice_clamp(
+  raster_list = zeta_results$raster_list,
+  att_names = band_names,
+  selected = .selected,
+  clamp_raster = FALSE, 
+  clamp_params = cparams)
+```
 
 ```{r, echo = FALSE, results = 'asis'}
 res <- lapply(.selected, function(x) {
@@ -62,13 +63,79 @@ res <- lapply(.selected, function(x) {
     '',
     '```{r}',
     'raster_select(sliced_clamped_raster, band_id = match(x, .selected)) %>% 
-	make_leaflet_map(ttl = x, groups = zeta_results$spatial_scales, style = "discrete")',
+	make_leaflet_map(ttl = x, groups = zeta_results$spatial_scales, style = "continuous")',
     '```',
     ''
   ), envir = environment(), quiet = TRUE)
 })
 cat(unlist(res), sep = '\n')
 ```
+
+
+## Maps - clamped {.tabset}
+
+```{r}
+sliced_clamped_raster <- slice_clamp(
+  raster_list = zeta_results$raster_list,
+  att_names = band_names,
+  selected = .selected,
+  clamp_raster = TRUE, 
+  clamp_params = cparams)
+```
+
+```{r, echo = FALSE, results = 'asis'}
+res <- lapply(.selected, function(x) {
+  knitr::knit_child(text = c(
+    '### `r x`',
+    '',
+    '```{r}',
+    'raster_select(sliced_clamped_raster, band_id = match(x, .selected)) %>% 
+  make_leaflet_map(ttl = x, groups = zeta_results$spatial_scales, style = "continuous")',
+    '```',
+    ''
+  ), envir = environment(), quiet = TRUE)
+})
+cat(unlist(res), sep = '\n')
+```
+
+## Maps - clamped - denoised {.tabset}
+
+```{r}
+sliced_clamped_raster <- reduce_spatial_noise(sliced_clamped_raster)
+```
+
+```{r, echo = FALSE, results = 'asis'}
+res <- lapply(.selected, function(x) {
+  knitr::knit_child(text = c(
+    '### `r x`',
+    '',
+    '```{r}',
+    'raster_select(sliced_clamped_raster, band_id = match(x, .selected)) %>% 
+  make_leaflet_map(ttl = x, groups = zeta_results$spatial_scales, style = "continuous")',
+    '```',
+    ''
+  ), envir = environment(), quiet = TRUE)
+})
+cat(unlist(res), sep = '\n')
+```
+
+## Maps - clamped - denoised - discrete {.tabset}
+
+```{r, echo = FALSE, results = 'asis'}
+res <- lapply(.selected, function(x) {
+  knitr::knit_child(text = c(
+    '### `r x`',
+    '',
+    '```{r}',
+    'raster_select(sliced_clamped_raster, band_id = match(x, .selected)) %>% 
+  make_leaflet_map(ttl = x, groups = zeta_results$spatial_scales, style = "discrete")',
+    '```',
+    ''
+  ), envir = environment(), quiet = TRUE)
+})
+cat(unlist(res), sep = '\n')
+```
+
 
 
 ## Distribution plots {.tabset}
