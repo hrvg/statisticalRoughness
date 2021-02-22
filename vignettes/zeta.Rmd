@@ -36,9 +36,9 @@ devtools::load_all()
 library("rayshader")
 library("raster")
 
-rstr <- raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "submarine_canyon.tif"))
-# raster_resolution <- 10
-raster_resolution <- 50
+rstr <- raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "gabilan_mesa.tif"))
+raster_resolution <- 10
+# raster_resolution <- 50
 # rstr <- raster::aggregate(rstr, fact = 9) # 90 m to match Pastor-Satorras
 # raster_resolution <- 90
 FT2D <- rstr %>% detrend_dem() %>% raster::as.matrix() %>%
@@ -174,10 +174,10 @@ This estimate of $\zeta$ is handled by an internal function which includes a che
 If the distribution is not constrained enough, `NA` values are returned.
 For the current landscape:
 
-|           |                                          anisotropy exponent, $\zeta$                                          |
-|:----------|:--------------------------------------------------------------------------------------------------------------:|
-| $\zeta_1$ | `r get_zeta_(x_stats$alpha1_mean, y_stats$alpha1_mean, x_stats$alpha1_IQR, y_stats$alpha1_IQR) %>% signifNA()` |
-| $\zeta_2$ | `r get_zeta_(x_stats$alpha2_mean, y_stats$alpha2_mean, x_stats$alpha2_IQR, y_stats$alpha2_IQR) %>% signifNA()` |
+|           |                                             anisotropy exponent, $\zeta$                                             |
+|:----------|:--------------------------------------------------------------------------------------------------------------------:|
+| $\zeta_1$ | `r get_zeta_(x_stats$alpha1_mean, y_stats$alpha1_mean, x_stats$alpha1_IQR, y_stats$alpha1_IQR, TRUE) %>% signifNA()` |
+| $\zeta_2$ | `r get_zeta_(x_stats$alpha2_mean, y_stats$alpha2_mean, x_stats$alpha2_IQR, y_stats$alpha2_IQR, TRUE) %>% signifNA()` |
 
 ```{r}
 get_zeta(rstr, raster_resolution, full = TRUE) %>% dplyr::mutate_all(signifNA)
