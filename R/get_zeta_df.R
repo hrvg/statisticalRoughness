@@ -18,7 +18,7 @@ get_zeta_df <- function(DEM, tiles, raster_resolution, vertical_accuracy = 1.87)
 	
 	# coercion
 	if (class(tiles) == "RasterLayer") tiles <- raster::rasterToPolygons(tiles, dissolve = FALSE)
-	tiles <- raster::crop(tiles, DEM)
+	DEM <- raster::extend(DEM, tiles)
 	
 	# spatial checks
 	if (length(tiles) == 0) stop("There are no tiles covering your raster.")

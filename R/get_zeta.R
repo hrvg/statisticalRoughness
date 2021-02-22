@@ -36,8 +36,7 @@ get_kruskal_flag <- function(alpha_x, alpha_y, var){
 		dplyr::mutate(type = "y") %>% 
 		na.omit()
 	if(nrow(alpha_x) > 1 & nrow(alpha_y) > 1){
-		kruskal <- rbind(alpha_x, alpha_y) %>%
-			dplyr::mutate(type = as.factor(type)) 
+		kruskal <- rbind(alpha_x, alpha_y) %>% dplyr::mutate(type = as.factor(type))
 		colnames(kruskal) <- c("var", "type")
 		kruskal <- kruskal %>% rstatix::kruskal_test(var ~ type) 
 		return(kruskal$p < 0.05)
@@ -80,8 +79,8 @@ get_zeta <- function(rstr, raster_resolution, nbin = 20, .Hann = TRUE, .quantile
 		xi_x <- mean(hhcf_x$autocorr_len, na.rm = TRUE)
 		xi_y <- mean(hhcf_y$autocorr_len, na.rm = TRUE)
 	} else { # invert so that x has the highest rms
-		alpha_x <- get_all_alpha_(hhcf_y, raster_resolution) %>% summarise_alpha()
-		alpha_y <- get_all_alpha_(hhcf_x, raster_resolution) %>% summarise_alpha()
+		alpha_x <- get_all_alpha_(hhcf_y, raster_resolution)
+		alpha_y <- get_all_alpha_(hhcf_x, raster_resolution)
 		xi_x <- mean(hhcf_y$autocorr_len, na.rm = TRUE)
 		xi_y <- mean(hhcf_x$autocorr_len, na.rm = TRUE)
 		w_x <- mean(hhcf_y$rms, na.rm = TRUE)
