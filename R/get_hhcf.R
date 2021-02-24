@@ -113,7 +113,7 @@ get_hhcf_ <- function(mat, dr, margin = 1, limlen = 30){
 			xi <- ACV$lag[utils::head(which(ACF <= 1 / exp(1)), 1)]
 			return(list(hhcf = HHCF, w = sqrt(W), xi = xi))
 		} else {
-			return(NA)
+			return(list(hhcf = NA, w = NA, xi = NA))
 		}
 	})
 	ind <- which(is.na(hhcf))

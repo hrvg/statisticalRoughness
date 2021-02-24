@@ -42,7 +42,7 @@ devtools::load_all()
 ## Reading results
 
 ```{r}
-region_names <- c("gabilan_mesa", "yosemite", "modoc")
+region_names <- c("fort_bragg", "yosemite", "gabilan_mesa", "modoc")
 .name <- region_names[1]
 results_directory <- file.path(system.file(paste0("extdata/zeta_results/", .name), package = "statisticalRoughness"))
 zeta_results <- read_zeta_raster(out_dir = results_directory, Lmax = 1E3, raster_resolution = 10, .len = 10)
@@ -55,8 +55,9 @@ We modify the `spatial_scales` to match this process.
 ```{r}
 rstr <- raster::raster(file.path(system.file("extdata/big_rasters/", package = "statisticalRoughness"), paste0(.name, ".tif")))
 Lmax <- min(head(dim(rstr), 2))
-spatial_scales <- get_factors(Lmax) %>% head(-1) %>% tail(length(zeta_results$raster_list)) * 10
-zeta_results$spatial_scales <- spatial_scales
+spatial_scales <- get_all_R_L(Lmax, 5, len = 13)$allL %>% head(-1)
+spatial_scales <- spatial_scales[spatial_scales >= 30]
+zeta_results$spatial_scales <- tail(spatial_scales, length(zeta_results$raster_list)) * 10
 zeta_results$spatial_scales
 ```
 Each element of the list in `zeta_results$raster_list` has `r read.csv(file.path(results_directory, "band_names.csv")) %>% names() %>% length()` bands with the following names:
@@ -75,14 +76,14 @@ In that `data.frame`, `n_sigma` controls the number of standard deviation to fil
 Leaving `Inf` values in the `*_clamp` will not constrain the distribution and if `lower` or `upper` are `TRUE` the `*_clamp` is overwritten using `n_sigma`.
 
 ```{r}
-.selected <- c("beta2", "alpha1.y", "alpha1.x", "alpha2.y", "alpha2.x", "zeta1", "zeta2", "w.y", "w.x", "inv.fc", "rc", "xi.y", "xi.x")
+.selected <- c("beta2", "alpha1.y", "alpha1.x", "alpha2.y", "alpha2.x", "w.y", "w.x", "xi.y", "xi.x", "zeta1", "zeta2")
 cparams <- data.frame(
   selected = .selected,
   n_sigma = rep(3, length(.selected)),
-  lower = rep(TRUE, length(.selected)),
-  upper = rep(TRUE, length(.selected)),
-  lower_clamp = rep(-Inf, length(.selected)),
-  upper_clamp = rep(Inf, length(.selected))
+  lower = c(TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE),
+  upper = c(FALSE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, TRUE, TRUE),
+  lower_clamp = c(-Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, 1, 1),
+  upper_clamp = c(0, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf)
 )
 ```
 
@@ -99,7 +100,8 @@ pretty_region_name <- function(x){
   switch(x,
     "modoc" = "Modoc Plateau",
     "yosemite" = "Yosemite Valley",
-    "gabilan_mesa" = "Gabilan Mesa"
+    "gabilan_mesa" = "Gabilan Mesa",
+    "fort_bragg" = "Fort Bragg"
   )
 }
 ```

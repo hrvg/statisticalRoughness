@@ -8,11 +8,11 @@
 #' @importFrom methods as
 #' @return a `leaflet` object
 #' @export
-make_leaflet_map <- function(clamped, ttl = "values", n_class = 15, circular = FALSE, style = "continuous", groups){
+make_leaflet_map <- function(clamped, ttl = "values", n_class = 10, circular = FALSE, style = "continuous", groups){
 	groups <- sapply(groups, as.character)
 	ma <- NULL
 	ma <- leaflet::leaflet() 
-	cInt <- classInt::classIntervals(clamped$values, n_class, style = "quantile")
+	cInt <- classInt::classIntervals(clamped$values, n_class, style = "fisher")
 	brk <- cInt$brks
 	if(circular){
 		clamped$values <- sapply(clamped$values, function(x) ifelse(x > 180, x - 180, x))

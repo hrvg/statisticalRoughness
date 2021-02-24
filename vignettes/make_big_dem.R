@@ -1,9 +1,5 @@
 library(raster)
 
-root_dir <- 'F:/hguillon/research/'
-dem_dir <- 'data/california-rivers/gis-files/NED' 
-DEM <- raster::raster(file.path(root_dir, dem_dir, "CA_DEM.grd"))
-
 getpol <- function(i, pts, dl = 1000,.crs = crs(DEM)){
 	x_min <- pts@coords[i,1] - dl
 	x_max <- pts@coords[i,1] + dl
@@ -36,6 +32,12 @@ get_dem <- function(region, f){
 	} else if (region == "marble"){
 		lat <- 36.7788543
 		lon <- -110.767441
+	} else if (region == "monterey"){
+		lat <- 36.7758621
+		lon <- -122
+	} else if (region == "fort_bragg"){
+		lat <- 40.05
+		lon <- -124.15
 	}
 
 	lonlat <- cbind(lon,lat)
@@ -50,26 +52,16 @@ get_dem <- function(region, f){
 	writeRaster(dem.c, paste0(region, ".tif"), overwrite = TRUE)
 }
 
-# for (region in c("gabilan_mesa", "yosemite", "modoc")) get_dem(region, 1000)
+root_dir <- 'F:/hguillon/research/'
+dem_dir <- 'data/california-rivers/gis-files/NED' 
+DEM <- raster::raster(file.path(root_dir, dem_dir, "CA_DEM.grd"))
+for (region in c("gabilan_mesa", "yosemite", "modoc")) get_dem(region, 1000)
 
 
-dem_dir <- "data/california-rivers/gis-files/nw_pacific_crm-v1"
-DEM <- raster::raster(file.path(root_dir, dem_dir, "nw_pacific_crm_v1.asc"))
-get_dem("oregon", 300)
+dem_dir <- "data/california-rivers/gis-files/monterey"
+DEM <- raster::raster(file.path(root_dir, dem_dir, "monterey.tif"))
+get_dem("monterey", 4500)
 
-
-dlx = 10e3/10/2 * res(DEM)[1] 
-dly = 25e3/10/2 * res(DEM)[2]
-i = 1
-x_min <- pts@coords[i,1] - dlx
-x_max <- pts@coords[i,1] + dlx
-y_min <- pts@coords[i,2] - dly
-y_max <- pts@coords[i,2] + dly
-coords = matrix(c(x_min, y_min,
-               x_min, y_max,
-               x_max, y_max,
-               x_max, y_min,
-               x_min, y_min), 
-             ncol = 2, byrow = TRUE)
-p <-  Polygon(coords)
-sp1 <-  SpatialPolygons(list(Polygons(list(p), ID = "a")), proj4string=.crs)
+dem_dir <- "data/california-rivers/gis-files/fort_bragg"
+DEM <- raster::raster(file.path(root_dir, dem_dir, "fort_bragg.tif"))
+get_dem("monterey", 4500)

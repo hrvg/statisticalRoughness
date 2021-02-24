@@ -1,8 +1,8 @@
 devtools::load_all()
 library(tictoc)
 
-# region_names <- c("gabilan_mesa", "yosemite", "modoc")
 region_names <- c("yosemite", "gabilan_mesa", "modoc")
+
 
 for (.name in region_names){
 	print(.name)
@@ -13,7 +13,7 @@ for (.name in region_names){
 
 	Lmax <- min(head(dim(rstr), 2))
 	spatial_scales <- get_all_R_L(Lmax, 5, len = 13)$allL %>% head(-1)
-	spatial_scales <- spatial_scales[spatial_scales >= 20]
+	spatial_scales <- spatial_scales[spatial_scales >= 30]
 
 	for (n in rev(spatial_scales)){
 		tic()

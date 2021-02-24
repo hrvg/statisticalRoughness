@@ -34,45 +34,30 @@ zeta_results <- read_zeta_raster(out_dir = results_directory, Lmax = 1E3, raster
 rstr <- raster::raster(file.path(system.file("extdata/big_rasters/", package = "statisticalRoughness"), paste0(region, ".tif")))
 
 Lmax <- min(head(dim(rstr), 2))
-spatial_scales <- get_factors(Lmax) %>% head(-1) %>% tail(length(zeta_results$raster_list)) * 10
-zeta_results$spatial_scales <- spatial_scales
+spatial_scales <- get_all_R_L(Lmax, 5, len = 13)$allL %>% head(-1)
+spatial_scales <- spatial_scales[spatial_scales >= 30]
+zeta_results$spatial_scales <- tail(spatial_scales, length(zeta_results$raster_list)) * 10
 zeta_results$spatial_scales
 
 band_names <- read.csv(file.path(results_directory, "band_names.csv")) %>% names()
 
 if ("theta" %in% .selected) zeta_results$raster_list <- zeta_results$raster_list %>% make_angular(match("theta", band_names))
 
-
 ```
 
-## Maps - raw {.tabset}
+## DEM
 
 ```{r}
-sliced_clamped_raster <- slice_clamp(
-  raster_list = zeta_results$raster_list,
-  att_names = band_names,
-  selected = .selected,
-  clamp_raster = FALSE, 
-  clamp_params = cparams)
+rstr <- raster::aggregate(rstr, fact = 10)
+library(rayshader)
+matrix_for_rayshader(raster::as.matrix(rstr)) %>%
+  sphere_shade(colorintensity = 0.5, texture = "imhof4") %>%
+    add_shadow(ray_shade(matrix_for_rayshader(raster::as.matrix(rstr)), sunaltitude = 20), max_darken = 0.1) %>%  
+    # add_shadow(ambient_shade(matrix_for_rayshader(raster::as.matrix(rstr))), 0) %>%
+    plot_map()
 ```
 
-```{r, echo = FALSE, results = 'asis'}
-res <- lapply(.selected, function(x) {
-  knitr::knit_child(text = c(
-    '### `r x`',
-    '',
-    '```{r}',
-    'raster_select(sliced_clamped_raster, band_id = match(x, .selected)) %>% 
-	make_leaflet_map(ttl = x, groups = zeta_results$spatial_scales, style = "continuous")',
-    '```',
-    ''
-  ), envir = environment(), quiet = TRUE)
-})
-cat(unlist(res), sep = '\n')
-```
-
-
-## Maps - clamped {.tabset}
+## Maps - clamped - denoised {.tabset}
 
 ```{r}
 sliced_clamped_raster <- slice_clamp(
@@ -83,25 +68,28 @@ sliced_clamped_raster <- slice_clamp(
   clamp_params = cparams)
 ```
 
-```{r, echo = FALSE, results = 'asis'}
-res <- lapply(.selected, function(x) {
-  knitr::knit_child(text = c(
-    '### `r x`',
-    '',
-    '```{r}',
-    'raster_select(sliced_clamped_raster, band_id = match(x, .selected)) %>% 
-  make_leaflet_map(ttl = x, groups = zeta_results$spatial_scales, style = "continuous")',
-    '```',
-    ''
-  ), envir = environment(), quiet = TRUE)
-})
-cat(unlist(res), sep = '\n')
-```
-
-## Maps - clamped - denoised {.tabset}
-
 ```{r}
 sliced_clamped_raster <- reduce_spatial_noise(sliced_clamped_raster)
+
+#' @param raster_list a `list` of `stars` objects
+#' @param target_id the id of the layer to be masked
+#' @return a `list` of `stars` 
+logtransform_layer <- function(raster_list, target_id){
+  transformed_raster_list <- lapply(seq_along(raster_list), function(n){
+    s <- raster_list[[n]] %>% as("Raster")
+    transformed_values <- raster::getValues(s[[target_id]])
+    transformed_values <- log10(transformed_values)
+    transformed_values[!is.finite(transformed_values)] <- NA
+    s <- raster::setValues(s, transformed_values, layer = target_id)
+    return(stars::st_as_stars(s))
+  })
+  return(transformed_raster_list)
+}
+
+.sliced_clamped_raster <- sliced_clamped_raster
+for (x in c("alpha1.y", "alpha1.x", "alpha2.y", "alpha2.x", "w.y", "w.x", "xi.y", "xi.x", "zeta1", "zeta2")){
+    .sliced_clamped_raster <- logtransform_layer(.sliced_clamped_raster, match(x, .selected))
+}
 ```
 
 ```{r, echo = FALSE, results = 'asis'}
@@ -110,25 +98,8 @@ res <- lapply(.selected, function(x) {
     '### `r x`',
     '',
     '```{r}',
-    'raster_select(sliced_clamped_raster, band_id = match(x, .selected)) %>% 
+    'raster_select(.sliced_clamped_raster, band_id = match(x, .selected)) %>% 
   make_leaflet_map(ttl = x, groups = zeta_results$spatial_scales, style = "continuous")',
-    '```',
-    ''
-  ), envir = environment(), quiet = TRUE)
-})
-cat(unlist(res), sep = '\n')
-```
-
-## Maps - clamped - denoised - discrete {.tabset}
-
-```{r, echo = FALSE, results = 'asis'}
-res <- lapply(.selected, function(x) {
-  knitr::knit_child(text = c(
-    '### `r x`',
-    '',
-    '```{r}',
-    'raster_select(sliced_clamped_raster, band_id = match(x, .selected)) %>% 
-  make_leaflet_map(ttl = x, groups = zeta_results$spatial_scales, style = "discrete")',
     '```',
     ''
   ), envir = environment(), quiet = TRUE)
