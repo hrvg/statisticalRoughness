@@ -4,7 +4,14 @@
 \alias{make_all_plots}
 \title{Wrapper function around \code{make_stacked_density_plot()} and \code{modes_from_stacked_density()}}
 \usage{
-make_all_plots(raster_list, .spatial_scales, .band_id, .var_name, ...)
+make_all_plots(
+  raster_list,
+  .spatial_scales,
+  .band_id,
+  .var_name,
+  .base_size = 12,
+  ...
+)
 }
 \arguments{
 \item{raster_list}{a \code{list} of \code{stars} or \code{RasterStack} objects}
@@ -14,6 +21,8 @@ make_all_plots(raster_list, .spatial_scales, .band_id, .var_name, ...)
 \item{.band_id}{\code{numeric}, identifier of the band of the \code{stars} object}
 
 \item{.var_name}{\code{character}, used for the title of the graph}
+
+\item{.base_size}{\code{numeric}, base size for the font, passed to \code{ggpubr::theme_pubr()}}
 
 \item{...}{passed to \code{make_stacked_density_plot()} and  \code{modes_from_stacked_density()}}
 }

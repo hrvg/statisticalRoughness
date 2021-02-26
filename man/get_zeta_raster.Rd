@@ -13,7 +13,7 @@ get_zeta_raster(DEM, tiles, .zeta_df = NULL, ...)
 
 \item{.zeta_df}{null or a data.frame with column zeta and a number of rows equals to the number of cells of tiles}
 
-\item{...}{to pass the \code{crs_ref} and \code{vertical_accuracy} argument to \code{get_zeta_df()}}
+\item{...}{to pass the \code{raster_resolution} and \code{vertical_accuracy} argument to \code{get_zeta_df()}}
 }
 \value{
 stack of raster of size tiles with anisotropy exponent values and a number of layers equals to the number of column in .zeta_df

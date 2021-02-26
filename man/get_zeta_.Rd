@@ -4,7 +4,7 @@
 \alias{get_zeta_}
 \title{Internal function to derive the anisotropy exponent from two roughness exponents}
 \usage{
-get_zeta_(alpha_1, alpha_2, IQR_1, IQR_2)
+get_zeta_(alpha_1, alpha_2, IQR_1, IQR_2, kruskal_flag)
 }
 \arguments{
 \item{alpha_1}{\code{numeric}, a roughness coefficient}

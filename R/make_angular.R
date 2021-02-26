@@ -1,3 +1,4 @@
+#' Transform a 360 degrees variable to a 180 degrees
 #' @param raster_list a `list` of `stars` objects
 #' @param target_id the id of the layer to be masked
 #' @return a `list` of `stars` 

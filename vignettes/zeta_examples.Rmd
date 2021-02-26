@@ -27,8 +27,7 @@ knitr::opts_chunk$set(
 This vignette displays the calculation of anisotropy exponent for different landscapes: Gabilan Mesa, Yosemite Valley and Modoc Plateau.
 
 ```{r, echo = FALSE}
-# library("statisticalRoughness")
-devtools::load_all()
+library("statisticalRoughness")
 library("rayshader")
 
 view_rotated_raster <- function(rstr, raster_resolution = 9.015, nbin = 50, .Hann = TRUE, .quantile_prob = c(0.9999)){

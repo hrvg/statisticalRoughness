@@ -6,7 +6,7 @@
 \usage{
 get_zeta(
   rstr,
-  raster_resolution = 9.015,
+  raster_resolution,
   nbin = 20,
   .Hann = TRUE,
   .quantile_prob = c(0.9999),

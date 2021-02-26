@@ -4,3 +4,5 @@
 ^LICENSE\.md$
 ^\.circleci$
 ^tic\.R$
+vignettes/vis_template.Rmd
+vignettes/all_viz.Rmd

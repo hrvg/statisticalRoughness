@@ -125,6 +125,7 @@ get_hhcf_ <- function(mat, dr, margin = 1, limlen = 30){
 	xi <- xi * dr
 	hhcf <- lapply(hhcf, function(elmt) elmt$hhcf)
 	hhcf <- do.call(rbind, hhcf) # one hhcf per line
+	# hhcf <- apply(hhcf, MARGIN = 2, FUN = mean, na.rm = TRUE)
 	hhcf <- data.frame(hhcf)
 	return(list(hhcf = hhcf, autocorr_len = xi, rms = w))
 }
