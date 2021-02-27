@@ -48,6 +48,7 @@ Imports:
     reshape2,
     rgdal,
     rlang,
+    rlist,
     rstatix,
     scales,
     segmented,

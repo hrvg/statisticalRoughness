@@ -105,8 +105,8 @@ get_fourier_angle <- function(filtered_spectral_power_matrix, FT2D, bandwidth = 
 #' @export
 #' @keywords rotate_raster
 #' @examples
-#' r <- raster::ncell(ncol = 3, nrow = 3)
-#' raster::values(r) <- 1:raster::ncell(r)
+#' r <- raster::raster(ncol = 3, nrow = 3)
+#' raster::values(r) <- 1:(raster::ncell(r))
 #' raster::as.matrix(r)
 #' raster::as.matrix(rotate_raster(r, 45))
 rotate_raster <- function(rstr, ang_fourier){

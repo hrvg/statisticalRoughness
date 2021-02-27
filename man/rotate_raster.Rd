@@ -18,8 +18,8 @@ a \code{matrix} corresponding to the DEM rotated in the main direction of the Fo
 Rotates the detrended DEM according to the main direction of the Fourier spectrum
 }
 \examples{
-r <- raster::ncell(ncol = 3, nrow = 3)
-raster::values(r) <- 1:raster::ncell(r)
+r <- raster::raster(ncol = 3, nrow = 3)
+raster::values(r) <- 1:(raster::ncell(r))
 raster::as.matrix(r)
 raster::as.matrix(rotate_raster(r, 45))
 }

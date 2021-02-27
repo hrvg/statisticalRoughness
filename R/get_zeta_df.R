@@ -20,8 +20,7 @@ get_zeta_df <- function(DEM, tiles, raster_resolution, vertical_accuracy = 1.87)
 	if (class(tiles) == "RasterLayer") tiles <- raster::rasterToPolygons(tiles, dissolve = FALSE)
 	DEM <- raster::extend(DEM, tiles)
 	
-	# spatial checks
-	if (length(tiles) == 0) stop("There are no tiles covering your raster.")
+	# spatial check
 	if (length(tiles) > raster::ncell(DEM)) stop("There are more tiles than cells in your raster.")
 
 	# setting up parallelization
