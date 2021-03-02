@@ -6,6 +6,7 @@
 #' @param alpha_2 `numeric`, a roughness coefficient
 #' @param IQR_1 `numeric`, an IQR
 #' @param IQR_2 `numeric`, an IQR
+#' @param kruskal_flag `logical` flag returned by `get_kruskal_flag()`
 #' @return a `numeric` anisotropy exponent
 #' @keywords zeta
 #' @export
@@ -31,13 +32,13 @@ get_kruskal_flag <- function(alpha_x, alpha_y, var){
 	alpha_x <- alpha_x %>% 
 		dplyr::select(var) %>% 
 		dplyr::mutate(type = "x") %>% 
-		na.omit()
+		stats::na.omit()
 	alpha_y <- alpha_y %>%
 		dplyr::select(var) %>%
 		dplyr::mutate(type = "y") %>% 
-		na.omit()
+		stats::na.omit()
 	if(nrow(alpha_x) > 1 & nrow(alpha_y) > 1){
-		kruskal <- rbind(alpha_x, alpha_y) %>% dplyr::mutate(type = as.factor(type))
+		kruskal <- rbind(alpha_x, alpha_y) %>% dplyr::mutate(type = as.factor(.data$type))
 		colnames(kruskal) <- c("var", "type")
 		kruskal <- kruskal %>% rstatix::kruskal_test(var ~ type) 
 		return(kruskal$p < 0.05)
@@ -109,36 +110,36 @@ get_zeta <- function(rstr, raster_resolution, nbin = 20, .Hann = TRUE, .quantile
 	if (full) return(res)
 	res <- res %>%
 		dplyr::rename(
-			alpha1.x = alpha1_mean.x,
-			alpha2.x = alpha2_mean.x,
-			alpha1.y = alpha1_mean.y,
-			alpha2.y = alpha2_mean.y
+			alpha1.x = .data$alpha1_mean.x,
+			alpha2.x = .data$alpha2_mean.x,
+			alpha1.y = .data$alpha1_mean.y,
+			alpha2.y = .data$alpha2_mean.y
 		) %>%
 		dplyr::mutate(
 			alpha1 = mean(c(.data$alpha1.x, .data$alpha1.y)),
 			alpha2 = mean(c(.data$alpha2.x, .data$alpha2.y)),
-			inv.fc = 1/fc
+			inv.fc = 1/.data$fc
 		) %>%
 		dplyr::select(
-			beta1,
-			beta2,
-			alpha1,
-			alpha1.x,
-			alpha1.y,
-			zeta1,
-			alpha2,
-			alpha2.x,
-			alpha2.y,
-			zeta2,
-			theta,
-			inv.fc,
-			rc,
-			xi,
-			xi.x,
-			xi.y,
-			w,
-			w.x,
-			w.y
+			.data$beta1,
+			.data$beta2,
+			.data$alpha1,
+			.data$alpha1.x,
+			.data$alpha1.y,
+			.data$zeta1,
+			.data$alpha2,
+			.data$alpha2.x,
+			.data$alpha2.y,
+			.data$zeta2,
+			.data$theta,
+			.data$inv.fc,
+			.data$rc,
+			.data$xi,
+			.data$xi.x,
+			.data$xi.y,
+			.data$w,
+			.data$w.x,
+			.data$w.y
 		)
 	return(res)
 }

@@ -4,6 +4,7 @@
 #' @param margin indicate the direction, 1 = row, 2 = column, passed to `apply`'s `MARGIN`
 #' @param detrend `logical` indicates if the data need to be detrended, default to `TRUE`
 #' @param get_autocorr `logical`, indicaites if the auto-correlation length is calculated
+#' @param limlen `numeric` the minimum length of data
 #' @export
 #' @keywords zeta
 get_hhcf <- function(mat, dr, margin = 1, detrend = TRUE, get_autocorr = FALSE, limlen = 30){
@@ -106,7 +107,7 @@ get_hhcf_ <- function(mat, dr, margin = 1, limlen = 30){
 			len <- length(row)
 			fit <- lm(row ~ x)
 			row[ind] <- fit$residuals
-			ACV <- stats::acf(row, plot = FALSE, type = "covariance", demean = FALSE, lag.max = length(row) - 1, na.action = na.pass)
+			ACV <- stats::acf(row, plot = FALSE, type = "covariance", demean = FALSE, lag.max = length(row) - 1, na.action = stats::na.pass)
 			W <- ACV$acf[1]
 			HHCF <- sqrt(2 * W - 2 * ACV$acf)[-1]
 			ACF <- ACV$acf / W

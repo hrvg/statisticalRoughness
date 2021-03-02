@@ -23,6 +23,8 @@ get_hhcf(
 \item{detrend}{\code{logical} indicates if the data need to be detrended, default to \code{TRUE}}
 
 \item{get_autocorr}{\code{logical}, indicaites if the auto-correlation length is calculated}
+
+\item{limlen}{\code{numeric} the minimum length of data}
 }
 \description{
 This wrapper function derives the one-dimensional \code{HHCF()} for all columns or rows of a matrix

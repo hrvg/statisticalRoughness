@@ -8,7 +8,8 @@ read_zeta_raster(
   out_dir = "/out/run128/out",
   Lmax = 10000,
   raster_resolution = 1,
-  .len = 32
+  .len = 32,
+  ...
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ read_zeta_raster(
 \item{raster_resolution}{\code{numeric} raster resolution, to determine the scales}
 
 \item{.len}{numbers of scales, passed to \code{get_all_R_L()} with a default of 5 factors and only with factors of 12}
+
+\item{...}{passed to \code{stars::read_stars()} to allow \code{proxy = FALSE}}
 }
 \value{
 a \code{list} with two elements containing the rasters as a \code{list} of \code{stars} objects and the spatial scales

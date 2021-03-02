@@ -14,6 +14,8 @@ get_zeta_(alpha_1, alpha_2, IQR_1, IQR_2, kruskal_flag)
 \item{IQR_1}{\code{numeric}, an IQR}
 
 \item{IQR_2}{\code{numeric}, an IQR}
+
+\item{kruskal_flag}{\code{logical} flag returned by \code{get_kruskal_flag()}}
 }
 \value{
 a \code{numeric} anisotropy exponent

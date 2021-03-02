@@ -11,6 +11,8 @@ get_alpha(row, dr, unused, do_plot = FALSE)
 
 \item{dr}{\code{numeric}, spacing of the values along the axis}
 
+\item{unused}{unused argument to match \code{get_alpha_()}}
+
 \item{do_plot}{\code{logical}, plot the fit, default to \code{FALSE}}
 }
 \description{

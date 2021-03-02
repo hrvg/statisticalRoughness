@@ -20,6 +20,7 @@ get_all_alpha <- function(hhcf, dr){
 #' @param row array of hhcf values
 #' @param dr `numeric`, spacing of the values along the axis
 #' @param do_plot `logical`, plot the fit, default to `FALSE`
+#' @param unused unused argument to match `get_alpha_()`
 #' @importFrom methods is
 #' @export
 #' @keywords zeta
@@ -160,6 +161,7 @@ filter_alpha <- function(alpha, prob = .999, rsquared_filter = TRUE){
 #' @keywords zeta
 #' @importFrom rlang .data
 summarise_alpha <- function(alpha){
+	. <- NULL
 	alpha <- alpha %>% dplyr::filter_all(dplyr::all_vars(is.finite(.)))
 	.list = list(min = min, mean = mean, max = max, sd = sd, IQR = stats::IQR)
 	if (nrow(alpha) > 1){
@@ -194,6 +196,7 @@ get_all_alpha_ <- function(hhcf, dr){
 #' 
 #' @param row array of hhcf values
 #' @param dr `numeric`, spacing of the values along the axis
+#' @param xi `numeric`, auto-correlation length
 #' @param do_plot `logical`, plot the fit, default to `FALSE`
 #' @importFrom methods is
 #' @export
@@ -224,7 +227,7 @@ get_alpha_ <- function(row, dr, xi, do_plot = FALSE){
 		x <- log10(df_filtered$dr)[which(df_filtered$dr <= xi)]
 		y <- log10(df_filtered$hhcf)[which(df_filtered$dr <= xi)]
 		tss <- sum((y - mean(y))^2)
-		fit1 <- tryCatch(.lm.fit(cbind(rep(1,length(x)), x), y), error = function(e) e, warning = function(w) w)
+		fit1 <- tryCatch(stats::.lm.fit(cbind(rep(1,length(x)), x), y), error = function(e) e, warning = function(w) w)
 		if(is(fit1, "warning") | is(fit1, "error")){
 			return(data.frame(alpha1 = NA, alpha2 = NA, rc = NA, rmax = NA, alpha.r2 = NA))
 		}
@@ -232,7 +235,7 @@ get_alpha_ <- function(row, dr, xi, do_plot = FALSE){
 
 		x <- log10(df_filtered$dr)[which(df_filtered$dr > xi)]
 		y <- log10(df_filtered$hhcf)[which(df_filtered$dr > xi)]
-		fit2 <- tryCatch(.lm.fit(cbind(rep(1,length(x)), x), y), error = function(e) e, warning = function(w) w)
+		fit2 <- tryCatch(stats::.lm.fit(cbind(rep(1,length(x)), x), y), error = function(e) e, warning = function(w) w)
 		if(is(fit2, "warning") | is(fit2, "error")){
 			return(data.frame(alpha1 = NA, alpha2 = NA, rc = NA, rmax = NA, alpha.r2 = NA))
 		}

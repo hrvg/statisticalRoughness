@@ -11,6 +11,8 @@ get_alpha_(row, dr, xi, do_plot = FALSE)
 
 \item{dr}{\code{numeric}, spacing of the values along the axis}
 
+\item{xi}{\code{numeric}, auto-correlation length}
+
 \item{do_plot}{\code{logical}, plot the fit, default to \code{FALSE}}
 }
 \description{
