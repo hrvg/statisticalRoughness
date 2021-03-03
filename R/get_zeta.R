@@ -27,6 +27,7 @@ get_zeta_ <- function(alpha_1, alpha_2, IQR_1, IQR_2, kruskal_flag){
 #' @param var `character` the variable to compare
 #' @importFrom rlang .data
 #' @return a `logical` value: `TRUE` if the distribution are statistically different, `FALSE` otherwise
+#' @keywords zeta
 #' @export
 get_kruskal_flag <- function(alpha_x, alpha_y, var){
 	alpha_x <- alpha_x %>% 

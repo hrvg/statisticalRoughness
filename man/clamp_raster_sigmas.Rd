@@ -38,3 +38,4 @@ a named \code{list} of with the clamped \code{stars} objects and the clamped val
 \description{
 This function uses a \code{list} as input so that the object can have vastly different resolutions.
 }
+\keyword{postprocessing}

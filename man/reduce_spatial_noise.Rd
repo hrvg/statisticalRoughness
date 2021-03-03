@@ -17,3 +17,4 @@ a \code{list} of \code{stars} or \code{RasterStack} objects
 \description{
 Convolves with a 3x3 mean kernel with weights of 1
 }
+\keyword{postprocessing}

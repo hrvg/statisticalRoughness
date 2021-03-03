@@ -10,6 +10,7 @@
 #' @importFrom rlang .data
 #' @return a `ggplot()` object
 #' @export
+#' @keywords postprocessing
 make_stacked_density_plot <- function(raster_list, band_id = 1, var_name = "variable", limx = c(0, 1), logscale = FALSE, spatial_scales = NULL, ...){
 	..density.. <- .x <- x <- NULL
 	if(length(raster_list) != length(spatial_scales)) stop("Length of `spatial_scales` is not compatible with `raster_list`")
@@ -47,6 +48,7 @@ make_stacked_density_plot <- function(raster_list, band_id = 1, var_name = "vari
 #' @return a `list` with three `ggplot` elements: a plot in the variable - density space, a plot in the variable mode - scale space, a density plot with the modes added.
 #' @importFrom rlang .data
 #' @export
+#' @keywords postprocessing
 modes_from_stacked_density <- function(plot_object, spatial_scales = NULL, var_name = "variable", ...){
 	x <- .x <- NULL
 	df <- ggplot2::ggplot_build(plot_object)$data[[1]]
@@ -83,6 +85,7 @@ modes_from_stacked_density <- function(plot_object, spatial_scales = NULL, var_n
 #' @param ... passed to `make_stacked_density_plot()` and  `modes_from_stacked_density()` 
 #' @return a list of grobs to be used by `gridExtra::grid.arrange()`
 #' @export
+#' @keywords postprocessing
 make_all_plots <- function(raster_list, .spatial_scales, .band_id, .var_name, .base_size = 12, ...){
 	stacked_density_plot <- make_stacked_density_plot(raster_list, spatial_scales = .spatial_scales, band_id = .band_id, var_name = .var_name, ...)
 	mode_plots <- modes_from_stacked_density(stacked_density_plot, spatial_scales = .spatial_scales, var_name = .var_name, ...)

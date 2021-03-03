@@ -1,3 +1,42 @@
+# statisticalRoughness 0.4
+
+
+New features
+
+- The following functions were added to compute the height-height correlation function, roughness exponents and anisotropy exponents, and power spectrum decay slope:
+	+ `get_hhcf()_`: based on the auto-covariance function
+	+ `get_alpha()_`: using the auto-correlation length as break point (instead of a bootstrapped segmented regression)
+	+ `get_all_alpha()_`: wrapper around `get_alpha_()`
+	+ `get_beta()`: still uses a bootstrapped segmented regression but is only performed once per tile
+- The following wrapper functions were added:
+	+ `get_zeta_df()`
+	+ `get_zeta_raster()`
+- The following functions were added for loading and visualizing the results:
+	+ `clamp_raster_sigmas()`
+	+ `crossscale_correlations()`
+	+ `four_values_check()`
+	+ `get_kruskal_flag()`
+	+ `make_all_plots()`
+	+ `make_angular()`
+	+ `make_leaflet_map()`
+	+ `make_stacked_density_plot()`
+	+ `modes_from_stacked_density()`
+	+ `raster_select()`
+	+ `read_zeta_raster()`
+	+ `reduce_spatial_noise()`
+	+ `slice_clamp()`
+
+
+Deprecation
+
+The following functions are not used anymore:
+	+ `get_hhcf()`
+	+ `get_alpha()`
+	+ `get_all_alpha()`
+
+
+- The following functions were modified
+
 # statisticalRoughness 0.3
 
 New features

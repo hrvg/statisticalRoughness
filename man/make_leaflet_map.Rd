@@ -32,3 +32,4 @@ a \code{leaflet} object
 \description{
 Produces a leaflet map
 }
+\keyword{postprocessing}

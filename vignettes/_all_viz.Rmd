@@ -8,10 +8,6 @@ output:
     toc: true
     toc_float: true
     code_folding: hide
-vignette: >
-  %\VignetteIndexEntry{Visualizing and processing results}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
 bibliography: bibliography.bib
 ---
 
@@ -109,7 +105,7 @@ pretty_region_name <- function(x){
 ```{r, echo = FALSE, results = 'asis'}
 res <- lapply(region_names, function(region) {
   knitr::knit_child(
-    'vis_template.rmd', envir = environment(), quiet = TRUE
+    '_vis_template.rmd', envir = environment(), quiet = TRUE
   )
 })
 cat(unlist(res), sep = '\n')

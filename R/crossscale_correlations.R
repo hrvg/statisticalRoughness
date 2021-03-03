@@ -8,6 +8,7 @@
 #' @return if `clamp` is `FALSE` a `ggplot` object, otherwise a named `list` with two elements, a `ggplot` object and a list of clamped rasters.
 #' @importFrom rlang .data
 #' @export
+#' @keywords postprocessing
 crossscale_correlations <- function(raster_list = NULL, att_names = NULL, selected = NULL, spatial_scales = NULL, corr_type = "spearman", clamp_raster = FALSE){
 	# checks and tests
 	.x <- NULL

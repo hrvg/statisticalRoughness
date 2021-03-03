@@ -17,3 +17,4 @@ a \code{list} of \code{stars}
 \description{
 Transform a 360 degrees variable to a 180 degrees
 }
+\keyword{postprocessing}

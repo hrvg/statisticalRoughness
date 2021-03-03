@@ -2,6 +2,7 @@
 #' @param raster_list a `list` of `stars` or `RasterStack` objects
 #' @param band_id `numeric`, identifier of the band of the `stars` object
 #' @export
+#' @keywords postprocessing
 raster_select <- function(raster_list, band_id){
 	selected_rasters <- lapply(seq_along(raster_list), function(i){
 		dplyr::slice(raster_list[[i]], along = "band", index = band_id)

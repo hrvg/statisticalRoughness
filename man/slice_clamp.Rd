@@ -29,3 +29,4 @@ if \code{clamp} is \code{FALSE} a \code{ggplot} object, otherwise a named \code{
 \description{
 Slicing and clamping of rasters
 }
+\keyword{postprocessing}

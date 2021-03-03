@@ -14,3 +14,4 @@ raster_select(raster_list, band_id)
 \description{
 Selecting raster bands
 }
+\keyword{postprocessing}

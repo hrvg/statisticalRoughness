@@ -21,3 +21,4 @@ a data.frame with a number of rows equals to the length of \code{tiles}
 \description{
 Get the value of the anisotropy exponent and associated metrics for a tile of elevation
 }
+\keyword{zeta}

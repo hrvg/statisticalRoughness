@@ -6,6 +6,7 @@
 #' @param ... passed to `stars::read_stars()` to allow `proxy = FALSE`
 #' @return a `list` with two elements containing the rasters as a `list` of `stars` objects and the spatial scales
 #' @export
+#' @keywords postprocessing
 read_zeta_raster <- function(out_dir = "/out/run128/out", Lmax = 1E4, raster_resolution = 1, .len = 32, ...){
 	lf <- list.files(path = file.path(out_dir), pattern = ".tif")
 	lf_ext <- unname(sapply(lf, tools::file_ext))

@@ -9,6 +9,7 @@
 #' @import future
 #' @import foreach
 #' @export
+#' @keywords zeta
 get_zeta_df <- function(DEM, tiles, raster_resolution, vertical_accuracy = 1.87){
 	# class check
 	if(!class(DEM) == "RasterLayer") stop("invalid class: DEM is not of class 'RasterLayer'")

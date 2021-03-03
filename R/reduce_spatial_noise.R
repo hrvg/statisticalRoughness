@@ -3,6 +3,7 @@
 #' @param .NAonly `logical`. If `TRUE`, only cell values that are NA are replaced with the computed focal values
 #' @return  a `list` of `stars` or `RasterStack` objects
 #' @export
+#' @keywords postprocessing
 reduce_spatial_noise <- function(raster_list, .NAonly = FALSE){
 	raster_list <- lapply(raster_list, function(s){
 		s <- as(s, "Raster")

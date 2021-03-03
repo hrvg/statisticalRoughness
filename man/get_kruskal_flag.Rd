@@ -19,3 +19,4 @@ a \code{logical} value: \code{TRUE} if the distribution are statistically differ
 \description{
 Computes a Kruskal-Wallis ranksum test for significant differences between the distributions of alpha
 }
+\keyword{zeta}

@@ -6,6 +6,7 @@
 #' @param ... to pass the `vertical_accuracy` argument to `get_zeta_df()`
 #' @return stack of raster of size tiles with anisotropy exponent values and a number of layers equals to the number of column in .zeta_df
 #' @export
+#' @keywords zeta
 get_zeta_raster <- function(DEM, tiles, raster_resolution, .zeta_df = NULL, ...){
 	# class check
 	if(!class(tiles) %in% c("RasterLayer", "SpatialPolygonsDataFrame")) stop("invalid class: tiles is not of class 'RasterLayer' or 'SpatialPolygonsDataFrame'")

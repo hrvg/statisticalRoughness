@@ -32,3 +32,4 @@ if \code{clamp} is \code{FALSE} a \code{ggplot} object, otherwise a named \code{
 \description{
 Creates a facet plot of correlation between \code{selected} attributes from a \code{raster_list} representing different \code{spatial_scales}
 }
+\keyword{postprocessing}

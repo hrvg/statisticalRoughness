@@ -23,3 +23,4 @@ stack of raster of size tiles with anisotropy exponent values and a number of la
 \description{
 Get the value of the anisotropy exponent for a tile of elevation
 }
+\keyword{zeta}

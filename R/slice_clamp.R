@@ -7,6 +7,7 @@
 #' @return if `clamp` is `FALSE` a `ggplot` object, otherwise a named `list` with two elements, a `ggplot` object and a list of clamped rasters.
 #' @importFrom methods as
 #' @export
+#' @keywords postprocessing
 slice_clamp <- function(raster_list = NULL, att_names = NULL, selected = NULL, clamp_raster = FALSE, clamp_params = NULL){
 	# checks and tests
 	if(class(raster_list) != "list") stop("`raster_list` is not a `list`.")
@@ -62,6 +63,7 @@ slice_clamp <- function(raster_list = NULL, att_names = NULL, selected = NULL, c
 #' @return a named `list` of with the clamped `stars` objects and the clamped values of all the rasters (from ploting purposes)
 #' @importFrom methods as
 #' @export
+#' @keywords postprocessing
 clamp_raster_sigmas <- function(raster_list, n_sigma = 3, band_id = 1, lower = TRUE, upper = TRUE, lower_clamp = -Inf, upper_clamp = Inf, use_values = FALSE){
 	assign("band_id", band_id, envir = .GlobalEnv) # this is not best practice but there is an issue with slice I cannot solve
 	sigma_level <- stats::pnorm(n_sigma * c(-1,1), mean = 0, sd = 1, log = FALSE) %>% diff()

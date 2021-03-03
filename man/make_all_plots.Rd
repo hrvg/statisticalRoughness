@@ -32,3 +32,4 @@ a list of grobs to be used by \code{gridExtra::grid.arrange()}
 \description{
 Wrapper function around \code{make_stacked_density_plot()} and \code{modes_from_stacked_density()}
 }
+\keyword{postprocessing}

@@ -26,3 +26,4 @@ a \code{list} with three \code{ggplot} elements: a plot in the variable - densit
 \description{
 Extract the modal values of the stacked density plot
 }
+\keyword{postprocessing}

@@ -15,3 +15,4 @@ four_values_check(raster_list)
 \description{
 Check that at least four values of the raster stack are not \code{NA} for each element of \code{raster_list}
 }
+\keyword{postprocessing}

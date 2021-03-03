@@ -35,3 +35,4 @@ a \code{ggplot()} object
 \description{
 Makes stacked density plot
 }
+\keyword{postprocessing}
