@@ -4,19 +4,14 @@
 \alias{get_zeta_df}
 \title{Get the value of the anisotropy exponent and associated metrics for a tile of elevation}
 \usage{
-get_zeta_df(
-  DEM,
-  tiles,
-  crs_ref = terra::crs("EPSG:3310"),
-  vertical_accuracy = 1.87
-)
+get_zeta_df(DEM, tiles, raster_resolution, vertical_accuracy = 1.87)
 }
 \arguments{
 \item{DEM}{an elevation raster}
 
 \item{tiles}{a \code{RasterLayer} or a \code{SpatialPolygons} to tiles \code{DEM}}
 
-\item{crs_ref}{a \code{raster::crs}, a coordinate reference system, default to \code{terra::crs("EPSG:3310")}}
+\item{raster_resolution}{\code{numeric} the resolution of \code{rstr} in meters}
 
 \item{vertical_accuracy}{\code{numeric}, the vertical accuracy of \code{DEM}, default to 1.87 for the 10-m National Elevation Dataset}
 }
@@ -26,3 +21,4 @@ a data.frame with a number of rows equals to the length of \code{tiles}
 \description{
 Get the value of the anisotropy exponent and associated metrics for a tile of elevation
 }
+\keyword{zeta}

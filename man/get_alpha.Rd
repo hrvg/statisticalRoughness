@@ -4,12 +4,14 @@
 \alias{get_alpha}
 \title{Estimates the roughness exponent from the HHCF from spline fit.}
 \usage{
-get_alpha(row, dr, do_plot = FALSE)
+get_alpha(row, dr, unused, do_plot = FALSE)
 }
 \arguments{
 \item{row}{array of hhcf values}
 
 \item{dr}{\code{numeric}, spacing of the values along the axis}
+
+\item{unused}{unused argument to match \code{get_alpha_()}}
 
 \item{do_plot}{\code{logical}, plot the fit, default to \code{FALSE}}
 }

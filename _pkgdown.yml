@@ -51,6 +51,10 @@ reference:
   - subtitle: Visualizations
   - contents:
     - has_keyword("fft2d_viz")
+  - title: Anisotropic analysis of topography
   - subtitle: Roughness and anisotropy exponents
   - contents:
     - has_keyword("zeta")
+  - subtitle: Postprocessing and visualizations
+  - contents:
+    - has_keyword("postprocessing")

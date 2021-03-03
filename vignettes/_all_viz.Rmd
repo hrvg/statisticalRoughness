@@ -1,0 +1,112 @@
+---
+title: "Visualizing and processing results"
+author:
+- name: Hervé Guillon
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    code_folding: hide
+bibliography: bibliography.bib
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 8, 
+  fig.height = 8,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+# Purpose
+
+This vignette showcases the functions used to visualize and process the results of the tiled workflow.
+
+# Initializing
+
+## Loading library
+
+```{r loading}
+# library("statisticalRoughness")
+devtools::load_all()
+```
+
+## Reading results
+
+```{r}
+region_names <- c("fort_bragg", "yosemite", "gabilan_mesa", "modoc")
+.name <- region_names[1]
+results_directory <- file.path(system.file(paste0("extdata/zeta_results/", .name), package = "statisticalRoughness"))
+zeta_results <- read_zeta_raster(out_dir = results_directory, Lmax = 1E3, raster_resolution = 10, .len = 10)
+```
+
+Note that `read_zeta_raster()` automatically uses `get_all_R_L()` to extract the values of the spatial scales.
+In our case, the spatial scales are wrong as the creation of the tiles followed the simple example in the tiled workflow vignette, that is that the tiles are created by aggregating the raster with different factors.
+We modify the `spatial_scales` to match this process.
+
+```{r}
+rstr <- raster::raster(file.path(system.file("extdata/big_rasters/", package = "statisticalRoughness"), paste0(.name, ".tif")))
+Lmax <- min(head(dim(rstr), 2))
+spatial_scales <- get_all_R_L(Lmax, 5, len = 13)$allL %>% head(-1)
+spatial_scales <- spatial_scales[spatial_scales >= 30]
+zeta_results$spatial_scales <- tail(spatial_scales, length(zeta_results$raster_list)) * 10
+zeta_results$spatial_scales
+```
+Each element of the list in `zeta_results$raster_list` has `r read.csv(file.path(results_directory, "band_names.csv")) %>% names() %>% length()` bands with the following names:
+
+```{r}
+band_names <- read.csv(file.path(results_directory, "band_names.csv")) %>% names()
+band_names
+```
+
+## Slicing and clamping
+
+While it is valuable to have this wealth of information, only part of it is relevant for visualization.
+Furthermore, additional steps are taken to remove outliers.
+These two steps are handled by `slice_clamp()` which selects the bands in its `selected` argument and uses the `clamp_params` `data.frame` to know how to clamp the values of the raster.
+In that `data.frame`, `n_sigma` controls the number of standard deviation to filter outlier, `lower` and `upper` are `logical` values controlling if the `lower` and `upper` outliers are filtered using `n_sigma`, and `lower_clamp` and `upper_clamp` are values to constrain the values to a given range.
+Leaving `Inf` values in the `*_clamp` will not constrain the distribution and if `lower` or `upper` are `TRUE` the `*_clamp` is overwritten using `n_sigma`.
+
+```{r}
+.selected <- c("beta2", "alpha1.y", "alpha1.x", "alpha2.y", "alpha2.x", "w.y", "w.x", "xi.y", "xi.x", "zeta1", "zeta2")
+cparams <- data.frame(
+  selected = .selected,
+  n_sigma = rep(3, length(.selected)),
+  lower = c(TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE),
+  upper = c(FALSE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, TRUE, TRUE),
+  lower_clamp = c(-Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, 1, 1),
+  upper_clamp = c(0, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf)
+)
+```
+
+```{r}
+cparams %>% 
+knitr::kable("html") %>% 
+kableExtra::kable_styling(bootstrap_options = c("striped", "hover"),
+  position = "center",
+  full_width = FALSE)
+```
+
+```{r, include = FALSE}
+pretty_region_name <- function(x){
+  switch(x,
+    "modoc" = "Modoc Plateau",
+    "yosemite" = "Yosemite Valley",
+    "gabilan_mesa" = "Gabilan Mesa",
+    "fort_bragg" = "Fort Bragg"
+  )
+}
+```
+
+```{r, echo = FALSE, results = 'asis'}
+res <- lapply(region_names, function(region) {
+  knitr::knit_child(
+    '_vis_template.rmd', envir = environment(), quiet = TRUE
+  )
+})
+cat(unlist(res), sep = '\n')
+```

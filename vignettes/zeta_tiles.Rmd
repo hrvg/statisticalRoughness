@@ -37,14 +37,15 @@ library("statisticalRoughness")
 First, we load one of the DEM.
 
 ```{r reading rasters}
-gabilan_mesa <- terra::rast(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "gabilan_mesa.tif"))
+rstr <- raster::raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "gabilan_mesa.tif"))
+raster_resolution <- 10
 ```
 
 Next we create tiles over which we will calculate the roughness and anisotropy exponents.
-This is done for simplicity here by using `terra::aggregate()`.
+This is done for simplicity here by using `raster::aggregate()`.
 
 ```{r tiles}
-tiles <- terra::aggregate(gabilan_mesa, fact = 100)
+tiles <- raster::aggregate(rstr, fact = 100)
 ```
 
 # Tiled workflow
@@ -55,25 +56,25 @@ If passing a raster, the conversion from raster to polygons is handled internall
 
 ```{r get_zeta_df}
 zeta_df <- get_zeta_df(
-  gabilan_mesa, tiles, 
-  crs_ref = terra::crs("EPSG:3310"), vertical_accuracy = 1.87
+  rstr, tiles, 
+  raster_resolution, vertical_accuracy = 1.87
 )
 ```
 
 `get_zeta_df()` returns a `data.frame` with no spatial information.
-`get_zeta_raster()` takes care to re-introduce the spatial information from the initial raster (here, `gabilan_mesa`) and from the `tiles`.
+`get_zeta_raster()` takes care to re-introduce the spatial information from the initial raster (here, `rstr`) and from the `tiles`.
 If the `.zeta_df` argument is set to `NULL`, `get_zeta_raster()` first runs `get_zeta()`
 
 ```{r get_zeta_raster}
 zeta_raster <- get_zeta_raster(
-  gabilan_mesa, tiles, 
-  .zeta_df = zeta_df, crs_ref = terra::crs("EPSG:3310"), vertical_accuracy = 1.87
+  rstr, tiles, 
+  .zeta_df = zeta_df, raster_resolution, vertical_accuracy = 1.87
 )
 ```
 
 For example here are the raster layers corresponding to $\alpha_{1,x}$ and $\alpha_{1,y}$.
 
 ```{r visualization, echo = FALSE}
-sp::spplot(zeta_raster[["alpha1_mean.x"]])
-sp::spplot(zeta_raster[["alpha1_mean.y"]])
+sp::spplot(zeta_raster[["alpha1.x"]])
+sp::spplot(zeta_raster[["alpha1.y"]])
 ```

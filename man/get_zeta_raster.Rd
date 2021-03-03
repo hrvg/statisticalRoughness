@@ -4,16 +4,18 @@
 \alias{get_zeta_raster}
 \title{Get the value of the anisotropy exponent for a tile of elevation}
 \usage{
-get_zeta_raster(DEM, tiles, .zeta_df = NULL, ...)
+get_zeta_raster(DEM, tiles, raster_resolution, .zeta_df = NULL, ...)
 }
 \arguments{
 \item{DEM}{an elevation raster}
 
 \item{tiles}{a \code{RasterLayer} or a \code{SpatialPolygons} to tiles \code{DEM}}
 
+\item{raster_resolution}{\code{numeric} the resolution of \code{rstr} in meters}
+
 \item{.zeta_df}{null or a data.frame with column zeta and a number of rows equals to the number of cells of tiles}
 
-\item{...}{to pass the \code{crs_ref} and \code{vertical_accuracy} argument to \code{get_zeta_df()}}
+\item{...}{to pass the \code{vertical_accuracy} argument to \code{get_zeta_df()}}
 }
 \value{
 stack of raster of size tiles with anisotropy exponent values and a number of layers equals to the number of column in .zeta_df
@@ -21,3 +23,4 @@ stack of raster of size tiles with anisotropy exponent values and a number of la
 \description{
 Get the value of the anisotropy exponent for a tile of elevation
 }
+\keyword{zeta}

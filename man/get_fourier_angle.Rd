@@ -14,7 +14,7 @@ get_fourier_angle(filtered_spectral_power_matrix, FT2D, bandwidth = 5)
 \item{bandwidth}{\code{numeric} the bandwidth for the kernel smoothing of the circular density calculation}
 }
 \value{
-angle of the main component of the Fourier spectrum
+angle of the main component of the Fourier spectrum, counted counter-clockwise
 }
 \description{
 Get the angle of the 2D Fourier spectrum
