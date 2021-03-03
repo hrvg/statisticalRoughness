@@ -168,7 +168,14 @@
     <p>This wrapper function derives the one-dimensional <code><a href='HHCF.html'>HHCF()</a></code> for all columns or rows of a matrix</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_hhcf</span><span class='op'>(</span><span class='va'>mat</span>, margin <span class='op'>=</span> <span class='fl'>1</span>, detrend <span class='op'>=</span> <span class='cn'>FALSE</span>, get_autocorr <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>get_hhcf</span><span class='op'>(</span>
+  <span class='va'>mat</span>,
+  <span class='va'>dr</span>,
+  margin <span class='op'>=</span> <span class='fl'>1</span>,
+  detrend <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  get_autocorr <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  limlen <span class='op'>=</span> <span class='fl'>30</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -178,16 +185,24 @@
       <td><p>a <code>matrix</code></p></td>
     </tr>
     <tr>
+      <th>dr</th>
+      <td><p><code>numeric</code>, spacing of the values along the axis</p></td>
+    </tr>
+    <tr>
       <th>margin</th>
       <td><p>indicate the direction, 1 = row, 2 = column, passed to <code>apply</code>'s <code>MARGIN</code></p></td>
     </tr>
     <tr>
       <th>detrend</th>
-      <td><p><code>logical</code> indicates if the data need to be detrended, default to <code>FALSE</code></p></td>
+      <td><p><code>logical</code> indicates if the data need to be detrended, default to <code>TRUE</code></p></td>
     </tr>
     <tr>
       <th>get_autocorr</th>
       <td><p><code>logical</code>, indicaites if the auto-correlation length is calculated</p></td>
+    </tr>
+    <tr>
+      <th>limlen</th>
+      <td><p><code>numeric</code> the minimum length of data</p></td>
     </tr>
     </table>
 

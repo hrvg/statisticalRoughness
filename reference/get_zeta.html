@@ -170,11 +170,12 @@
 
     <pre class="usage"><span class='fu'>get_zeta</span><span class='op'>(</span>
   <span class='va'>rstr</span>,
-  raster_resolution <span class='op'>=</span> <span class='fl'>9.015</span>,
+  <span class='va'>raster_resolution</span>,
   nbin <span class='op'>=</span> <span class='fl'>20</span>,
   .Hann <span class='op'>=</span> <span class='cn'>TRUE</span>,
   .quantile_prob <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0.9999</span><span class='op'>)</span>,
-  .prob <span class='op'>=</span> <span class='fl'>0.999</span>
+  .prob <span class='op'>=</span> <span class='fl'>0.999</span>,
+  full <span class='op'>=</span> <span class='cn'>FALSE</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -203,6 +204,10 @@
     <tr>
       <th>.prob, </th>
       <td><p><code>numeric</code> the value of the probabilities passed to <code><a href='https://rdrr.io/r/stats/quantile.html'>quantile()</a></code>, passed to <code><a href='filter_alpha.html'>filter_alpha()</a></code></p></td>
+    </tr>
+    <tr>
+      <th>full, </th>
+      <td><p><code>logical</code> if <code>TRUE</code> all results are returned, else, the default, results of interest are returned</p></td>
     </tr>
     </table>
 

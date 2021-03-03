@@ -168,7 +168,7 @@
     <p>Get the value of the anisotropy exponent for a tile of elevation</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_zeta_raster</span><span class='op'>(</span><span class='va'>DEM</span>, <span class='va'>tiles</span>, .zeta_df <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>get_zeta_raster</span><span class='op'>(</span><span class='va'>DEM</span>, <span class='va'>tiles</span>, <span class='va'>raster_resolution</span>, .zeta_df <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -182,12 +182,16 @@
       <td><p>a <code>RasterLayer</code> or a <code>SpatialPolygons</code> to tiles <code>DEM</code></p></td>
     </tr>
     <tr>
+      <th>raster_resolution</th>
+      <td><p><code>numeric</code> the resolution of <code>rstr</code> in meters</p></td>
+    </tr>
+    <tr>
       <th>.zeta_df</th>
       <td><p>null or a data.frame with column zeta and a number of rows equals to the number of cells of tiles</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>to pass the <code>crs_ref</code> and <code>vertical_accuracy</code> argument to <code><a href='get_zeta_df.html'>get_zeta_df()</a></code></p></td>
+      <td><p>to pass the <code>vertical_accuracy</code> argument to <code><a href='get_zeta_df.html'>get_zeta_df()</a></code></p></td>
     </tr>
     </table>
 

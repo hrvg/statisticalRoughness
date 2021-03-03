@@ -162,6 +162,54 @@
       
     </div>
 
+    <div id="statisticalroughness-04" class="section level1">
+<h1 class="page-header" data-toc-text="0.4">
+<a href="#statisticalroughness-04" class="anchor"></a>statisticalRoughness 0.4</h1>
+<p>New features</p>
+<ul>
+<li>The following functions were added to compute the height-height correlation function, roughness exponents and anisotropy exponents, and power spectrum decay slope:
+<ul>
+<li>
+<code>get_hhcf()_</code>: based on the auto-covariance function</li>
+<li>
+<code>get_alpha()_</code>: using the auto-correlation length as break point (instead of a bootstrapped segmented regression)</li>
+<li>
+<code>get_all_alpha()_</code>: wrapper around <code><a href="../reference/get_alpha_.html">get_alpha_()</a></code>
+</li>
+<li>
+<code><a href="../reference/get_beta.html">get_beta()</a></code>: still uses a bootstrapped segmented regression but is only performed once per tile</li>
+</ul>
+</li>
+<li>The following wrapper functions were added:
+<ul>
+<li><code><a href="../reference/get_zeta_df.html">get_zeta_df()</a></code></li>
+<li><code><a href="../reference/get_zeta_raster.html">get_zeta_raster()</a></code></li>
+</ul>
+</li>
+<li>The following functions were added for loading and visualizing the results:
+<ul>
+<li><code><a href="../reference/clamp_raster_sigmas.html">clamp_raster_sigmas()</a></code></li>
+<li><code><a href="../reference/crossscale_correlations.html">crossscale_correlations()</a></code></li>
+<li><code><a href="../reference/four_values_check.html">four_values_check()</a></code></li>
+<li><code><a href="../reference/get_kruskal_flag.html">get_kruskal_flag()</a></code></li>
+<li><code><a href="../reference/make_all_plots.html">make_all_plots()</a></code></li>
+<li><code><a href="../reference/make_angular.html">make_angular()</a></code></li>
+<li><code><a href="../reference/make_leaflet_map.html">make_leaflet_map()</a></code></li>
+<li><code><a href="../reference/make_stacked_density_plot.html">make_stacked_density_plot()</a></code></li>
+<li><code><a href="../reference/modes_from_stacked_density.html">modes_from_stacked_density()</a></code></li>
+<li><code><a href="../reference/raster_select.html">raster_select()</a></code></li>
+<li><code><a href="../reference/read_zeta_raster.html">read_zeta_raster()</a></code></li>
+<li><code><a href="../reference/reduce_spatial_noise.html">reduce_spatial_noise()</a></code></li>
+<li><code><a href="../reference/slice_clamp.html">slice_clamp()</a></code></li>
+</ul>
+</li>
+</ul>
+<p>Deprecation</p>
+<p>The following functions are not used anymore: + <code><a href="../reference/get_hhcf.html">get_hhcf()</a></code> + <code><a href="../reference/get_alpha.html">get_alpha()</a></code> + <code><a href="../reference/get_all_alpha.html">get_all_alpha()</a></code></p>
+<ul>
+<li>The following functions were modified</li>
+</ul>
+</div>
     <div id="statisticalroughness-03" class="section level1">
 <h1 class="page-header" data-toc-text="0.3">
 <a href="#statisticalroughness-03" class="anchor"></a>statisticalRoughness 0.3</h1>

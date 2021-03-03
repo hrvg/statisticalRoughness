@@ -379,6 +379,15 @@
         <td><p>Visualizes values of a matrix</p></td>
       </tr>
     </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-anisotropic-analysis-of-topography" class="hasAnchor"><a href="#section-anisotropic-analysis-of-topography" class="anchor"></a>Anisotropic analysis of topography</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
       
       <tr>
         <th colspan="2">
@@ -417,7 +426,19 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="get_all_alpha_.html">get_all_alpha_()</a></code> </p>
+        </td>
+        <td><p>Wrapper to extract all roughness exponents from the HHCFs</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="get_alpha.html">get_alpha()</a></code> </p>
+        </td>
+        <td><p>Estimates the roughness exponent from the HHCF from spline fit.</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_alpha_.html">get_alpha_()</a></code> </p>
         </td>
         <td><p>Estimates the roughness exponent from the HHCF from spline fit.</p></td>
       </tr><tr>
@@ -426,6 +447,18 @@
           <p><code><a href="get_hhcf.html">get_hhcf()</a></code> </p>
         </td>
         <td><p>This wrapper function derives the one-dimensional <code>HHCF()</code> for all columns or rows of a matrix</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_hhcf_.html">get_hhcf_()</a></code> </p>
+        </td>
+        <td><p>This wrapper function derives the one-dimensional <code>HHCF()</code> for all columns or rows of a matrix</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_kruskal_flag.html">get_kruskal_flag()</a></code> </p>
+        </td>
+        <td><p>Computes a Kruskal-Wallis ranksum test for significant differences between the distributions of alpha</p></td>
       </tr><tr>
         
         <td>
@@ -441,9 +474,106 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="get_zeta_df.html">get_zeta_df()</a></code> </p>
+        </td>
+        <td><p>Get the value of the anisotropy exponent and associated metrics for a tile of elevation</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_zeta_raster.html">get_zeta_raster()</a></code> </p>
+        </td>
+        <td><p>Get the value of the anisotropy exponent for a tile of elevation</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="summarise_alpha.html">summarise_alpha()</a></code> </p>
         </td>
         <td><p>Wrapper to summarize <code>alpha</code> values</p></td>
+      </tr>
+    </tbody><tbody>
+      
+      <tr>
+        <th colspan="2">
+          <h3 id="section-postprocessing-and-visualizations" class="hasAnchor"><a href="#section-postprocessing-and-visualizations" class="anchor"></a>Postprocessing and visualizations</h3>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="clamp_raster_sigmas.html">clamp_raster_sigmas()</a></code> </p>
+        </td>
+        <td><p>Filter outliers from a list of raster data using data from all rasters</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="crossscale_correlations.html">crossscale_correlations()</a></code> </p>
+        </td>
+        <td><p>Creates a facet plot of correlation between <code>selected</code> attributes from a <code>raster_list</code> representing different <code>spatial_scales</code></p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="four_values_check.html">four_values_check()</a></code> </p>
+        </td>
+        <td><p>Check that at least four values of the raster stack are not <code>NA</code> for each element of <code>raster_list</code></p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="make_all_plots.html">make_all_plots()</a></code> </p>
+        </td>
+        <td><p>Wrapper function around <code>make_stacked_density_plot()</code> and <code>modes_from_stacked_density()</code></p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="make_angular.html">make_angular()</a></code> </p>
+        </td>
+        <td><p>Transform a 360 degrees variable to a 180 degrees</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="make_leaflet_map.html">make_leaflet_map()</a></code> </p>
+        </td>
+        <td><p>Produces a leaflet map</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="make_stacked_density_plot.html">make_stacked_density_plot()</a></code> </p>
+        </td>
+        <td><p>Makes stacked density plot</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="modes_from_stacked_density.html">modes_from_stacked_density()</a></code> </p>
+        </td>
+        <td><p>Extract the modal values of the stacked density plot</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="raster_select.html">raster_select()</a></code> </p>
+        </td>
+        <td><p>Selecting raster bands</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="read_zeta_raster.html">read_zeta_raster()</a></code> </p>
+        </td>
+        <td><p>Read zeta raster from destination</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="reduce_spatial_noise.html">reduce_spatial_noise()</a></code> </p>
+        </td>
+        <td><p>Convolves with a 3x3 mean kernel with weights of 1</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="slice_clamp.html">slice_clamp()</a></code> </p>
+        </td>
+        <td><p>Slicing and clamping of rasters</p></td>
       </tr>
     </tbody>
     </table>

@@ -168,12 +168,7 @@
     <p>Get the value of the anisotropy exponent and associated metrics for a tile of elevation</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_zeta_df</span><span class='op'>(</span>
-  <span class='va'>DEM</span>,
-  <span class='va'>tiles</span>,
-  crs_ref <span class='op'>=</span> <span class='fu'>terra</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/terra/man/crs.html'>crs</a></span><span class='op'>(</span><span class='st'>"EPSG:3310"</span><span class='op'>)</span>,
-  vertical_accuracy <span class='op'>=</span> <span class='fl'>1.87</span>
-<span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>get_zeta_df</span><span class='op'>(</span><span class='va'>DEM</span>, <span class='va'>tiles</span>, <span class='va'>raster_resolution</span>, vertical_accuracy <span class='op'>=</span> <span class='fl'>1.87</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -187,8 +182,8 @@
       <td><p>a <code>RasterLayer</code> or a <code>SpatialPolygons</code> to tiles <code>DEM</code></p></td>
     </tr>
     <tr>
-      <th>crs_ref</th>
-      <td><p>a <code><a href='https://rdrr.io/pkg/raster/man/projection.html'>raster::crs</a></code>, a coordinate reference system, default to <code><a href='https://rdrr.io/pkg/terra/man/crs.html'>terra::crs("EPSG:3310")</a></code></p></td>
+      <th>raster_resolution</th>
+      <td><p><code>numeric</code> the resolution of <code>rstr</code> in meters</p></td>
     </tr>
     <tr>
       <th>vertical_accuracy</th>

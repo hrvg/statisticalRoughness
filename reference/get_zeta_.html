@@ -168,7 +168,7 @@
     <p>If any IQR is higher than 0.225, this function returns <code>NA</code>. The threshold value of 0.225 is the IQR of a normal distribution with a standard deviation equals to 0.5/3, a three-sigma range between 0 and 1.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_zeta_</span><span class='op'>(</span><span class='va'>alpha_1</span>, <span class='va'>alpha_2</span>, <span class='va'>IQR_1</span>, <span class='va'>IQR_2</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>get_zeta_</span><span class='op'>(</span><span class='va'>alpha_1</span>, <span class='va'>alpha_2</span>, <span class='va'>IQR_1</span>, <span class='va'>IQR_2</span>, <span class='va'>kruskal_flag</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -188,6 +188,10 @@
     <tr>
       <th>IQR_2</th>
       <td><p><code>numeric</code>, an IQR</p></td>
+    </tr>
+    <tr>
+      <th>kruskal_flag</th>
+      <td><p><code>logical</code> flag returned by <code><a href='get_kruskal_flag.html'>get_kruskal_flag()</a></code></p></td>
     </tr>
     </table>
 

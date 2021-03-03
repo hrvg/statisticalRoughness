@@ -119,7 +119,7 @@
       <h1 data-toc-skip>Deriving the anisotropy exponent</h1>
                         <h4 class="author">Hervé Guillon</h4>
                         
-            <h4 class="date">30 January 2021</h4>
+            <h4 class="date">03 March 2021</h4>
       
       
       <div class="hidden name"><code>zeta.Rmd</code></div>
@@ -142,17 +142,21 @@
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/tylermorganwall/rayshader">"rayshader"</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://rspatial.org/raster">"raster"</a></span><span class="op">)</span>
 
-<span class="va">gabilan_mesa</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/raster/man/raster.html">raster</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata/rasters/"</span>, package <span class="op">=</span> <span class="st">"statisticalRoughness"</span><span class="op">)</span>, <span class="st">"gabilan_mesa.tif"</span><span class="op">)</span><span class="op">)</span>
-<span class="va">gabilan_mesa</span> <span class="op">&lt;-</span> <span class="va">gabilan_mesa</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/detrend_dem.html">detrend_dem</a></span><span class="op">(</span><span class="op">)</span> 
-<span class="va">raster_resolution</span> <span class="op">&lt;-</span> <span class="fl">9.015</span>
-<span class="va">FT2D</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fft2D.html">fft2D</a></span><span class="op">(</span><span class="fu">raster</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/raster/man/as.matrix.html">as.matrix</a></span><span class="op">(</span><span class="va">gabilan_mesa</span><span class="op">)</span>, dx <span class="op">=</span> <span class="va">raster_resolution</span>, dy <span class="op">=</span> <span class="va">raster_resolution</span>, Hann <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="va">rstr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/raster/man/raster.html">raster</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata/rasters/"</span>, package <span class="op">=</span> <span class="st">"statisticalRoughness"</span><span class="op">)</span>, <span class="st">"submarine_canyon.tif"</span><span class="op">)</span><span class="op">)</span>
+<span class="co"># raster_resolution &lt;- 10</span>
+<span class="va">raster_resolution</span> <span class="op">&lt;-</span> <span class="fl">50</span>
+<span class="co"># rstr &lt;- raster::aggregate(rstr, fact = 9) # 90 m to match Pastor-Satorras</span>
+<span class="co"># raster_resolution &lt;- 90</span>
+<span class="va">FT2D</span> <span class="op">&lt;-</span> <span class="va">rstr</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/detrend_dem.html">detrend_dem</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">raster</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/raster/man/as.matrix.html">as.matrix</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="../reference/fft2D.html">fft2D</a></span><span class="op">(</span>dx <span class="op">=</span> <span class="va">raster_resolution</span>, dy <span class="op">=</span> <span class="va">raster_resolution</span>, Hann <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="va">nbin</span> <span class="op">&lt;-</span> <span class="fl">20</span>
 <span class="va">binned_power_spectrum</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bin.html">bin</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log10</a></span><span class="op">(</span><span class="va">FT2D</span><span class="op">$</span><span class="va">radial_frequency_vector</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log10</a></span><span class="op">(</span><span class="va">FT2D</span><span class="op">$</span><span class="va">spectral_power_vector</span><span class="op">)</span>, <span class="va">nbin</span><span class="op">)</span>
 <span class="va">binned_power_spectrum</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html">na.omit</a></span><span class="op">(</span><span class="va">binned_power_spectrum</span><span class="op">)</span>
 <span class="va">normalized_spectral_power_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_normalized_spectral_power_matrix.html">get_normalized_spectral_power_matrix</a></span><span class="op">(</span><span class="va">binned_power_spectrum</span>, <span class="va">FT2D</span><span class="op">)</span>
 <span class="va">filtered_spectral_power_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/filter_spectral_power_matrix.html">filter_spectral_power_matrix</a></span><span class="op">(</span><span class="va">normalized_spectral_power_matrix</span>, <span class="va">FT2D</span>, quantile_prob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.9999</span><span class="op">)</span><span class="op">)</span>
 <span class="va">ang_fourier</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_fourier_angle.html">get_fourier_angle</a></span><span class="op">(</span><span class="va">filtered_spectral_power_matrix</span>, <span class="va">FT2D</span><span class="op">)</span>
-<span class="va">rotated_raster</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rotate_raster.html">rotate_raster</a></span><span class="op">(</span><span class="fu">raster</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/raster/man/as.matrix.html">as.matrix</a></span><span class="op">(</span><span class="va">gabilan_mesa</span><span class="op">)</span>, <span class="va">ang_fourier</span><span class="op">)</span></code></pre></div>
+<span class="va">ang_fourier</span> <span class="op">&lt;-</span> <span class="fl">0</span>
+<span class="va">rotated_raster</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rotate_raster.html">rotate_raster</a></span><span class="op">(</span><span class="va">rstr</span>, <span class="va">ang_fourier</span><span class="op">)</span> </code></pre></div>
 <p>On the figure below, the horizontal line is the middle row, the leftmost vertical line is the first third column and the rightmost vertical line is the middle column.</p>
 <p><img src="zeta_files/figure-html/rayshader-1.png" width="768"></p>
 </div>
@@ -163,8 +167,8 @@
 <p><span class="math display">\[C(r) = \left\langle \sqrt{[h(x+r,t)-h(x,t)]^2} \right\rangle\]</span></p>
 <p>with <span class="math inline">\(h\)</span> the elevation, <span class="math inline">\(x\)</span> the spatial coordinate, <span class="math inline">\(t\)</span> the time coordinate, <span class="math inline">\(r\)</span> a spatial increment and where brackets indicate averaging. With this definition, we can now calculate the HHCF for the <code>rotated_raster</code> in the row-wise (<code>margin = 1</code>) and column-wise directions (<code>margin = 2</code>) using <code><a href="../reference/get_hhcf.html">get_hhcf()</a></code>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">hhcf_x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_hhcf.html">get_hhcf</a></span><span class="op">(</span><span class="va">rotated_raster</span>, margin <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
-<span class="va">hhcf_y</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_hhcf.html">get_hhcf</a></span><span class="op">(</span><span class="va">rotated_raster</span>, margin <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">hhcf_x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_hhcf_.html">get_hhcf_</a></span><span class="op">(</span><span class="va">rotated_raster</span>, <span class="va">raster_resolution</span>, margin <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
+<span class="va">hhcf_y</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_hhcf_.html">get_hhcf_</a></span><span class="op">(</span><span class="va">rotated_raster</span>, <span class="va">raster_resolution</span>, margin <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="roughness-exponent-alpha" class="section level1">
 <h1 class="hasAnchor">
@@ -177,50 +181,50 @@
 <p><span class="math display">\[ C(r) \sim r^\alpha \]</span></p>
 <p>with <span class="math inline">\(\alpha\)</span> the roughness exponent. We now use <code><a href="../reference/get_alpha.html">get_alpha()</a></code> to derive the roughness exponents <span class="math inline">\(\alpha_x\)</span> and <span class="math inline">\(\alpha_y\)</span> in each direction. The option <code>do_plot = TRUE</code> provides a graphical display of the step-wise binned regression process and identification of the cross-over lengthscale. As the regression is a piecewise regression, for each direction, two slopes are returned, for example: <span class="math inline">\(\alpha_{1,x}\)</span> and <span class="math inline">\(\alpha_{2,x}\)</span>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/get_alpha.html">get_alpha</a></span><span class="op">(</span><span class="va">hhcf_x</span><span class="op">$</span><span class="va">hhcf</span><span class="op">[</span><span class="va">ind_x</span>, <span class="op">]</span>, <span class="va">raster_resolution</span>, do_plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="../reference/get_alpha_.html">get_alpha_</a></span><span class="op">(</span><span class="va">hhcf_x</span><span class="op">$</span><span class="va">hhcf</span><span class="op">[</span><span class="va">ind_x</span>, <span class="op">]</span>, <span class="va">raster_resolution</span>, <span class="va">hhcf_x</span><span class="op">$</span><span class="va">autocorr_len</span><span class="op">[</span><span class="va">ind_x</span><span class="op">]</span>, do_plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p><img src="zeta_files/figure-html/example_x_1-1.png" width="768"></p>
-<pre><code>#&gt;        rc    alpha1    alpha2    rmax  alpha.r2
-#&gt; x 112.492 0.8514611 0.3053454 243.405 0.9991539</code></pre>
+<pre><code>#&gt;    rc    alpha1    alpha2 rmax  alpha.r2
+#&gt; 1 900 0.7098919 0.4400109  900 0.9990707</code></pre>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/get_alpha.html">get_alpha</a></span><span class="op">(</span><span class="va">hhcf_y</span><span class="op">$</span><span class="va">hhcf</span><span class="op">[</span><span class="va">ind_y</span>, <span class="op">]</span>, <span class="va">raster_resolution</span>, do_plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="../reference/get_alpha_.html">get_alpha_</a></span><span class="op">(</span><span class="va">hhcf_y</span><span class="op">$</span><span class="va">hhcf</span><span class="op">[</span><span class="va">ind_y</span>, <span class="op">]</span>, <span class="va">raster_resolution</span>, <span class="va">hhcf_y</span><span class="op">$</span><span class="va">autocorr_len</span><span class="op">[</span><span class="va">ind_y</span><span class="op">]</span>, do_plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p><img src="zeta_files/figure-html/example_y_1-1.png" width="768"></p>
-<pre><code>#&gt;         rc    alpha1    alpha2    rmax  alpha.r2
-#&gt; x 69.71757 0.8454504 0.2776742 243.405 0.9993926</code></pre>
+<pre><code>#&gt;    rc    alpha1    alpha2 rmax  alpha.r2
+#&gt; 1 550 0.4990442 0.3582344  550 0.9997282</code></pre>
 <p><code><a href="../reference/get_alpha.html">get_alpha()</a></code> includes a number of safeguard and the function will return <code>NA</code>. Here is an example the roughly follow a ridgeline, the middle column, with no statistically consistent scaling.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/get_alpha.html">get_alpha</a></span><span class="op">(</span><span class="va">hhcf_y</span><span class="op">$</span><span class="va">hhcf</span><span class="op">[</span><span class="va">ind_x</span>, <span class="op">]</span>, <span class="va">raster_resolution</span>, do_plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="../reference/get_alpha_.html">get_alpha_</a></span><span class="op">(</span><span class="va">hhcf_y</span><span class="op">$</span><span class="va">hhcf</span><span class="op">[</span><span class="va">ind_x</span>, <span class="op">]</span>, <span class="va">raster_resolution</span>, <span class="va">hhcf_y</span><span class="op">$</span><span class="va">autocorr_len</span><span class="op">[</span><span class="va">ind_x</span><span class="op">]</span>, do_plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p><img src="zeta_files/figure-html/example_y_2-1.png" width="768"></p>
-<pre><code>#&gt;         rc    alpha1    alpha2   rmax  alpha.r2
-#&gt; x 69.15329 0.7871953 0.2112622 126.21 0.9987383</code></pre>
+<pre><code>#&gt;    rc    alpha1    alpha2 rmax  alpha.r2
+#&gt; 1 800 0.5858021 0.2630057  800 0.9993276</code></pre>
 </div>
 <div id="computing-all-roughness-exponents" class="section level2">
 <h2 class="hasAnchor">
 <a href="#computing-all-roughness-exponents" class="anchor"></a>Computing all roughness exponents</h2>
 <p>Provided a list of HHCF from <code><a href="../reference/get_hhcf.html">get_hhcf()</a></code>, the function <code><a href="../reference/get_all_alpha.html">get_all_alpha()</a></code> computes all step-wise regressions.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">alpha_x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_all_alpha.html">get_all_alpha</a></span><span class="op">(</span><span class="va">hhcf_x</span>, <span class="va">raster_resolution</span><span class="op">)</span>
-<span class="va">alpha_y</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_all_alpha.html">get_all_alpha</a></span><span class="op">(</span><span class="va">hhcf_y</span>, <span class="va">raster_resolution</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">alpha_x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_all_alpha_.html">get_all_alpha_</a></span><span class="op">(</span><span class="va">hhcf_x</span>, <span class="va">raster_resolution</span><span class="op">)</span>
+<span class="va">alpha_y</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_all_alpha_.html">get_all_alpha_</a></span><span class="op">(</span><span class="va">hhcf_y</span>, <span class="va">raster_resolution</span><span class="op">)</span></code></pre></div>
 <p><img src="zeta_files/figure-html/unnamed-chunk-2-1.png" width="768"></p>
 <p>The resulting <code>data.frames</code> can easily be summarized with <code><a href="../reference/summarise_alpha.html">summarise_alpha()</a></code>. For example:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">alpha_x</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/summarise_alpha.html">summarise_alpha</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt;   alpha1_min alpha1_mean alpha1_max  alpha1_sd alpha1_IQR alpha2_min</span>
-<span class="co">#&gt; 1  0.7525691   0.8576394  0.9194875 0.02333023 0.02668279  0.1089438</span>
-<span class="co">#&gt;   alpha2_mean alpha2_max  alpha2_sd alpha2_IQR   rc_min  rc_mean   rc_max</span>
-<span class="co">#&gt; 1   0.3469332   0.648869 0.08089364  0.1061726 42.56599 117.3809 229.5888</span>
-<span class="co">#&gt;      rc_sd   rc_IQR rmax_min rmax_mean rmax_max  rmax_sd rmax_IQR alpha.r2_min</span>
-<span class="co">#&gt; 1 25.04692 26.14729    90.15  404.4445   973.62 216.4101    180.3    0.9932127</span>
-<span class="co">#&gt;   alpha.r2_mean alpha.r2_max  alpha.r2_sd alpha.r2_IQR</span>
-<span class="co">#&gt; 1     0.9989099      0.99965 0.0006989915 0.0004849006</span>
+<span class="co">#&gt;   rc_min  rc_mean rc_max    rc_sd rc_IQR alpha1_min alpha1_mean alpha1_max</span>
+<span class="co">#&gt; 1    300 687.0079   1000 215.6765    375  0.2980933   0.6625037   0.815061</span>
+<span class="co">#&gt;    alpha1_sd alpha1_IQR alpha2_min alpha2_mean alpha2_max  alpha2_sd alpha2_IQR</span>
+<span class="co">#&gt; 1 0.09010577  0.1432971  0.1013226   0.3741094  0.5047531 0.09252255  0.1277108</span>
+<span class="co">#&gt;   rmax_min rmax_mean rmax_max  rmax_sd rmax_IQR alpha.r2_min alpha.r2_mean</span>
+<span class="co">#&gt; 1      300  687.0079     1000 215.6765      375    0.9803992     0.9980126</span>
+<span class="co">#&gt;   alpha.r2_max alpha.r2_sd alpha.r2_IQR</span>
+<span class="co">#&gt; 1    0.9999609 0.003395262  0.001633519</span>
 <span class="va">alpha_y</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/summarise_alpha.html">summarise_alpha</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt;   alpha1_min alpha1_mean alpha1_max  alpha1_sd alpha1_IQR alpha2_min</span>
-<span class="co">#&gt; 1  0.4445179   0.8035647  0.9064168 0.06828347 0.05439905  0.1101542</span>
-<span class="co">#&gt;   alpha2_mean alpha2_max alpha2_sd alpha2_IQR   rc_min  rc_mean   rc_max</span>
-<span class="co">#&gt; 1   0.3291653   1.002387 0.1200056  0.0899577 49.48651 120.3672 1587.951</span>
-<span class="co">#&gt;      rc_sd   rc_IQR rmax_min rmax_mean rmax_max  rmax_sd rmax_IQR alpha.r2_min</span>
-<span class="co">#&gt; 1 171.9672 28.32148  117.195  369.5543 2677.455 391.4812  207.345    0.9760342</span>
-<span class="co">#&gt;   alpha.r2_mean alpha.r2_max alpha.r2_sd alpha.r2_IQR</span>
-<span class="co">#&gt; 1     0.9981882    0.9997217 0.002859781 0.0006231902</span></code></pre></div>
+<span class="co">#&gt;   rc_min  rc_mean rc_max    rc_sd rc_IQR alpha1_min alpha1_mean alpha1_max</span>
+<span class="co">#&gt; 1    500 718.2927    900 102.8823    150  0.4902996   0.5906993  0.7834738</span>
+<span class="co">#&gt;    alpha1_sd alpha1_IQR alpha2_min alpha2_mean alpha2_max  alpha2_sd alpha2_IQR</span>
+<span class="co">#&gt; 1 0.06916046 0.07288459  0.1766741   0.3511234  0.5004916 0.06996465  0.0858283</span>
+<span class="co">#&gt;   rmax_min rmax_mean rmax_max  rmax_sd rmax_IQR alpha.r2_min alpha.r2_mean</span>
+<span class="co">#&gt; 1      500  718.2927      900 102.8823      150    0.9901366     0.9981793</span>
+<span class="co">#&gt;   alpha.r2_max alpha.r2_sd alpha.r2_IQR</span>
+<span class="co">#&gt; 1    0.9999859 0.001887551  0.001563519</span></code></pre></div>
 <p>In a more human-readable format, we can summarize the entire landscape on <code>rotated_raster</code> by:</p>
 <table class="table">
 <thead><tr class="header">
@@ -233,13 +237,13 @@
 <tbody>
 <tr class="odd">
 <td align="left"><span class="math inline">\(\alpha_1\)</span></td>
-<td align="center">0.86 <span class="math inline">\(\pm\)</span> 0.023</td>
-<td align="center">0.8 <span class="math inline">\(\pm\)</span> 0.068</td>
+<td align="center">0.66 <span class="math inline">\(\pm\)</span> 0.09</td>
+<td align="center">0.59 <span class="math inline">\(\pm\)</span> 0.069</td>
 </tr>
 <tr class="even">
 <td align="left"><span class="math inline">\(\alpha_2\)</span></td>
-<td align="center">0.35 <span class="math inline">\(\pm\)</span> 0.081</td>
-<td align="center">0.33 <span class="math inline">\(\pm\)</span> 0.12</td>
+<td align="center">0.37 <span class="math inline">\(\pm\)</span> 0.093</td>
+<td align="center">0.35 <span class="math inline">\(\pm\)</span> 0.07</td>
 </tr>
 </tbody>
 </table>
@@ -264,14 +268,42 @@
 <tbody>
 <tr class="odd">
 <td align="left"><span class="math inline">\(\zeta_1\)</span></td>
-<td align="center">1.07</td>
+<td align="center">1.12</td>
 </tr>
 <tr class="even">
 <td align="left"><span class="math inline">\(\zeta_2\)</span></td>
-<td align="center">1.05</td>
+<td align="center">1.07</td>
 </tr>
 </tbody>
 </table>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/get_zeta.html">get_zeta</a></span><span class="op">(</span><span class="va">rstr</span>, <span class="va">raster_resolution</span>, full <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate_all.html">mutate_all</a></span><span class="op">(</span><span class="va">signifNA</span><span class="op">)</span>
+<span class="co">#&gt;         fc beta1 beta2 beta.r2 alpha1_min.x alpha1_mean.x alpha1_max.x</span>
+<span class="co">#&gt; x 0.000834 -6.32  -3.2   0.993        0.322         0.663        0.828</span>
+<span class="co">#&gt;   alpha1_sd.x alpha1_IQR.x alpha2_min.x alpha2_mean.x alpha2_max.x alpha2_sd.x</span>
+<span class="co">#&gt; x      0.0878        0.131       0.0932         0.368         0.51      0.0987</span>
+<span class="co">#&gt;   alpha2_IQR.x rc_min.x rc_mean.x rc_max.x rc_sd.x rc_IQR.x rmax_min.x</span>
+<span class="co">#&gt; x        0.148      250       683     1000     227      400        250</span>
+<span class="co">#&gt;   rmax_mean.x rmax_max.x rmax_sd.x rmax_IQR.x alpha.r2_min.x alpha.r2_mean.x</span>
+<span class="co">#&gt; x         683       1000       227        400          0.968           0.998</span>
+<span class="co">#&gt;   alpha.r2_max.x alpha.r2_sd.x alpha.r2_IQR.x alpha1_min.y alpha1_mean.y</span>
+<span class="co">#&gt; x              1       0.00373        0.00124         0.49         0.592</span>
+<span class="co">#&gt;   alpha1_max.y alpha1_sd.y alpha1_IQR.y alpha2_min.y alpha2_mean.y alpha2_max.y</span>
+<span class="co">#&gt; x        0.786      0.0692       0.0849        0.189         0.353        0.488</span>
+<span class="co">#&gt;   alpha2_sd.y alpha2_IQR.y rc_min.y rc_mean.y rc_max.y rc_sd.y rc_IQR.y</span>
+<span class="co">#&gt; x      0.0666       0.0809      250       713      900     123      150</span>
+<span class="co">#&gt;   rmax_min.y rmax_mean.y rmax_max.y rmax_sd.y rmax_IQR.y alpha.r2_min.y</span>
+<span class="co">#&gt; x        250         713        900       123        150           0.99</span>
+<span class="co">#&gt;   alpha.r2_mean.y alpha.r2_max.y alpha.r2_sd.y alpha.r2_IQR.y zeta1 zeta2 theta</span>
+<span class="co">#&gt; x           0.998              1       0.00194        0.00151  1.12  1.04  91.6</span>
+<span class="co">#&gt;    rc  w.x  w.y    w xi.x xi.y  xi</span>
+<span class="co">#&gt; x 698 91.4 90.3 90.8  679  716 697</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/get_zeta.html">get_zeta</a></span><span class="op">(</span><span class="va">rstr</span>,<span class="va">raster_resolution</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate_all.html">mutate_all</a></span><span class="op">(</span><span class="va">signifNA</span><span class="op">)</span>
+<span class="co">#&gt;   beta1 beta2 alpha1 alpha1.x alpha1.y zeta1 alpha2 alpha2.x alpha2.y zeta2</span>
+<span class="co">#&gt; x -6.32  -3.2  0.627    0.663    0.592  1.12   0.36    0.368    0.353  1.04</span>
+<span class="co">#&gt;   theta inv.fc  rc  xi xi.x xi.y    w  w.x  w.y</span>
+<span class="co">#&gt; x  91.6   1200 698 697  679  716 90.8 91.4 90.3</span></code></pre></div>
 </div>
   </div>
 
