@@ -120,7 +120,7 @@
       <h1 data-toc-skip>Example of anisotropic landscapes</h1>
                         <h4 class="author">Hervé Guillon</h4>
                         
-            <h4 class="date">03 March 2021</h4>
+            <h4 class="date">08 March 2021</h4>
       
       
       <div class="hidden name"><code>zeta_examples.Rmd</code></div>
@@ -143,7 +143,7 @@
 <span class="va">gabilan_mesa</span> <span class="op">&lt;-</span> <span class="fu">raster</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/raster/man/raster.html">raster</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata/rasters/"</span>, package <span class="op">=</span> <span class="st">"statisticalRoughness"</span><span class="op">)</span>, <span class="st">"gabilan_mesa.tif"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">res_gabi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_zeta.html">get_zeta</a></span><span class="op">(</span><span class="va">gabilan_mesa</span>, <span class="va">raster_resolution</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate_all.html">mutate_all</a></span><span class="op">(</span><span class="va">signifNA</span><span class="op">)</span></code></pre></div>
 <p>Gabilan Mesa landscape has a minimum elevation of 215.8804016 m, an average elevation of 309.5151503 m, and a maximum elevation of 381.4825745 m. The maximum relief is thus 165.6021729 m.</p>
-<p>The figure below showcases the landscape in its original form. The landscape was rotated so that in this original frame of reference, <span class="math inline">\(\theta_x =\)</span> 122<span class="math inline">\(^\circ\)</span> and <span class="math inline">\(\theta_y =\)</span> 212<span class="math inline">\(^\circ\)</span>. (In the rotated frame of reference, <span class="math inline">\(\theta_x' = 0^\circ\)</span> and <span class="math inline">\(\theta_y' = 90^\circ\)</span>.) The segmented regression on the power spectrum identifies scalings with slope <span class="math inline">\(\beta_1 =\)</span> -2.13, and <span class="math inline">\(\beta_2 =\)</span> -5.43, before and after a cut-off lengthscale of <span class="math inline">\(1/f_c =\)</span> 310 m, respectively. As <span class="math inline">\(\beta = 2H + d\)</span>, and <span class="math inline">\(d = 2\)</span>, the Hurst coefficients <span class="math inline">\(H\)</span> corresponding to <span class="math inline">\(\beta_1\)</span> and <span class="math inline">\(\beta_2\)</span> are 0.065, and 1.715, respectively. Before a cut-off lengthscale of 127 m, the roughness exponents in the <span class="math inline">\(x\)</span>– and <span class="math inline">\(y\)</span>–directions are <span class="math inline">\(\alpha_{1,x} =\)</span> 0.764, and <span class="math inline">\(\alpha_{1,y} =\)</span> 0.668. Consequently, the anisotropy exponent is <span class="math inline">\(\zeta_1 =\)</span> 1.14. After cut-off lengthscale, the roughness exponents are lower and almost equal with <span class="math inline">\(\alpha_{2,x} =\)</span> 0.302, and <span class="math inline">\(\alpha_{2,y} =\)</span> 0.263. Consequently, the anisotropy exponent is <span class="math inline">\(\zeta_2 =\)</span> 1.15.</p>
+<p>The figure below showcases the landscape in its original form. The landscape was rotated so that in this original frame of reference, <span class="math inline">\(\theta_x =\)</span> 122<span class="math inline">\(^\circ\)</span> and <span class="math inline">\(\theta_y =\)</span> 212<span class="math inline">\(^\circ\)</span>. (In the rotated frame of reference, <span class="math inline">\(\theta_x' = 0^\circ\)</span> and <span class="math inline">\(\theta_y' = 90^\circ\)</span>.) The segmented regression on the power spectrum identifies scalings with slope <span class="math inline">\(\beta_1 =\)</span> -2.13, and <span class="math inline">\(\beta_2 =\)</span> -5.43, before and after a cut-off lengthscale of <span class="math inline">\(1/f_c =\)</span> 310 m, respectively. As <span class="math inline">\(\beta = 2H + d\)</span>, and <span class="math inline">\(d = 2\)</span>, the Hurst coefficients <span class="math inline">\(H\)</span> corresponding to <span class="math inline">\(\beta_1\)</span> and <span class="math inline">\(\beta_2\)</span> are 0.065, and 1.715, respectively. Before a cut-off lengthscale of 127 m, the roughness exponents in the <span class="math inline">\(x\)</span>– and <span class="math inline">\(y\)</span>–directions are <span class="math inline">\(\alpha_{1,x} =\)</span> 0.764, and <span class="math inline">\(\alpha_{1,y} =\)</span> 0.668. Consequently, the anisotropy exponent is <span class="math inline">\(\zeta_1 =\)</span> 1.14. After cut-off lengthscale, the roughness exponents are lower and almost equal with <span class="math inline">\(\alpha_{2,x} =\)</span> 0.302, and <span class="math inline">\(\alpha_{2,y} =\)</span> 0.259. Consequently, the anisotropy exponent is <span class="math inline">\(\zeta_2 =\)</span> 1.17.</p>
 <p>The figure below showcases the landscape in its original form (left) and smoothed with a Gaussian kernel of 12 standard deviations to match the value of <span class="math inline">\(r_c\)</span> (right).</p>
 <p><img src="zeta_examples_files/figure-html/unnamed-chunk-4-1.png" width="672"></p>
 </div>
@@ -277,10 +277,10 @@ Gabilan Mesa
 0.302
 </td>
 <td style="text-align:right;">
-0.263
+0.259
 </td>
 <td style="text-align:left;">
-1.15
+1.17
 </td>
 <td style="text-align:right;">
 302.0
