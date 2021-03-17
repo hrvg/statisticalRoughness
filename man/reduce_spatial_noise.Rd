@@ -2,7 +2,7 @@
 % Please edit documentation in R/reduce_spatial_noise.R
 \name{reduce_spatial_noise}
 \alias{reduce_spatial_noise}
-\title{Convolves with a 3x3 mean kernel with weights of 1}
+\title{Convolves with a 3x3 median kernel with weights of 1}
 \usage{
 reduce_spatial_noise(raster_list, .NAonly = FALSE)
 }
@@ -15,6 +15,6 @@ reduce_spatial_noise(raster_list, .NAonly = FALSE)
 a \code{list} of \code{stars} or \code{RasterStack} objects
 }
 \description{
-Convolves with a 3x3 mean kernel with weights of 1
+Convolves with a 3x3 median kernel with weights of 1
 }
 \keyword{postprocessing}

@@ -1,3 +1,4 @@
+#' Apply a log transform to a given layer
 #' @param raster_list a `list` of `stars` objects
 #' @param target_id the id of the layer to be masked
 #' @return a `list` of `stars`

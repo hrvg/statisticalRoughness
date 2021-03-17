@@ -6,7 +6,6 @@
 \usage{
 crossscale_correlations(
   raster_list = NULL,
-  att_names = NULL,
   selected = NULL,
   spatial_scales = NULL,
   corr_type = "spearman",
@@ -15,8 +14,6 @@ crossscale_correlations(
 }
 \arguments{
 \item{raster_list}{a \code{list} of \code{stars} or \code{RasterStack} objects}
-
-\item{att_names}{\code{character}, the attributes corresponding to each band}
 
 \item{selected}{\code{character}, the selected attributes}
 
