@@ -1,6 +1,5 @@
 #' Creates a facet plot of correlation between `selected` attributes from a `raster_list` representing different `spatial_scales`
 #' @param raster_list a `list` of `stars` or `RasterStack` objects
-#' @param att_names `character`, the attributes corresponding to each band
 #' @param selected `character`, the selected attributes
 #' @param spatial_scales `numeric`, the spatial scales corresponding to each raster in `raster_list`
 #' @param corr_type `character`, the type of correlation to compute, 'pearson' or 'spearman'
@@ -9,7 +8,7 @@
 #' @importFrom rlang .data
 #' @export
 #' @keywords postprocessing
-crossscale_correlations <- function(raster_list = NULL, att_names = NULL, selected = NULL, spatial_scales = NULL, corr_type = "spearman", clamp_raster = FALSE){
+crossscale_correlations <- function(raster_list = NULL, selected = NULL, spatial_scales = NULL, corr_type = "spearman", clamp_raster = FALSE){
 	# checks and tests
 	.x <- NULL
 	if(class(raster_list) != "list") stop("`raster_list` is not a `list`.")
@@ -19,7 +18,6 @@ crossscale_correlations <- function(raster_list = NULL, att_names = NULL, select
 	if(!class(spatial_scales) %in% c("integer", "numeric")) stop("`spatial_scales` is not `integer` or `numeric`.")
 	if(length(unique(sapply(raster_list, function(obj) dim(obj)[3]))) != 1) stop("Not all rasters have the same number of bands.")
 	if(length(raster_list) != length(spatial_scales)) stop("`raster_list` and `spatial_scales` have different lengths.")
-	if(!all(selected %in% att_names)) stop("Some or all `selected` attributes are not contained in `att_names`.")
 	if(!length(selected) >= 2) stop("At least two attributes should be selected.")
 	if(! corr_type %in% c("spearman", "pearson")) stop("`corr_type should be either 'spearman' or 'pearson'.")
 
@@ -30,7 +28,7 @@ crossscale_correlations <- function(raster_list = NULL, att_names = NULL, select
 		return(df)
 	})
 	list_correlations <- lapply(list_values, function(df){
-		df <- stats::na.omit(df)
+		# df <- stats::na.omit(df) # NA handled pairwise by Hmisc::rcorr
 		corr <- Hmisc::rcorr(as.matrix(df), type = corr_type)$r 
 		corr[lower.tri(corr, diag = TRUE)] <- NA
 		as.data.frame(corr)

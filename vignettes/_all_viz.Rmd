@@ -105,7 +105,7 @@ pretty_region_name <- function(x){
 ```{r, echo = FALSE, results = 'asis'}
 res <- lapply(region_names, function(region) {
   knitr::knit_child(
-    '_vis_template.rmd', envir = environment(), quiet = TRUE
+    '_vis_template.Rmd', envir = environment(), quiet = TRUE
   )
 })
 cat(unlist(res), sep = '\n')
