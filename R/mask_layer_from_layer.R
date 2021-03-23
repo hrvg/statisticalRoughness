@@ -4,7 +4,7 @@
 #' @param mask_id the id of the layer to use as a mask, currently default to pvalue mask with a threshold at 0.05
 #' @param option `character` one of `pval`, `r2`, `NA`
 #' @param pval_threshold `numeric` threshold of p-values, default to 0.05
-#' @param r2d_threshold `numeric` threshold of r squared, default to 0.95
+#' @param r2_threshold `numeric` threshold of r squared, default to 0.95
 #' @return a `list` of `stars` 
 #' @export
 mask_layer_from_layer <- function(raster_list, target_id, mask_id, option = "pval", pval_threshold = 0.05, r2_threshold = 0.95){

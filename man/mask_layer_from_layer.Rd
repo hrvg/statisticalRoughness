@@ -24,7 +24,7 @@ mask_layer_from_layer(
 
 \item{pval_threshold}{\code{numeric} threshold of p-values, default to 0.05}
 
-\item{r2d_threshold}{\code{numeric} threshold of r squared, default to 0.95}
+\item{r2_threshold}{\code{numeric} threshold of r squared, default to 0.95}
 }
 \value{
 a \code{list} of \code{stars}

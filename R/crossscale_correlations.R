@@ -42,6 +42,9 @@ crossscale_correlations <- function(raster_list = NULL, selected = NULL, spatial
 		dplyr::mutate(scale = spatial_scales[[i]])
 	})
 	graphics_df <- do.call(rbind, list_graphics) %>% dplyr::arrange(.data$var1, .data$var2)
+	graphics_df <- graphics_df %>% 
+	    dplyr::filter(!((.data$var1 == "median_Pe" | .data$var2 == "median_Pe") & .data$scale > 1e4)) %>% 
+	    dplyr::filter(!((.data$var1 == "geol_diversity" | .data$var2 == "geol_diversity") & .data$scale < 1e4)) 
 
 	p <- ggplot2::ggplot(graphics_df, ggplot2::aes(x = .data$scale, y = .data$value)) +
 		ggplot2::scale_x_log10(
@@ -59,8 +62,8 @@ crossscale_correlations <- function(raster_list = NULL, selected = NULL, spatial
 	p <- p + ggforce::facet_wrap_paginate(.data$var1 ~ .data$var2, nrow = 2, ncol = 2)
 		p <- lapply(seq(ggforce::n_pages(p)), function(i) p + ggforce::facet_wrap_paginate(.data$var1 ~ .data$var2, nrow = 2, ncol = 2, scales = "free", page = i))
 	if(clamp_raster){
-		return(list(p = p, rasters = raster_list))
+		return(list(p = p, rasters = raster_list, graphics_df = graphics_df))
 	} else {
-		return(p)
+		return(list(p = p, graphics_df = graphics_df))
 	}
 }
