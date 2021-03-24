@@ -1,4 +1,3 @@
-
 #' Statistics on cross-scale correlations
 #' @param graphics_df a `data.frame` output from `crossscale_correlations()`
 #' @return a list with two elements, the plots and the graphics_df
