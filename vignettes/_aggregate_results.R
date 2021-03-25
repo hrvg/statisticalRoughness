@@ -4,7 +4,7 @@ library("tictoc")
 # PARAMETERS
 tic()
 print("Saving parameters...")
-out_dir <- "out13"
+out_dir <- "out14"
 if(!dir.exists(out_dir)) dir.create(out_dir)
 
 .selected <- c("beta2", "alpha1.x", "alpha1.y", "alpha2.x", "alpha2.y", "w.x", "w.y", "xi.x", "xi.y", "zeta1", "zeta2", "median_Pe", "H", "q", "geol_diversity", "inv.fc", "theta")
@@ -155,12 +155,12 @@ sub_sliced_clamped_raster <- slice_clamp(
 print("Raster subselected.")
 toc()
 
-# REDUCE NOISE
-tic()
-print("Reducing noise...")
-sub_sliced_clamped_raster <- reduce_spatial_noise(sub_sliced_clamped_raster, .NAonly = FALSE)
-print("Reduced noise...")
-toc()
+# # REDUCE NOISE
+# tic()
+# print("Reducing noise...")
+# sub_sliced_clamped_raster <- reduce_spatial_noise(sub_sliced_clamped_raster, .NAonly = FALSE)
+# print("Reduced noise...")
+# toc()
 
 # OUTPUT: DISTRIBUTION
 tic()
