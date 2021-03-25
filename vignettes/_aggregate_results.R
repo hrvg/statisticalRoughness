@@ -4,17 +4,17 @@ library("tictoc")
 # PARAMETERS
 tic()
 print("Saving parameters...")
-out_dir <- "out11"
+out_dir <- "out13"
 if(!dir.exists(out_dir)) dir.create(out_dir)
 
-.selected <- c("beta2", "alpha1.x", "alpha1.y", "alpha2.x", "alpha2.y", "w.x", "w.y", "xi.x", "xi.y", "zeta1", "zeta2", "median_Pe", "H", "q", "geol_diversity", "inv.fc")
+.selected <- c("beta2", "alpha1.x", "alpha1.y", "alpha2.x", "alpha2.y", "w.x", "w.y", "xi.x", "xi.y", "zeta1", "zeta2", "median_Pe", "H", "q", "geol_diversity", "inv.fc", "theta")
 cparams <- data.frame(
   selected = .selected,
   n_sigma = rep(3, length(.selected)),
-  lower = c(TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE),
-  upper = c(FALSE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE),
-  lower_clamp = c(-Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, 1E-16, -Inf, -Inf, -Inf),
-  upper_clamp = c(0, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf)
+  lower = c(TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, TRUE),
+  upper = c(FALSE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, TRUE),
+  lower_clamp = c(-Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, 1E-16, -Inf, -Inf, -Inf, -Inf),
+  upper_clamp = c(0, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf)
 )
 print(cparams)
 saveRDS(cparams, file.path(out_dir, "cparams.Rds"))
@@ -104,12 +104,6 @@ sliced_clamped_raster <- correct_zeta(sliced_clamped_raster, match("zeta2", .sel
 print("Corrected zeta.")
 toc()
 
-# REDUCE NOISE
-# tic()
-# print("Reducing noise...")
-# sliced_clamped_raster <- reduce_spatial_noise(sliced_clamped_raster, .NAonly = TRUE)
-# print("Reduced noise...")
-# toc()
 
 # FOUR VALUES CHECK
 tic()
@@ -118,17 +112,6 @@ ind <- four_values_check(sliced_clamped_raster)
 sliced_clamped_raster <- sliced_clamped_raster[ind]
 spatial_scales <- zeta_results$spatial_scales[ind]
 print("Performed four-values check.")
-toc()
-
-# OUTPUT: MAPS
-tic()
-print("Outputting maps...")
-for(x in .selected){
-  print(x)
-  raster_select(sliced_clamped_raster, band_id = match(x, .selected)) %>% 
-  save_map(ttl = x, groups = zeta_results$spatial_scales, begin = 0.1, end = 0.95, direction = -1, option = "viridis", col_style = "cont", out_path = out_dir)
-}
-print("Outputted maps.")
 toc()
 
 # OUTPUT: DISTRIBUTION
@@ -153,8 +136,66 @@ crossscale_corr <- crossscale_correlations(
   spatial_scales = spatial_scales,
   corr_type = "pearson")
 saveRDS(crossscale_corr$graphics_df, file.path(out_dir, "graphics_df.Rds"))
-pdf(file.path(out_dir, "pearson.pdf"))
+# pdf(file.path(out_dir, "pearson.pdf"))
+# crossscale_corr$p
+# dev.off()
+print("Outputted correlations.")
+toc()
+
+# SUBSELECTING (to reduce the output from the correlations)
+tic()
+print("Subselecting rasters...")
+.subselected <- .selected[which(!(grepl("\\.x", .selected) | grepl("\\.y", .selected) | .selected == "zeta1" | .selected == "zeta2"))]
+sub_sliced_clamped_raster <- slice_clamp(
+  raster_list = sliced_clamped_raster,
+  att_names = .selected,
+  selected = .subselected,
+  clamp_raster = FALSE, 
+  clamp_params = NULL)
+print("Raster subselected.")
+toc()
+
+# REDUCE NOISE
+tic()
+print("Reducing noise...")
+sub_sliced_clamped_raster <- reduce_spatial_noise(sub_sliced_clamped_raster, .NAonly = FALSE)
+print("Reduced noise...")
+toc()
+
+# OUTPUT: DISTRIBUTION
+tic()
+print("Outputting distributions...")
+pdf(file.path(out_dir, "distributions_sub.pdf"))
+for(x in .selected){
+  gb <- make_all_plots(sliced_clamped_raster, spatial_scales, match(x, .selected), x, begin = 0.1, end = 0.85, direction = 1, option = "viridis")
+  layout_mat <- matrix(c(1, 1, 1, 1, 1, 2, 2, 2, 3, 3), byrow = FALSE, nrow = 5, ncol = 2)
+  gridExtra::grid.arrange(grobs = gb, layout_matrix = layout_mat)
+}
+dev.off()
+print("Outputted distributions.")
+toc()
+
+# OUTPUT: PEARSON CORRELATIONS
+tic()
+print("Outputting correlations...")
+crossscale_corr <- crossscale_correlations(
+  raster_list = sub_sliced_clamped_raster,
+  selected = .subselected,
+  spatial_scales = spatial_scales,
+  corr_type = "pearson")
+pdf(file.path(out_dir, "pearson_sub.pdf"))
 crossscale_corr$p
 dev.off()
 print("Outputted correlations.")
+toc()
+
+# OUTPUT: MAPS
+tic()
+print("Outputting maps...")
+for(x in .subselected){
+  print(x)
+  raster_select(sub_sliced_clamped_raster, band_id = match(x, .subselected)) %>% 
+  save_map(ttl = x, groups = zeta_results$spatial_scales, begin = 0.1, end = 0.95, direction = -1, option = "viridis", col_style = "cont", out_path = out_dir)
+}
+print("Outputted maps.")
 toc()
