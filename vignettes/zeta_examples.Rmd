@@ -65,8 +65,8 @@ The maximum relief is thus `r (raster::maxValue(gabilan_mesa) - raster::minValue
 
 The figure below showcases the landscape in its original form.
 The landscape was rotated so that in this original frame of reference,
-$\theta_x =$ `r res_gabi$theta %% 180`$^\circ$ and
-$\theta_y =$ `r (res_gabi$theta %% 180 + 90)`$^\circ$.
+$\theta_x =$ `r res_gabi$theta.x`$^\circ$ and
+$\theta_y =$ `r (res_gabi$theta.y)`$^\circ$.
 (In the rotated frame of reference, $\theta_x' = 0^\circ$ and $\theta_y' = 90^\circ$.)
 The segmented regression on the power spectrum identifies scalings with slope $\beta_1 =$ `r res_gabi$beta1`, and $\beta_2 =$ `r res_gabi$beta2`, before and after a cut-off lengthscale of $1/f_c =$ `r (res_gabi$inv.fc)` m, respectively.
 As $\beta = 2H + d$, and $d = 2$, the Hurst coefficients $H$ corresponding to $\beta_1$ and $\beta_2$ are 
@@ -119,8 +119,8 @@ and a maximum elevation of `r raster::maxValue(yosemite)` m.
 The maximum relief is thus `r (raster::maxValue(yosemite) - raster::minValue(yosemite))` m.
 The figure below showcases the landscape in its original form.
 The landscape was rotated so that in this original frame of reference,
-$\theta_x =$ `r res_yose$theta %% 180`$^\circ$ and
-$\theta_y =$ `r (res_yose$theta %% 180 + 90)`$^\circ$.
+$\theta_x =$ `r res_yose$theta.x`$^\circ$ and
+$\theta_y =$ `r (res_yose$theta.y)`$^\circ$.
 (In the rotated frame of reference, $\theta_x' = 0^\circ$ and $\theta_y' = 90^\circ$.)
 The segmented regression on the power spectrum identifies scalings with slope $\beta_1 =$ `r res_yose$beta1`, and $\beta_2 =$ `r res_yose$beta2`, before and after a cut-off lengthscale of $1/f_c =$ `r (res_yose$inv.fc)` m, respectively.
 As $\beta = 2H + d$, and $d = 2$, the Hurst coefficients $H$ corresponding to $\beta_1$ and $\beta_2$ are 
@@ -172,8 +172,8 @@ an average elevation of `r raster::cellStats(modoc, stat = "mean")` m,
 and a maximum elevation of `r raster::maxValue(modoc)` m.
 The maximum relief is thus `r (raster::maxValue(modoc) - raster::minValue(modoc))` m.
 The landscape was rotated so that in this original frame of reference,
-$\theta_x =$ `r res_modo$theta %% 180`$^\circ$ and
-$\theta_y =$ `r (res_modo$theta %% 180 + 90)`$^\circ$.
+$\theta_x =$ `r res_modo$theta.x`$^\circ$ and
+$\theta_y =$ `r (res_modo$theta.y)`$^\circ$.
 (In the rotated frame of reference, $\theta_x' = 0^\circ$ and $\theta_y' = 90^\circ$.)
 The segmented regression on the power spectrum identifies scalings with slope $\beta_1 =$ `r res_modo$beta1`, and $\beta_2 =$ `r res_modo$beta2`, before and after a cut-off lengthscale of $1/f_c =$ `r (res_modo$inv.fc)` m, respectively.
 As $\beta = 2H + d$, and $d = 2$, the Hurst coefficients $H$ corresponding to $\beta_1$ and $\beta_2$ are 
@@ -230,8 +230,8 @@ The maximum relief is thus `r (raster::maxValue(marble_canyon) - raster::minValu
 
 The figure below showcases the landscape in its original form.
 The landscape was rotated so that in this original frame of reference,
-$\theta_x =$ `r res_mrbl$theta %% 180`$^\circ$ and
-$\theta_y =$ `r (res_mrbl$theta %% 180 + 90)`$^\circ$.
+$\theta_x =$ `r res_mrbl$theta.x`$^\circ$ and
+$\theta_y =$ `r (res_mrbl$theta.y)`$^\circ$.
 (In the rotated frame of reference, $\theta_x' = 0^\circ$ and $\theta_y' = 90^\circ$.)
 The segmented regression on the power spectrum identifies scalings with slope $\beta_1 =$ `r res_mrbl$beta1`, and $\beta_2 =$ `r res_mrbl$beta2`, before and after a cut-off lengthscale of $1/f_c =$ `r (res_mrbl$inv.fc)` m, respectively.
 As $\beta = 2H + d$, and $d = 2$, the Hurst coefficients $H$ corresponding to $\beta_1$ and $\beta_2$ are 
@@ -284,8 +284,8 @@ The maximum relief is thus `r (raster::maxValue(submarine_canyon) - raster::minV
 
 The figure below showcases the landscape in its original form.
 The landscape was rotated so that in this original frame of reference,
-$\theta_x =$ `r res_subm$theta %% 180`$^\circ$ and
-$\theta_y =$ `r (res_subm$theta %% 180 + 90)`$^\circ$.
+$\theta_x =$ `r res_subm$theta.x`$^\circ$ and
+$\theta_y =$ `r (res_subm$theta.y)`$^\circ$.
 (In the rotated frame of reference, $\theta_x' = 0^\circ$ and $\theta_y' = 90^\circ$.)
 The segmented regression on the power spectrum identifies scalings with slope $\beta_1 =$ `r res_subm$beta1`, and $\beta_2 =$ `r res_subm$beta2`, before and after a cut-off lengthscale of $1/f_c =$ `r (res_subm$inv.fc)` m, respectively.
 As $\beta = 2H + d$, and $d = 2$, the Hurst coefficients $H$ corresponding to $\beta_1$ and $\beta_2$ are 
@@ -342,7 +342,8 @@ cnames <- c(
   "$\\alpha_{2,x}$",
   "$\\alpha_{2,y}$",
   "$\\zeta_2$",
-  "$\\theta$",
+  "$\\theta_x$",
+  "$\\theta_y$",
   "$1/f_c$",
   "$r_c$",
   "$\\xi_x$",

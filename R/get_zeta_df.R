@@ -46,7 +46,7 @@ get_zeta_df <- function(DEM, tiles, raster_resolution, vertical_accuracy = 1.87)
 			zeta_df <- get_zeta(cropped_DEM, raster_resolution)
 		} else {
 			zeta_df <- matrix(NA, nrow = 1, ncol = 19) %>% as.data.frame()
-			colnames(zeta_df) <- c("beta1", "beta2", "alpha1", "alpha1.x", "alpha1.y", "zeta1", "alpha2", "alpha2.x", "alpha2.y", "zeta2", "theta", "inv.fc", "rc", "xi", "xi.x", "xi.y", "w", "w.x", "w.y")
+			colnames(zeta_df) <- c("beta1", "beta2", "alpha1", "alpha1.x", "alpha1.y", "zeta1", "alpha2", "alpha2.x", "alpha2.y", "zeta2", "theta.x", "theta.y", "inv.fc", "rc", "xi", "xi.x", "xi.y", "w", "w.x", "w.y")
 		}
 		zeta_df
 	}

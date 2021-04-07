@@ -37,7 +37,7 @@ zeta_results$spatial_scales
 
 band_names <- read.csv(file.path(results_directory, "band_names.csv")) %>% names()
 
-if ("theta" %in% .selected) zeta_results$raster_list <- zeta_results$raster_list %>% make_angular(match("theta", band_names))
+# if ("theta" %in% .selected) zeta_results$raster_list <- zeta_results$raster_list %>% make_angular(match("theta", band_names))
 
 ```
 
@@ -65,7 +65,7 @@ sliced_clamped_raster <- slice_clamp(
 ```
 
 ```{r}
-sliced_clamped_raster <- reduce_spatial_noise(sliced_clamped_raster)
+# sliced_clamped_raster <- reduce_spatial_noise(sliced_clamped_raster)
 
 #' @param raster_list a `list` of `stars` objects
 #' @param target_id the id of the layer to be masked
@@ -166,7 +166,6 @@ cat(unlist(res), sep = '\n')
 ```{r}
 crossscale_correlations(
 	raster_list = sliced_clamped_raster,
-	att_names = band_names,
 	selected = .selected,
 	spatial_scales = spatial_scales,
 	corr_type = "pearson")

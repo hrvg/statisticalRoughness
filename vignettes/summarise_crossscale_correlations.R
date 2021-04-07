@@ -1,12 +1,14 @@
-
 #' Statistics on cross-scale correlations
 #' @param graphics_df a `data.frame` output from `crossscale_correlations()`
 #' @return a list with two elements, the plots and the graphics_df
 #' @export
 #' @importFrom rlang .data
-summarise_crossscale_correlations <- function(graphics_df, stat = "mean", threshold = 0){
+summarise_crossscale_correlations <- function(graphics_df, stat = "mean", threshold = 0, filter_xy = FALSE){
   if(class(graphics_df) != "data.frame") stop("`graphics_df` is not of class `data.frame`")
   .list = list(min = min, mean = mean, max = max, sd = sd)
+  if (filter_xy){
+    graphics_df <- graphics_df %>% dplyr::filter(!(grepl("\\.x", var1) | grepl("\\.x", var2) | grepl("\\.y", var1) | grepl("\\.y", var2) | var1 == "zeta1" | var2 == "zeta1" | var1 == "zeta2" | var2 == "zeta2"))
+  }
   new_graphics_df <- graphics_df %>% 
     dplyr::mutate(vars = paste0(.data$var1, "-", .data$var2)) %>%
     dplyr::group_by(vars) %>%
@@ -40,11 +42,11 @@ summarise_crossscale_correlations <- function(graphics_df, stat = "mean", thresh
     distance_matrix <- rbind(distance_matrix, distance_matrix %>% dplyr::mutate(var1 = distance_matrix$var2, var2 = distance_matrix$var1)) %>% 
     dplyr::arrange(var2) %>%
     tidyr::spread(.data$var2, .data$value, drop = FALSE)
-    distance_matrix$var1 <- NULL
-    distance_matrix <- as.matrix(distance_matrix)
+  distance_matrix$var1 <- NULL
+  distance_matrix <- as.matrix(distance_matrix)
   distance_matrix <- distance_matrix[order(colnames(distance_matrix)),order(colnames(distance_matrix))]
   groupColors <- viridisLite::viridis(nrow(distance_matrix), begin = .1, end = .9)
   groupColors <- sapply(groupColors, function(x) substring(x, first = 1, last = 7)) %>% unname()
-  cdiag <- chorddiag::chorddiag(distance_matrix, groupColors = groupColors, groupnamePadding = 20)
+  cdiag <- chorddiag::chorddiag(distance_matrix, groupColors = groupColors, groupnamePadding = 20, precision = 3)
   return(list(dotplots = p, cdiag = cdiag))
 }
