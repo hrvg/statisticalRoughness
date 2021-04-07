@@ -74,6 +74,8 @@ get_zeta <- function(rstr, raster_resolution, nbin = 20, .Hann = TRUE, .quantile
 	hhcf_y <- get_hhcf_(rotated_raster, raster_resolution, margin = 2)
 	w_x <- mean(hhcf_x$rms, na.rm = TRUE)
 	w_y <- mean(hhcf_y$rms, na.rm = TRUE)
+	theta_x <- ang_fourier %% 360
+	theta_y <- (theta_x + 90) %% 360
 	rms_flag <- w_x > w_y
 	if(is.na(rms_flag)) rms_flag <- TRUE
 	if(rms_flag){
@@ -88,6 +90,8 @@ get_zeta <- function(rstr, raster_resolution, nbin = 20, .Hann = TRUE, .quantile
 		xi_y <- mean(hhcf_x$autocorr_len, na.rm = TRUE)
 		w_x <- mean(hhcf_y$rms, na.rm = TRUE)
 		w_y <- mean(hhcf_x$rms, na.rm = TRUE)
+		theta_y <- ang_fourier %% 360
+		theta_x <- (theta_y - 90) %% 360
 	}
 	kruskal_flag1 <- get_kruskal_flag(alpha_x, alpha_y, "alpha1")
 	kruskal_flag2 <- get_kruskal_flag(alpha_x, alpha_y, "alpha2")
@@ -106,7 +110,9 @@ get_zeta <- function(rstr, raster_resolution, nbin = 20, .Hann = TRUE, .quantile
 			w = mean(c(.data$w.x, .data$w.y)),
 			xi.x = xi_x,
 			xi.y = xi_y,
-			xi = mean(c(.data$xi.x, .data$xi.y))
+			xi = mean(c(.data$xi.x, .data$xi.y)),
+			theta.x = theta_x,
+			theta.y = theta_y
 		)
 	if (full) return(res)
 	res <- res %>%
@@ -132,7 +138,8 @@ get_zeta <- function(rstr, raster_resolution, nbin = 20, .Hann = TRUE, .quantile
 			.data$alpha2.x,
 			.data$alpha2.y,
 			.data$zeta2,
-			.data$theta,
+			.data$theta.x,
+			.data$theta.y,
 			.data$inv.fc,
 			.data$rc,
 			.data$xi,

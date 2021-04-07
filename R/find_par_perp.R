@@ -41,7 +41,7 @@ find_par_perp <- function(raster_list, xdir_id, ydir_id, xtarget_id = NULL, ytar
 		par_values[i_par] <- raster::getValues(s[[ytarget_id]])[i_par] # assign when predicate is TRUE
 		s <- raster::setValues(s, par_values, layer = raster::nlayers(s))
 		
-		return(list(r = stars::st_as_stars(s, proxy = FALSE), index_perp = i_perp, ratio_perp = length(i_perp) / length(na.omit(perp_values)), index_par = i_par))
+		return(list(r = stars::st_as_stars(s, proxy = FALSE), index_perp = i_perp, ratio_perp = length(i_perp) / length(stats::na.omit(perp_values)), index_par = i_par))
 	})
 	
 	par_perp_raster_list <- lapply(res, function(l) l$r)

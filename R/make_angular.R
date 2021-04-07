@@ -8,7 +8,7 @@ make_angular <- function(raster_list, target_id){
 	transformed_raster_list <- lapply(seq_along(raster_list), function(n){
 		s <- raster_list[[n]] %>% as("Raster")
 		transformed_values <- raster::getValues(s[[target_id]])
-		transformed_values <-  sapply(transformed_values, function(x) sin(2 * (x %% 90)))
+		transformed_values <-  sapply(transformed_values, function(x) pracma::sind(2 * (x %% 90)))
 		# transformed_values <-  sapply(transformed_values, function(x) ifelse(x > 180, x - 180, x))
 		# transformed_values[!is.finite(transformed_values)] <- NA
 		s <- raster::setValues(s, transformed_values, layer = target_id)

@@ -35,9 +35,9 @@ library("statisticalRoughness")
 library("rayshader")
 library("raster")
 
-rstr <- raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "submarine_canyon.tif"))
-# raster_resolution <- 10
-raster_resolution <- 50
+rstr <- raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "gabilan_mesa.tif"))
+raster_resolution <- 10
+# raster_resolution <- 50
 # rstr <- raster::aggregate(rstr, fact = 9) # 90 m to match Pastor-Satorras
 # raster_resolution <- 90
 FT2D <- rstr %>% detrend_dem() %>% raster::as.matrix() %>%
@@ -48,7 +48,7 @@ binned_power_spectrum <- na.omit(binned_power_spectrum)
 normalized_spectral_power_matrix <- get_normalized_spectral_power_matrix(binned_power_spectrum, FT2D)
 filtered_spectral_power_matrix <- filter_spectral_power_matrix(normalized_spectral_power_matrix, FT2D, quantile_prob = c(0.9999))
 ang_fourier <- get_fourier_angle(filtered_spectral_power_matrix, FT2D)
-ang_fourier <- 0
+# ang_fourier <- 0
 rotated_raster <- rotate_raster(rstr, ang_fourier) 
 ```
 

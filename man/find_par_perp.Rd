@@ -2,20 +2,36 @@
 % Please edit documentation in R/find_par_perp.R
 \name{find_par_perp}
 \alias{find_par_perp}
-\title{Add parallel and perpendicular directions}
+\title{Add parallel and perpendicular directions and modifies the values of the x,y raster so that the raster in the perpendicular direction has the highest value for the defining direction.}
 \usage{
-find_par_perp(raster_list, xdir_id, ydir_id)
+find_par_perp(
+  raster_list,
+  xdir_id,
+  ydir_id,
+  xtarget_id = NULL,
+  ytarget_id = NULL,
+  index_perp = NULL,
+  index_par = NULL
+)
 }
 \arguments{
 \item{raster_list}{a \code{list} of \code{stars} objects}
 
-\item{xdir_id}{the id of the layer with the x direction}
+\item{xdir_id}{\code{numeric}, the id of the layer with the x direction}
 
-\item{ydir_id}{the id of the layer with the y direction}
+\item{ydir_id}{\code{numeric}, the id of the layer with the y direction}
+
+\item{xtarget_id}{\code{numeric}, optional, the id of the target layer with the x direction}
+
+\item{ytarget_id}{\code{numeric}, optional, the id of the target layer with the y direction}
+
+\item{index_perp}{\code{numeric}, optional, the index of values in the perpendicular direction}
+
+\item{index_par}{\code{numeric}, optional, the index of values in the parallel direction}
 }
 \value{
 a \code{list} of \code{stars}
 }
 \description{
-Add parallel and perpendicular directions
+Here the perpendicular direction is defined so that alpha_1_perp > alpha_1_par.
 }

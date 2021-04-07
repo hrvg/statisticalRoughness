@@ -72,14 +72,14 @@ In that `data.frame`, `n_sigma` controls the number of standard deviation to fil
 Leaving `Inf` values in the `*_clamp` will not constrain the distribution and if `lower` or `upper` are `TRUE` the `*_clamp` is overwritten using `n_sigma`.
 
 ```{r}
-.selected <- c("beta2", "alpha1.y", "alpha1.x", "alpha2.y", "alpha2.x", "w.y", "w.x", "xi.y", "xi.x", "zeta1", "zeta2")
+.selected <- c("beta2", "alpha1.y", "alpha1.x", "alpha2.y", "alpha2.x", "w.y", "w.x", "xi.y", "xi.x", "zeta1", "zeta2", "theta")
 cparams <- data.frame(
   selected = .selected,
   n_sigma = rep(3, length(.selected)),
-  lower = c(TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE),
-  upper = c(FALSE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, TRUE, TRUE),
-  lower_clamp = c(-Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, 1, 1),
-  upper_clamp = c(0, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf)
+  lower = c(TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE),
+  upper = c(FALSE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, FALSE),
+  lower_clamp = c(-Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, 1, 1, -Inf),
+  upper_clamp = c(0, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf)
 )
 ```
 

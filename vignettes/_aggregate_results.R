@@ -4,7 +4,7 @@ library("tictoc")
 # PARAMETERS
 tic()
 print("Saving parameters...")
-out_dir <- "out14"
+out_dir <- "out15"
 if(!dir.exists(out_dir)) dir.create(out_dir)
 
 .selected <- c("beta2", "alpha1.x", "alpha1.y", "alpha2.x", "alpha2.y", "w.x", "w.y", "xi.x", "xi.y", "zeta1", "zeta2", "median_Pe", "H", "q", "geol_diversity", "inv.fc", "theta")
@@ -167,7 +167,7 @@ tic()
 print("Outputting distributions...")
 pdf(file.path(out_dir, "distributions_sub.pdf"))
 for(x in .selected){
-  gb <- make_all_plots(sliced_clamped_raster, spatial_scales, match(x, .selected), x, begin = 0.1, end = 0.85, direction = 1, option = "viridis")
+  gb <- make_all_plots(sub_sliced_clamped_raster, spatial_scales, match(x, .subselected), x, begin = 0.1, end = 0.85, direction = 1, option = "viridis")
   layout_mat <- matrix(c(1, 1, 1, 1, 1, 2, 2, 2, 3, 3), byrow = FALSE, nrow = 5, ncol = 2)
   gridExtra::grid.arrange(grobs = gb, layout_matrix = layout_mat)
 }
