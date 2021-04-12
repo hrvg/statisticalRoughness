@@ -31,13 +31,14 @@ rstr <- raster::raster(file.path(system.file("extdata/big_rasters/", package = "
 
 Lmax <- min(head(dim(rstr), 2))
 spatial_scales <- get_all_R_L(Lmax, 5, len = 13)$allL %>% head(-1)
-spatial_scales <- spatial_scales[spatial_scales >= 30]
+spatial_scales <- spatial_scales[spatial_scales >= 72]
 zeta_results$spatial_scales <- tail(spatial_scales, length(zeta_results$raster_list)) * 10
 zeta_results$spatial_scales
 
 band_names <- read.csv(file.path(results_directory, "band_names.csv")) %>% names()
 
-# if ("theta" %in% .selected) zeta_results$raster_list <- zeta_results$raster_list %>% make_angular(match("theta", band_names))
+if ("theta.x" %in% .selected) zeta_results$raster_list <- zeta_results$raster_list %>% make_angular(match("theta.x", band_names))
+if ("theta.y" %in% .selected) zeta_results$raster_list <- zeta_results$raster_list %>% make_angular(match("theta.y", band_names))
 
 ```
 
@@ -65,27 +66,53 @@ sliced_clamped_raster <- slice_clamp(
 ```
 
 ```{r}
+# sliced_clamped_raster <- sliced_clamped_raster
+for (x in c("w.y", "w.x", "xi.y", "xi.x")){
+    sliced_clamped_raster <- logtransform_layer(sliced_clamped_raster, match(x, .selected))
+}
+
 # sliced_clamped_raster <- reduce_spatial_noise(sliced_clamped_raster)
 
+#' Apply a log transform to a given layer
 #' @param raster_list a `list` of `stars` objects
 #' @param target_id the id of the layer to be masked
-#' @return a `list` of `stars` 
-logtransform_layer <- function(raster_list, target_id){
+#' @return a `list` of `stars`
+#' @export
+get_theta_from_theta <- function(raster_list, theta_x, theta_y){
   transformed_raster_list <- lapply(seq_along(raster_list), function(n){
     s <- raster_list[[n]] %>% as("Raster")
-    transformed_values <- raster::getValues(s[[target_id]])
-    transformed_values <- log10(transformed_values)
-    transformed_values[!is.finite(transformed_values)] <- NA
-    s <- raster::setValues(s, transformed_values, layer = target_id)
+    theta_y_values <- raster::getValues(s[[theta_x]]) + 90
+    s <- raster::setValues(s, theta_y_values, layer = theta_y)
     return(stars::st_as_stars(s))
   })
   return(transformed_raster_list)
 }
 
-.sliced_clamped_raster <- sliced_clamped_raster
-for (x in c("alpha1.y", "alpha1.x", "alpha2.y", "alpha2.x", "w.y", "w.x", "xi.y", "xi.x", "zeta1", "zeta2")){
-    .sliced_clamped_raster <- logtransform_layer(.sliced_clamped_raster, match(x, .selected))
-}
+sliced_clamped_raster <- get_theta_from_theta(sliced_clamped_raster, match("theta.x", .selected), match("theta.y", .selected))
+
+res1 <- find_par_perp(sliced_clamped_raster, match("alpha1.x", .selected), match("alpha1.y", .selected))
+res2 <- find_par_perp(sliced_clamped_raster, match("alpha2.x", .selected), match("alpha2.y", .selected))
+sliced_clamped_raster <- res1$raster_list
+.selected <- c(.selected, "alpha_perp1", "alpha_par1")
+
+sliced_clamped_raster <- find_par_perp(sliced_clamped_raster, match("alpha1.x", .selected), match("alpha1.y", .selected), match("alpha2.x", .selected), match("alpha2.y", .selected), index_perp = res1$index_perp, index_par = res1$index_par)
+.selected <- c(.selected, "alpha_perp2", "alpha_par2")
+
+sliced_clamped_raster <- find_par_perp(sliced_clamped_raster, match("alpha1.x", .selected), match("alpha1.y", .selected), match("w.x", .selected), match("w.y", .selected), index_perp = res1$index_perp, index_par = res1$index_par)
+.selected <- c(.selected, "w_perp", "w_par")
+
+sliced_clamped_raster <- find_par_perp(sliced_clamped_raster, match("alpha1.x", .selected), match("alpha1.y", .selected), match("xi.x", .selected), match("xi.y", .selected), index_perp = res1$index_perp, index_par = res1$index_par)
+.selected <- c(.selected, "xi_perp", "xi_par")
+
+sliced_clamped_raster <- find_par_perp(sliced_clamped_raster, match("alpha1.x", .selected), match("alpha1.y", .selected), match("theta.x", .selected), match("theta.y", .selected), index_perp = res1$index_perp, index_par = res1$index_par)
+.selected <- c(.selected, "theta_perp", "theta_par")
+
+sliced_clamped_raster <- correct_zeta(sliced_clamped_raster, match("zeta1", .selected))
+.selected <- c(.selected, "zeta_perp1")
+sliced_clamped_raster <- correct_zeta(sliced_clamped_raster, match("zeta2", .selected))
+.selected <- c(.selected, "zeta_perp2")
+
+
 ```
 
 ```{r, echo = FALSE, results = 'asis'}
@@ -94,7 +121,7 @@ res <- lapply(.selected, function(x) {
     '### `r x`',
     '',
     '```{r}',
-    'raster_select(.sliced_clamped_raster, band_id = match(x, .selected)) %>% 
+    'raster_select(sliced_clamped_raster, band_id = match(x, .selected)) %>% 
   make_leaflet_map(ttl = x, groups = zeta_results$spatial_scales, style = "continuous")',
     '```',
     ''
@@ -131,7 +158,7 @@ cat(unlist(res), sep = '\n')
 
 ## Comparing $x-$ and $y-$ variables
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval = FALSE}
 is_band1_gt_band2 <- function(band1, band2, rasters, .selected, spatial_scales){
 	allx <- raster_select(rasters, band_id = match(band1, .selected))$rasters
 	ally <- raster_select(rasters, band_id = match(band2, .selected))$rasters
@@ -153,7 +180,7 @@ is_band1_gt_band2 <- function(band1, band2, rasters, .selected, spatial_scales){
 }
 ```
 
-```{r, echo = FALSE, results = "asis"}
+```{r, echo = FALSE, results = "asis", eval = FALSE}
 vars <- .selected[grepl(".x", .selected)]
 res <- foreach(var = vars) %do% {
 	is_band1_gt_band2(var, gsub(".x", ".y", var), sliced_clamped_raster, .selected, spatial_scales)
@@ -163,7 +190,7 @@ cat(unlist(res), sep = '\n')
 
 ## Cross-scale correlations
 
-```{r}
+```{r, eval = FALSE}
 crossscale_correlations(
 	raster_list = sliced_clamped_raster,
 	selected = .selected,
