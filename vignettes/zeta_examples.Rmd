@@ -30,7 +30,7 @@ This vignette displays the calculation of anisotropy exponent for different land
 library("statisticalRoughness")
 library("rayshader")
 
-view_rotated_raster <- function(rstr, raster_resolution = 9.015, nbin = 50, .Hann = TRUE, .quantile_prob = c(0.9999)){
+view_rotated_raster <- function(rstr, raster_resolution = 9.015, nbin = 50, .Hann = TRUE, .quantile_prob = c(0.99)){
 	rstr <- rstr %>% detrend_dem() 
 	FT2D <- fft2D(raster::as.matrix(rstr), dx = raster_resolution, dy = raster_resolution, Hann = .Hann)
 	binned_power_spectrum <- bin(log10(FT2D$radial_frequency_vector), log10(FT2D$spectral_power_vector), nbin) %>% na.omit()

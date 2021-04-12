@@ -61,8 +61,8 @@ get_kruskal_flag <- function(alpha_x, alpha_y, var){
 #' @return a `data.frame`
 #' @export
 #' @keywords zeta
-get_zeta <- function(rstr, raster_resolution, nbin = 20, .Hann = TRUE, .quantile_prob = c(0.9999), .prob = .999, full = FALSE){
-	FT2D <- rstr %>% detrend_dem() %>% raster::as.matrix() %>% 
+get_zeta <- function(rstr, raster_resolution, nbin = 20, .Hann = TRUE, .quantile_prob = c(0.99), .prob = .999, full = FALSE){
+	FT2D <- rstr %>% raster::trim() %>% detrend_dem() %>% raster::as.matrix() %>% 
 		fft2D(dx = raster_resolution, dy = raster_resolution, Hann = .Hann)
 	binned_power_spectrum <- bin(log10(FT2D$radial_frequency_vector), log10(FT2D$spectral_power_vector), nbin) %>% stats::na.omit()
 	beta <- get_beta(binned_power_spectrum, FT2D)
@@ -76,23 +76,23 @@ get_zeta <- function(rstr, raster_resolution, nbin = 20, .Hann = TRUE, .quantile
 	w_y <- mean(hhcf_y$rms, na.rm = TRUE)
 	theta_x <- ang_fourier %% 360
 	theta_y <- (theta_x + 90) %% 360
-	# rms_flag <- w_x > w_y
-	# if(is.na(rms_flag)) rms_flag <- TRUE
-	# if(rms_flag){
+	rms_flag <- w_x > w_y
+	if(is.na(rms_flag)) rms_flag <- TRUE
+	if(rms_flag){
 		alpha_x <- get_all_alpha_(hhcf_x, raster_resolution) 
 		alpha_y <- get_all_alpha_(hhcf_y, raster_resolution)
 		xi_x <- mean(hhcf_x$autocorr_len, na.rm = TRUE)
 		xi_y <- mean(hhcf_y$autocorr_len, na.rm = TRUE)
-	# } else { # invert so that x has the highest rms
-	# 	alpha_x <- get_all_alpha_(hhcf_y, raster_resolution)
-	# 	alpha_y <- get_all_alpha_(hhcf_x, raster_resolution)
-	# 	xi_x <- mean(hhcf_y$autocorr_len, na.rm = TRUE)
-	# 	xi_y <- mean(hhcf_x$autocorr_len, na.rm = TRUE)
-	# 	w_x <- mean(hhcf_y$rms, na.rm = TRUE)
-	# 	w_y <- mean(hhcf_x$rms, na.rm = TRUE)
-	# 	theta_y <- ang_fourier %% 360
-	# 	theta_x <- (theta_y - 90) %% 360
-	# }
+	} else { # invert so that x has the highest rms
+		alpha_x <- get_all_alpha_(hhcf_y, raster_resolution)
+		alpha_y <- get_all_alpha_(hhcf_x, raster_resolution)
+		xi_x <- mean(hhcf_y$autocorr_len, na.rm = TRUE)
+		xi_y <- mean(hhcf_x$autocorr_len, na.rm = TRUE)
+		w_x <- mean(hhcf_y$rms, na.rm = TRUE)
+		w_y <- mean(hhcf_x$rms, na.rm = TRUE)
+		theta_y <- ang_fourier %% 360
+		theta_x <- (theta_y - 90) %% 360
+	}
 	kruskal_flag1 <- get_kruskal_flag(alpha_x, alpha_y, "alpha1")
 	kruskal_flag2 <- get_kruskal_flag(alpha_x, alpha_y, "alpha2")
 	alpha_x <- alpha_x %>% summarise_alpha()

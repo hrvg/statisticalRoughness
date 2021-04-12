@@ -46,7 +46,7 @@ nbin <- 20
 binned_power_spectrum <- bin(log10(FT2D$radial_frequency_vector), log10(FT2D$spectral_power_vector), nbin)
 binned_power_spectrum <- na.omit(binned_power_spectrum)
 normalized_spectral_power_matrix <- get_normalized_spectral_power_matrix(binned_power_spectrum, FT2D)
-filtered_spectral_power_matrix <- filter_spectral_power_matrix(normalized_spectral_power_matrix, FT2D, quantile_prob = c(0.9999))
+filtered_spectral_power_matrix <- filter_spectral_power_matrix(normalized_spectral_power_matrix, FT2D)
 ang_fourier <- get_fourier_angle(filtered_spectral_power_matrix, FT2D)
 # ang_fourier <- 0
 rotated_raster <- rotate_raster(rstr, ang_fourier) 

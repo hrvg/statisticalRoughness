@@ -75,7 +75,7 @@ get_normalized_spectral_power_matrix <- function(B, FT2D){
 #' @return angle of the main component of the Fourier spectrum, counted counter-clockwise
 #' @export
 #' @keywords rotate_raster
-get_fourier_angle <- function(filtered_spectral_power_matrix, FT2D, bandwidth = 5){
+get_fourier_angle <- function(filtered_spectral_power_matrix, FT2D, bandwidth = 2.5){
 	nfx <- ncol(FT2D$radial_frequency_matrix)
 	nfy <- nrow(FT2D$radial_frequency_matrix)
 	nyq <- FT2D$radial_frequency_matrix[(nfy / 2 + 1), 1]
