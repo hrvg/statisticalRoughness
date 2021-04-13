@@ -101,8 +101,8 @@ get_theta_from_theta <- function(raster_list, theta_x, theta_y){
 # sliced_clamped_raster <- find_par_perp(sliced_clamped_raster, match("alpha1.x", .selected), match("alpha1.y", .selected), match("theta.x", .selected), match("theta.y", .selected), index_perp = res1$index_perp, index_par = res1$index_par)
 # .selected <- c(.selected, "theta_perp", "theta_par")
 
-# if ("theta.x" %in% .selected) sliced_clamped_raster  <- sliced_clamped_raster  %>% make_angular(match("theta.x", .selected))
-# sliced_clamped_raster <- get_theta_from_theta(sliced_clamped_raster, match("theta.x", .selected), match("theta.y", .selected))
+if ("theta.x" %in% .selected) sliced_clamped_raster  <- sliced_clamped_raster  %>% make_angular(match("theta.x", .selected))
+sliced_clamped_raster <- get_theta_from_theta(sliced_clamped_raster, match("theta.x", .selected), match("theta.y", .selected))
 
 # if ("theta_perp" %in% .selected) sliced_clamped_raster  <- sliced_clamped_raster  %>% make_angular(match("theta_perp", .selected))
 # sliced_clamped_raster <- get_theta_from_theta(sliced_clamped_raster, match("theta_perp", .selected), match("theta_par", .selected))
@@ -139,6 +139,7 @@ cat(unlist(res), sep = '\n')
 ind <- four_values_check(sliced_clamped_raster)
 sliced_clamped_raster <- sliced_clamped_raster[ind]
 spatial_scales <- zeta_results$spatial_scales[ind]
+ind
 ```
 
 ```{r, echo = FALSE, results = 'asis'}

@@ -9,7 +9,7 @@ four_values_check <- function(raster_list){
 	  	# all(notNA > 4)
 		df <- as.data.frame(s) %>% dplyr::select(-c("x", "y")) %>% dplyr::group_by(.data$band) %>% dplyr::group_map(~.)
 		df <- do.call(cbind, df)
-		nrow(stats::na.omit(df)) > 4
+		min(apply(df, MARGIN = 2, FUN = function(x) sum(!is.na(x)))) > 4
 	})
 }
 
