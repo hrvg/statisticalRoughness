@@ -71,11 +71,11 @@ get_normalized_spectral_power_matrix <- function(B, FT2D){
 #' Get the angle of the 2D Fourier spectrum
 #' @param filtered_spectral_power_matrix truncated normalized power spectrum
 #' @param FT2D `list`, results from `fft2d()` with objects radial frequency and spectral power matrices
-#' @param bandwidth `numeric` the bandwidth for the kernel smoothing of the circular density calculation
+#' @param bandwidth `numeric` or `character`; the bandwidth for the kernel smoothing of the circular density calculation; default to "SJ" for Sheater and Jones method
 #' @return angle of the main component of the Fourier spectrum, counted counter-clockwise
 #' @export
 #' @keywords rotate_raster
-get_fourier_angle <- function(filtered_spectral_power_matrix, FT2D, bandwidth = 2.5){
+get_fourier_angle <- function(filtered_spectral_power_matrix, FT2D, bandwidth = "SJ"){
 	nfx <- ncol(FT2D$radial_frequency_matrix)
 	nfy <- nrow(FT2D$radial_frequency_matrix)
 	nyq <- FT2D$radial_frequency_matrix[(nfy / 2 + 1), 1]

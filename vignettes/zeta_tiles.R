@@ -1,8 +1,8 @@
 devtools::load_all()
 library(tictoc)
 
-# region_names <- c("fort_bragg", "yosemite", "gabilan_mesa", "modoc")
-region_names <- c("gabilan_mesa", "yosemite")
+region_names <- c("fort_bragg", "yosemite", "gabilan_mesa", "modoc")
+# region_names <- c("gabilan_mesa", "yosemite")
 
 for (.name in region_names){
 	print(.name)
