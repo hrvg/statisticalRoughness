@@ -28,8 +28,8 @@ This vignette showcases the functions used to visualize and process the results 
 
 ```{r}
 CLAMP_RASTER <- FALSE
-PERP_PAR <- FALSE
-REDUCE_NOISE <- FALSE
+PERP_PAR <- TRUE
+REDUCE_NOISE <- TRUE
 CORRELATION <- FALSE
 ```
 

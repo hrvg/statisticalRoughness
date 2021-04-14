@@ -12,7 +12,8 @@
 #' @export
 get_zeta_ <- function(alpha_1, alpha_2, IQR_1, IQR_2, kruskal_flag){
 	if(any(is.na(c(IQR_1, IQR_2)))) return(NA)
-	if(IQR_1 <= 0.225 & IQR_2 <= 0.225 & kruskal_flag){
+	# if(IQR_1 <= 0.225 & IQR_2 <= 0.225 & kruskal_flag){
+	if(kruskal_flag){
 		# zeta <- max(c(alpha_1, alpha_2), na.rm = TRUE) / min(c(alpha_1, alpha_2), na.rm = TRUE)
 		zeta <- max(c(alpha_1), na.rm = TRUE) / min(c(alpha_2), na.rm = TRUE)
 	} else {

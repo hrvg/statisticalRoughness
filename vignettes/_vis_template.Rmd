@@ -87,6 +87,10 @@ if ("theta.x" %in% .selected) sliced_clamped_raster  <- sliced_clamped_raster  %
 sliced_clamped_raster <- get_theta_from_theta(sliced_clamped_raster, match("theta.x", .selected), match("theta.y", .selected))
 ```
 
+```{r reduce noise, eval = REDUCE_NOISE}
+sliced_clamped_raster <- reduce_spatial_noise(sliced_clamped_raster)
+```
+
 ```{r find_par_perp, echo = FALSE, eval = PERP_PAR}
 res1 <- find_par_perp(sliced_clamped_raster, match("alpha1.x", .selected), match("alpha1.y", .selected))
 res2 <- find_par_perp(sliced_clamped_raster, match("alpha2.x", .selected), match("alpha2.y", .selected))
@@ -115,9 +119,6 @@ sliced_clamped_raster <- correct_zeta(sliced_clamped_raster, match("zeta2", .sel
 .selected <- c(.selected, "zeta_perp2")
 ```
 
-```{r reduce noise, eval = REDUCE_NOISE}
-sliced_clamped_raster <- reduce_spatial_noise(sliced_clamped_raster)
-```
 
 ```{r, echo = FALSE, results = 'asis'}
 res <- lapply(.selected, function(x) {
