@@ -31,7 +31,7 @@ rstr <- raster::raster(file.path(system.file("extdata/big_rasters/", package = "
 
 Lmax <- min(head(dim(rstr), 2))
 spatial_scales <- get_all_R_L(Lmax, 5, len = 13)$allL %>% head(-1)
-spatial_scales <- spatial_scales[spatial_scales >= 50]
+spatial_scales <- spatial_scales[spatial_scales >= 30]
 
 zeta_results$spatial_scales <- tail(spatial_scales, length(zeta_results$raster_list)) * 10
 zeta_results$spatial_scales
@@ -51,23 +51,22 @@ matrix_for_rayshader(raster::as.matrix(rstr)) %>%
     plot_map()
 ```
 
-## Maps - clamped - denoised {.tabset}
+## Maps {.tabset}
 
 ```{r}
 sliced_clamped_raster <- slice_clamp(
   raster_list = zeta_results$raster_list,
   att_names = band_names,
   selected = .selected,
-  clamp_raster = TRUE, 
+  clamp_raster = CLAMP_RASTER, 
   clamp_params = cparams)
 ```
 
-```{r}
+```{r, echo = FALSE}
 # sliced_clamped_raster <- sliced_clamped_raster
 for (x in c("w.y", "w.x", "xi.y", "xi.x")){
     sliced_clamped_raster <- logtransform_layer(sliced_clamped_raster, match(x, .selected))
 }
-
 
 #' Apply a log transform to a given layer
 #' @param raster_list a `list` of `stars` objects
@@ -86,7 +85,9 @@ get_theta_from_theta <- function(raster_list, theta_x, theta_y){
 
 if ("theta.x" %in% .selected) sliced_clamped_raster  <- sliced_clamped_raster  %>% make_angular(match("theta.x", .selected))
 sliced_clamped_raster <- get_theta_from_theta(sliced_clamped_raster, match("theta.x", .selected), match("theta.y", .selected))
+```
 
+```{r find_par_perp, echo = FALSE, eval = PERP_PAR}
 res1 <- find_par_perp(sliced_clamped_raster, match("alpha1.x", .selected), match("alpha1.y", .selected))
 res2 <- find_par_perp(sliced_clamped_raster, match("alpha2.x", .selected), match("alpha2.y", .selected))
 sliced_clamped_raster <- res1$raster_list
@@ -112,10 +113,10 @@ sliced_clamped_raster <- correct_zeta(sliced_clamped_raster, match("zeta1", .sel
 
 sliced_clamped_raster <- correct_zeta(sliced_clamped_raster, match("zeta2", .selected))
 .selected <- c(.selected, "zeta_perp2")
+```
 
+```{r reduce noise, eval = REDUCE_NOISE}
 sliced_clamped_raster <- reduce_spatial_noise(sliced_clamped_raster)
-
-
 ```
 
 ```{r, echo = FALSE, results = 'asis'}
@@ -132,8 +133,6 @@ res <- lapply(.selected, function(x) {
 })
 cat(unlist(res), sep = '\n')
 ```
-
-
 
 ## Distribution plots {.tabset}
 
@@ -152,7 +151,7 @@ res <- lapply(.selected, function(x) {
     '```{r}',
     'gb <- make_all_plots(sliced_clamped_raster, spatial_scales, match(x, .selected), x, begin = 0.1, end = 0.85, direction = 1, option = "viridis")',
     'layout_mat <- matrix(c(1, 1, 1, 1, 1, 2, 2, 2, 3, 3), byrow = FALSE, nrow = 5, ncol = 2)',
-	'gridExtra::grid.arrange(grobs = gb, layout_matrix = layout_mat)',
+    'gridExtra::grid.arrange(grobs = gb, layout_matrix = layout_mat)',
     '```',
     ''
   ), envir = environment(), quiet = TRUE)
@@ -160,41 +159,63 @@ res <- lapply(.selected, function(x) {
 cat(unlist(res), sep = '\n')
 ```
 
+## Interactive plot
+
+```{r}
+x <- "theta.x"
+gb <- make_all_plots(sliced_clamped_raster, spatial_scales, match(x, .selected), x, begin = 0.1, end = 0.85, direction = 1, option = "viridis")
+plotly::ggplotly(gb[[1]])
+```
+
+
 ## Comparing $x-$ and $y-$ variables
 
-```{r, echo = FALSE, eval = FALSE}
-is_band1_gt_band2 <- function(band1, band2, rasters, .selected, spatial_scales){
+```{r, echo = FALSE, eval = TRUE}
+is_band1_gtlt_band2 <- function(band1, band2, rasters, .selected, spatial_scales, option = "gt"){
 	allx <- raster_select(rasters, band_id = match(band1, .selected))$rasters
 	ally <- raster_select(rasters, band_id = match(band2, .selected))$rasters
 	xy <- foreach(x = allx, y = ally, .combine = rbind) %do% {
 		x <- as(x, "Raster")
 		y <- as(y, "Raster")
 		s <- raster::stack(x, y)
-		raster::calc(s, fun = function(x){x[1] > x[2]}) %>% raster::getValues() %>% rstatix::freq_table() %>% dplyr::filter(group == "TRUE") %>% dplyr::select(-group)
+    if (option == "gt") res <- raster::calc(s, fun = function(x){x[1] > x[2]}) %>% raster::getValues() %>% rstatix::freq_table() %>% dplyr::filter(group == "TRUE") %>% dplyr::select(-group)
+    if (option == "lt") res <- raster::calc(s, fun = function(x){x[1] < x[2]}) %>% raster::getValues() %>% rstatix::freq_table() %>% dplyr::filter(group == "TRUE") %>% dplyr::select(-group)
+    res
 	}
-	# rownames(xy) <- spatial_scales
   mean_xy <- xy %>% dplyr::summarize(n = mean(n), prop = mean(prop))
-  # rownames(mean_xy) <- "mean"
   xy <- rbind(xy, mean_xy)
+	rownames(xy) <- c(spatial_scales, "mean")
 	xy  %>% 
-	knitr::kable("html", caption = paste0("Is ", band1, " greater than ", band2, "?")) %>% 
+	knitr::kable("html", caption = paste0("Is ", band1, " ", ifelse(option == "gt", "greater", "lesser"), " than ", band2, "?")) %>% 
 	kableExtra::kable_styling(bootstrap_options = c("striped", "hover"),
 		position = "center",
 		full_width = TRUE)
 }
 ```
 
-```{r, echo = FALSE, results = "asis", eval = FALSE}
+```{r, echo = FALSE, results = "asis", eval = TRUE}
 vars <- .selected[grepl(".x", .selected)]
-res <- foreach(var = vars) %do% {
-	is_band1_gt_band2(var, gsub(".x", ".y", var), sliced_clamped_raster, .selected, spatial_scales)
+opts <- sapply(grepl("theta", vars), function(x) ifelse(x, "lt", "gt"))
+res <- foreach(var = vars, opt = opts) %do% {
+	is_band1_gtlt_band2(var, gsub(".x", ".y", var), sliced_clamped_raster, .selected, spatial_scales, option = opt)
 }
 cat(unlist(res), sep = '\n')
 ```
 
+## Comparing $\perp-$ and $\parallel-$ variables
+
+```{r, echo = FALSE, results = "asis", eval = PERP_PAR}
+vars <- .selected[grepl("_perp", .selected)]
+vars <- vars[!grepl("zeta", vars)]
+opts <- sapply(grepl("theta", vars), function(x) ifelse(x, "lt", "gt"))
+res <- foreach(var = vars, opt = opts) %do% {
+  is_band1_gtlt_band2(var, gsub("_perp", "_par", var), sliced_clamped_raster, .selected, spatial_scales, option = opt)
+}
+cat(unlist(res), sep = '\n')
+```
 ## Cross-scale correlations
 
-```{r, eval = FALSE}
+```{r, eval = CORRELATION}
 crossscale_correlations(
 	raster_list = sliced_clamped_raster,
 	selected = .selected,

@@ -26,6 +26,13 @@ knitr::opts_chunk$set(
 
 This vignette showcases the functions used to visualize and process the results of the tiled workflow.
 
+```{r}
+CLAMP_RASTER <- FALSE
+PERP_PAR <- FALSE
+REDUCE_NOISE <- FALSE
+CORRELATION <- FALSE
+```
+
 # Initializing
 
 ## Loading library
@@ -39,7 +46,8 @@ devtools::load_all()
 
 ```{r}
 # region_names <- c("fort_bragg", "yosemite", "gabilan_mesa", "modoc")
-region_names <- c("gabilan_mesa", "yosemite")
+# region_names <- c("fort_bragg", "gabilan_mesa", "yosemite")
+region_names <- c("yosemite")
 .name <- region_names[1]
 results_directory <- file.path(system.file(paste0("extdata/zeta_results/", .name), package = "statisticalRoughness"))
 zeta_results <- read_zeta_raster(out_dir = results_directory, Lmax = 1E3, raster_resolution = 10, .len = 10)
