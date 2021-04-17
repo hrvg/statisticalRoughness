@@ -62,6 +62,12 @@ sliced_clamped_raster <- slice_clamp(
   clamp_params = cparams)
 ```
 
+```{r masking, eval = MASKING}
+for (x in .selected[!grepl("zeta1", .selected)]){
+  sliced_clamped_raster <- mask_layer_from_layer(sliced_clamped_raster, match(x, .selected), match("zeta1", .selected), option = "NA")
+}
+```
+
 ```{r, echo = FALSE}
 # sliced_clamped_raster <- sliced_clamped_raster
 for (x in c("w.y", "w.x", "xi.y", "xi.x")){
@@ -181,6 +187,7 @@ is_band1_gtlt_band2 <- function(band1, band2, rasters, .selected, spatial_scales
 		s <- raster::stack(x, y)
     if (option == "gt") res <- raster::calc(s, fun = function(x){x[1] > x[2]}) %>% raster::getValues() %>% rstatix::freq_table() %>% dplyr::filter(group == "TRUE") %>% dplyr::select(-group)
     if (option == "lt") res <- raster::calc(s, fun = function(x){x[1] < x[2]}) %>% raster::getValues() %>% rstatix::freq_table() %>% dplyr::filter(group == "TRUE") %>% dplyr::select(-group)
+    if(nrow(res) == 0) res <- data.frame(n = 0, prop = 0)
     res
 	}
   mean_xy <- xy %>% dplyr::summarize(n = mean(n), prop = mean(prop))
