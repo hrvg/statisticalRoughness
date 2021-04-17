@@ -4,12 +4,14 @@
 \alias{make_angular}
 \title{Transform a 360 degrees variable to a 180 degrees}
 \usage{
-make_angular(raster_list, target_id)
+make_angular(raster_list, target_id, mode = "half")
 }
 \arguments{
 \item{raster_list}{a \code{list} of \code{stars} objects}
 
 \item{target_id}{the id of the layer to be masked}
+
+\item{mode}{\code{character}, should the function consider a full or a half-circle}
 }
 \value{
 a \code{list} of \code{stars}
