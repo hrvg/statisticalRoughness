@@ -39,3 +39,5 @@ vignettes/*.pdf
 .Renviron
 docs
 docs/
+
+/inst/extdata/zeta_results*

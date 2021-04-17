@@ -31,7 +31,8 @@ The main purpose of Fourier analysis in this package is to rotate rasters so tha
 First, we perform the basic steps from [this vignette](articles/basic_2dft.html).
 
 ```{r}
-library("statisticalRoughness")
+# library("statisticalRoughness")
+devtools::load_all()
 library("rayshader")
 library("raster")
 
@@ -106,7 +107,7 @@ power_ww <-power_ww^2
 power_ww <- power_ww / sum(power_ww)
 
 coord_polar <- useful::cart2pol(coord$Var2, coord$Var1, degree = TRUE)
-cDens_fourier <- spatstat.core::circdensity(coord_polar$theta, weights = power_ww, bw = 5)
+cDens_fourier <- spatstat.core::circdensity(coord_polar$theta, weights = power_ww, bw = "SJ")
 spatstat.core::rose(cDens_fourier, main = "Rose plot of FFT components")
 ```
 
