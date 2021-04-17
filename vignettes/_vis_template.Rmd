@@ -62,7 +62,7 @@ sliced_clamped_raster <- slice_clamp(
   clamp_params = cparams)
 ```
 
-```{r masking, eval = MASKING}
+```{r, eval = MASKING}
 for (x in .selected[!grepl("zeta1", .selected)]){
   sliced_clamped_raster <- mask_layer_from_layer(sliced_clamped_raster, match(x, .selected), match("zeta1", .selected), option = "NA")
 }
@@ -93,11 +93,11 @@ if ("theta.x" %in% .selected) sliced_clamped_raster  <- sliced_clamped_raster  %
 sliced_clamped_raster <- get_theta_from_theta(sliced_clamped_raster, match("theta.x", .selected), match("theta.y", .selected))
 ```
 
-```{r reduce noise, eval = REDUCE_NOISE}
+```{r, eval = REDUCE_NOISE}
 sliced_clamped_raster <- reduce_spatial_noise(sliced_clamped_raster)
 ```
 
-```{r find_par_perp, echo = FALSE, eval = PERP_PAR}
+```{r, echo = FALSE, eval = PERP_PAR}
 res1 <- find_par_perp(sliced_clamped_raster, match("alpha1.x", .selected), match("alpha1.y", .selected))
 res2 <- find_par_perp(sliced_clamped_raster, match("alpha2.x", .selected), match("alpha2.y", .selected))
 sliced_clamped_raster <- res1$raster_list
@@ -115,8 +115,8 @@ sliced_clamped_raster <- find_par_perp(sliced_clamped_raster, match("alpha1.x", 
 sliced_clamped_raster <- find_par_perp(sliced_clamped_raster, match("alpha1.x", .selected), match("alpha1.y", .selected), match("theta.x", .selected), match("theta.y", .selected), index_perp = res1$index_perp, index_par = res1$index_par)
 .selected <- c(.selected, "theta_perp", "theta_par")
 
-if ("theta_perp" %in% .selected) sliced_clamped_raster  <- sliced_clamped_raster  %>% make_angular(match("theta_perp", .selected))
 sliced_clamped_raster <- get_theta_from_theta(sliced_clamped_raster, match("theta_perp", .selected), match("theta_par", .selected))
+sliced_clamped_raster  <- sliced_clamped_raster %>% make_angular(match("theta_par", .selected), mode = "full")
 
 sliced_clamped_raster <- correct_zeta(sliced_clamped_raster, match("zeta1", .selected))
 .selected <- c(.selected, "zeta_perp1")
@@ -124,7 +124,6 @@ sliced_clamped_raster <- correct_zeta(sliced_clamped_raster, match("zeta1", .sel
 sliced_clamped_raster <- correct_zeta(sliced_clamped_raster, match("zeta2", .selected))
 .selected <- c(.selected, "zeta_perp2")
 ```
-
 
 ```{r, echo = FALSE, results = 'asis'}
 res <- lapply(.selected, function(x) {
