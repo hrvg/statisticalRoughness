@@ -92,7 +92,13 @@ get_fourier_angle <- function(filtered_spectral_power_matrix, FT2D, bandwidth = 
 	power_ww <- power_ww / sum(power_ww)
 
 	coord_polar <- useful::cart2pol(coord$Var2, coord$Var1, degree = TRUE) # counted counter-clockwise
-	cDens_fourier <- spatstat.core::circdensity(coord_polar$theta, weights = power_ww, bw = bandwidth) # counted counter-clockwise
+	cDens_fourier <- tryCatch( # catching a rare error
+			spatstat.core::circdensity(coord_polar$theta, weights = power_ww, bw = bandwidth), 
+			error = function(e) e, warning = function(w) w
+		)
+	if(is(cDens_fourier, "warning") | is(cDens_fourier, "error")){
+		cDens_fourier <- spatstat.core::circdensity(coord_polar$theta, weights = power_ww, bw = 5) # counted counter-clockwise
+	}
 
 	ang_fourier <- cDens_fourier$x[which.max(cDens_fourier$y)]
 	return(ang_fourier)
