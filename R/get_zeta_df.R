@@ -10,7 +10,7 @@
 #' @import foreach
 #' @export
 #' @keywords zeta
-get_zeta_df <- function(DEM, tiles, raster_resolution, vertical_accuracy = 1.87){
+get_zeta_df <- function(DEM, tiles, raster_resolution, vertical_accuracy = 1.8, mode = "radial"){
 	# class check
 	if(!class(DEM) == "RasterLayer") stop("invalid class: DEM is not of class 'RasterLayer'")
 	if(!class(tiles) %in% c("RasterLayer", "SpatialPolygonsDataFrame")) stop("invalid class: tiles is not of class 'RasterLayer' or 'SpatialPolygonsDataFrame'")
@@ -43,10 +43,15 @@ get_zeta_df <- function(DEM, tiles, raster_resolution, vertical_accuracy = 1.87)
 		cropped_DEM_values <- raster::getValues(cropped_DEM)
 		pct_non_na <- sum(is.finite(cropped_DEM_values)) / raster::ncell(cropped_DEM)
 		if ((pct_non_na > 1/3) & !(stats::IQR(stats::na.omit(cropped_DEM_values)) < vertical_accuracy)){ 
-			zeta_df <- get_zeta(cropped_DEM, raster_resolution)
+			zeta_df <- get_zeta(cropped_DEM, raster_resolution, .mode = mode)
 		} else {
-			zeta_df <- matrix(NA, nrow = 1, ncol = 20) %>% as.data.frame()
-			colnames(zeta_df) <- c("beta1", "beta2", "alpha1", "alpha1.x", "alpha1.y", "zeta1", "alpha2", "alpha2.x", "alpha2.y", "zeta2", "theta.x", "theta.y", "inv.fc", "rc", "xi", "xi.x", "xi.y", "w", "w.x", "w.y")
+			if (mode == "fourier"){
+				zeta_df <- matrix(NA, nrow = 1, ncol = 20) %>% as.data.frame()
+				colnames(zeta_df) <- c("beta1", "beta2", "alpha1", "alpha1.x", "alpha1.y", "zeta1", "alpha2", "alpha2.x", "alpha2.y", "zeta2", "theta.x", "theta.y", "inv.fc", "rc", "xi", "xi.x", "xi.y", "w", "w.x", "w.y")
+			} else if (mode == "radial"){
+				zeta_df <- matrix(NA, nrow = 1, ncol = 19) %>% as.data.frame()
+				colnames(zeta_df) <- c("alpha1", "alpha1.x", "alpha1.y", "zeta1", "alpha2", "alpha2.x", "alpha2.y", "zeta2", "theta.x", "theta.y", "alpha1_median", "alpha1_mad", "rc", "xi", "xi.x", "xi.y", "w", "w.x", "w.y")
+			}
 		}
 		zeta_df
 	}

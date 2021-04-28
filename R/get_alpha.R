@@ -183,7 +183,7 @@ summarise_alpha <- function(alpha){
 get_all_alpha_ <- function(hhcf, dr){
 	xi <- hhcf$autocorr_len
 	hhcf <- hhcf$hhcf
-	all_alpha <- lapply(seq_along(hhcf), function(k){
+	all_alpha <- lapply(seq(nrow(hhcf)), function(k){
 		get_alpha_(hhcf[k, ], dr, xi[k])
 	})
 	all_alpha <- do.call(rbind, all_alpha)

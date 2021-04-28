@@ -35,11 +35,14 @@ print("Saving parameters...")
 ZETA_MASKING <- FALSE
 REDUCE_NOISE <- FALSE
 NOISE_FUN <- mean
-PAR_PERP <- TRUE
+PAR_PERP <- FALSE
 MAPS <- TRUE
 DIST <- TRUE
-CORR <- TRUE
+CORR <- FALSE
 SUB <- TRUE
+COMPARE <- FALSE
+AVERAGE <- TRUE
+
 out_dir <- paste("out", ifelse(ZETA_MASKING, "zeta-masking", "no-masking"), ifelse(REDUCE_NOISE, "noise-reduction", "no-noise-reduction"), sep = "_")
 if(!dir.exists(out_dir)) dir.create(out_dir)
 
@@ -48,8 +51,8 @@ cparams <- data.frame(
   selected = .selected,
   n_sigma = rep(3, length(.selected)),
   lower = c(TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE),
-  upper = c(FALSE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE),
-  lower_clamp = c(-Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf),
+  upper = c(FALSE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, FALSE, FALSE, FALSE, TRUE, TRUE, FALSE),
+  lower_clamp = c(-Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, -Inf, 1, 1, -Inf, -Inf, -Inf, 1e-16, -Inf, -Inf),
   upper_clamp = c(0, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf, Inf)
 )
 print(cparams)
@@ -62,11 +65,31 @@ tic()
 print("Loading zeta results...")
 results_directory <- file.path("F:/hguillon/research/exploitation/out/run149/")
 zeta_results <- read_zeta_raster(out_dir = results_directory, Lmax = 1E4, raster_resolution = 10, .len = 32, proxy = FALSE)
-zeta_results$spatial_scales <- zeta_results$spatial_scales[10:31]
+zeta_results$spatial_scales <- zeta_results$spatial_scales[3:32]
 band_names <- read.csv(file.path(results_directory, "band_names.csv")) %>% names()
 if ("theta" %in% .selected) zeta_results$raster_list <- zeta_results$raster_list %>% make_angular(match("theta", band_names))
 print("Zeta results loaded.")
 toc()
+
+# AVERAGING
+#' Average layer1 and layer2
+#' @param raster_list a `list` of `stars` objects
+#' @param xtarget_id `numeric`, optional, the id of the target layer with the x direction
+#' @param ytarget_id `numeric`, optional, the id of the target layer with the y direction
+#' @return a `list` of `stars`
+#' @export
+create_average_layer <- function(raster_list, xtarget_id, ytarget_id){
+  transformed_raster_list <- lapply(seq_along(raster_list), function(n){
+    s <- raster_list[[n]] %>% as("Raster")
+    r_target_x <- s[[xtarget_id]]
+    r_target_y <- s[[ytarget_id]]
+    tmp_s <- raster::stack(r_target_x, r_target_y)
+    res <- raster::calc(tmp_s, fun = mean, na.rm = TRUE)
+    s <- raster::stack(s, res)
+    return(stars::st_as_stars(s))
+  })
+  return(transformed_raster_list)
+}
 
 # CLAMPING
 tic()
@@ -79,6 +102,23 @@ sliced_clamped_raster <- slice_clamp(
   clamp_params = cparams)
 print("Raster clamped.")
 toc()
+
+# AVERAGING
+if(AVERAGE){
+  tic()
+  print("Averaging...")
+  sliced_clamped_raster <- create_average_layer(sliced_clamped_raster, match("alpha1.x", .selected), match("alpha1.y", .selected))
+  .selected <- c(.selected, "alpha1")
+  sliced_clamped_raster <- create_average_layer(sliced_clamped_raster, match("alpha2.x", .selected), match("alpha2.y", .selected))
+  .selected <- c(.selected, "alpha2")
+  sliced_clamped_raster <- create_average_layer(sliced_clamped_raster, match("xi.x", .selected), match("xi.y", .selected))
+  .selected <- c(.selected, "xi")
+  sliced_clamped_raster <- create_average_layer(sliced_clamped_raster, match("w.x", .selected), match("w.y", .selected))
+  .selected <- c(.selected, "w")
+  print("Averaging done.")
+  toc()
+}
+
 
 # MASK q from H
 tic()
@@ -114,7 +154,8 @@ toc()
 # LOG TRANSFORM
 tic()
 print("Applying log-transforms...")
-for (x in c("median_Pe", "w.x", "w.y", "xi.x", "xi.y", "inv.fc")){
+var_to_transforms <- c("median_Pe", "w.x", "w.y", "xi.x", "xi.y", "inv.fc", "w", "xi")
+for (x in var_to_transforms[var_to_transforms %in% .selected]){
     sliced_clamped_raster <- logtransform_layer(sliced_clamped_raster, match(x, .selected))
 }
 print("Applied log-transforms.")
@@ -154,15 +195,17 @@ if (REDUCE_NOISE && !PAR_PERP){
 }
 
 # COMPARING X-Y DIRECTIONS
-tic()
-print("Comparing x-y directions...")
-vars <- .selected[grepl(".x", .selected)]
-opts <- sapply(grepl("theta", vars), function(x) ifelse(x, "lt", "gt"))
-res_xy <- foreach(var = vars, opt = opts) %do% {
-  is_band1_gtlt_band2(var, gsub(".x", ".y", var), sliced_clamped_raster, .selected, zeta_results$spatial_scales, option = opt)
+if (COMPARE){
+  tic()
+  print("Comparing x-y directions...")
+  vars <- .selected[grepl(".x", .selected)]
+  opts <- sapply(grepl("theta", vars), function(x) ifelse(x, "lt", "gt"))
+  res_xy <- foreach(var = vars, opt = opts) %do% {
+    is_band1_gtlt_band2(var, gsub(".x", ".y", var), sliced_clamped_raster, .selected, zeta_results$spatial_scales, option = opt)
+  }
+  print("Compared x-y directions.")
+  toc()
 }
-print("Compared x-y directions.")
-toc()
 
 # PAR PERP
 if (PAR_PERP){
@@ -283,7 +326,8 @@ if (CORR){
 
 # SUBSELECTING (to reduce the output from the correlations)
 if (SUB){
-  .subselected <- .selected[which(!(grepl("\\.x", .selected) | grepl("\\.y", .selected) | .selected == "zeta1" | .selected == "zeta2"))]
+  # .subselected <- .selected[which(!(grepl("\\.x", .selected) | grepl("\\.y", .selected) | .selected == "zeta1" | .selected == "zeta2"))]
+  .subselected <- c("H", "q", "w", "xi", "alpha1", "alpha2", "theta.x", "zeta1")
   tic()
   print("Subselecting rasters...")
   sub_sliced_clamped_raster <- slice_clamp(
@@ -296,12 +340,24 @@ if (SUB){
   toc()
 }
 
-# OUTPUT: DISTRIBUTION
+# OUTPUT: MAPS
+if (SUB && MAPS){
+  tic()
+  print("Outputting maps...")
+  for(x in .subselected){
+    print(x)
+    raster_select(sub_sliced_clamped_raster, band_id = match(x, .subselected)) %>% 
+    save_map(ttl = x, groups = zeta_results$spatial_scales, begin = 0.1, end = 0.95, direction = -1, option = "viridis", col_style = "cont", out_path = out_dir)
+  }
+  print("Outputted maps.")
+  toc()
+}
 
+# OUTPUT: DISTRIBUTION
 if (SUB && DIST){
   tic()
   print("Outputting distributions...")
-  pdf(file.path(out_dir, "distributions_sub.pdf"))
+  pdf(file.path(out_dir, "distributions_sub.pdf"))1
   for(x in .subselected){
     gb <- make_all_plots(sub_sliced_clamped_raster, spatial_scales, match(x, .subselected), x, begin = 0.1, end = 0.85, direction = 1, option = "viridis")
     layout_mat <- matrix(c(1, 1, 1, 1, 1, 2, 2, 2, 3, 3), byrow = FALSE, nrow = 5, ncol = 2)

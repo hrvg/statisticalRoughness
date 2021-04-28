@@ -55,7 +55,7 @@ Using `get_zeta()` returns a `data.frame` with the variable of interest for the 
 ```{r}
 raster_resolution <- 10
 gabilan_mesa <- raster::raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "gabilan_mesa.tif"))
-res_gabi <- get_zeta(gabilan_mesa, raster_resolution, mode = "fourier") %>% dplyr::mutate_all(signifNA)
+res_gabi <- get_zeta(gabilan_mesa, raster_resolution, .mode = "radial") %>% dplyr::mutate_all(signifNA)
 ```
 
 Gabilan Mesa landscape has 
@@ -69,10 +69,6 @@ The landscape was rotated so that in this original frame of reference,
 $\theta_x =$ `r res_gabi$theta.x`$^\circ$ and
 $\theta_y =$ `r (res_gabi$theta.y)`$^\circ$.
 (In the rotated frame of reference, $\theta_x' = 0^\circ$ and $\theta_y' = 90^\circ$.)
-The segmented regression on the power spectrum identifies scalings with slope $\beta_1 =$ `r res_gabi$beta1`, and $\beta_2 =$ `r res_gabi$beta2`, before and after a cut-off lengthscale of $1/f_c =$ `r (res_gabi$inv.fc)` m, respectively.
-As $\beta = 2H + d$, and $d = 2$, the Hurst coefficients $H$ corresponding to $\beta_1$ and $\beta_2$ are 
-`r ((abs(res_gabi$beta1) - 2)/2)`, and
-`r ((abs(res_gabi$beta2) - 2)/2)`, respectively.
 Before a cut-off lengthscale of
 `r res_gabi$rc` m,
 the roughness exponents in the $x$-- and $y$--directions are
@@ -110,7 +106,7 @@ matrix_for_rayshader(raster::as.matrix(gabilan_mesa)) %>%
 ```{r}
 raster_resolution <- 10
 yosemite <- raster::raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "yosemite.tif"))
-res_yose <- get_zeta(yosemite, raster_resolution, mode = "fourier") %>% dplyr::mutate_all(signifNA)
+res_yose <- get_zeta(yosemite, raster_resolution, .mode = "radial") %>% dplyr::mutate_all(signifNA)
 ```
 
 Yosemite Valley landscape has 
@@ -123,10 +119,6 @@ The landscape was rotated so that in this original frame of reference,
 $\theta_x =$ `r res_yose$theta.x`$^\circ$ and
 $\theta_y =$ `r (res_yose$theta.y)`$^\circ$.
 (In the rotated frame of reference, $\theta_x' = 0^\circ$ and $\theta_y' = 90^\circ$.)
-The segmented regression on the power spectrum identifies scalings with slope $\beta_1 =$ `r res_yose$beta1`, and $\beta_2 =$ `r res_yose$beta2`, before and after a cut-off lengthscale of $1/f_c =$ `r (res_yose$inv.fc)` m, respectively.
-As $\beta = 2H + d$, and $d = 2$, the Hurst coefficients $H$ corresponding to $\beta_1$ and $\beta_2$ are 
-`r ((abs(res_yose$beta1) - 2)/2)`, and
-`r ((abs(res_yose$beta2) - 2)/2)`.
 Before a cut-off lengthscale of
 `r res_yose$rc` m,
 the roughness exponents in the $x$-- and $y$--directions are
@@ -164,7 +156,7 @@ matrix_for_rayshader(raster::as.matrix(yosemite)) %>%
 ```{r}
 raster_resolution <- 10
 modoc <- raster::raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "modoc.tif"))
-res_modo <- get_zeta(modoc, raster_resolution, mode = "fourier") %>% dplyr::mutate_all(signifNA)
+res_modo <- get_zeta(modoc, raster_resolution, .mode = "radial") %>% dplyr::mutate_all(signifNA)
 ```
 
 Modoc Plateau landscape has 
@@ -176,10 +168,6 @@ The landscape was rotated so that in this original frame of reference,
 $\theta_x =$ `r res_modo$theta.x`$^\circ$ and
 $\theta_y =$ `r (res_modo$theta.y)`$^\circ$.
 (In the rotated frame of reference, $\theta_x' = 0^\circ$ and $\theta_y' = 90^\circ$.)
-The segmented regression on the power spectrum identifies scalings with slope $\beta_1 =$ `r res_modo$beta1`, and $\beta_2 =$ `r res_modo$beta2`, before and after a cut-off lengthscale of $1/f_c =$ `r (res_modo$inv.fc)` m, respectively.
-As $\beta = 2H + d$, and $d = 2$, the Hurst coefficients $H$ corresponding to $\beta_1$ and $\beta_2$ are 
-`r ((abs(res_modo$beta1) - 2)/2)`, and
-`r ((abs(res_modo$beta2) - 2)/2)`.
 Before a cut-off lengthscale of
 `r res_modo$rc` m,
 the roughness exponents in the $x$-- and $y$--directions are almost equal as
@@ -220,7 +208,7 @@ matrix_for_rayshader(raster::as.matrix(modoc)) %>%
 raster_resolution <- 90
 marble_canyon <- raster::raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "marble_canyon.tif"))
 marble_canyon <- raster::aggregate(marble_canyon, fact = 9) # 90 m to match Pastor-Satorras
-res_mrbl <- get_zeta(marble_canyon, raster_resolution, mode = "fourier") %>% dplyr::mutate_all(signifNA)
+res_mrbl <- get_zeta(marble_canyon, raster_resolution, .mode = "radial") %>% dplyr::mutate_all(signifNA)
 ```
 
 Marble Canyon landscape has 
@@ -234,10 +222,6 @@ The landscape was rotated so that in this original frame of reference,
 $\theta_x =$ `r res_mrbl$theta.x`$^\circ$ and
 $\theta_y =$ `r (res_mrbl$theta.y)`$^\circ$.
 (In the rotated frame of reference, $\theta_x' = 0^\circ$ and $\theta_y' = 90^\circ$.)
-The segmented regression on the power spectrum identifies scalings with slope $\beta_1 =$ `r res_mrbl$beta1`, and $\beta_2 =$ `r res_mrbl$beta2`, before and after a cut-off lengthscale of $1/f_c =$ `r (res_mrbl$inv.fc)` m, respectively.
-As $\beta = 2H + d$, and $d = 2$, the Hurst coefficients $H$ corresponding to $\beta_1$ and $\beta_2$ are 
-`r ((abs(res_mrbl$beta1) - 2)/2)`, and
-`r ((abs(res_mrbl$beta2) - 2)/2)`, respectively.
 Before a cut-off lengthscale of
 `r res_mrbl$rc` m,
 the roughness exponents in the $x$-- and $y$--directions are
@@ -274,7 +258,7 @@ matrix_for_rayshader(raster::as.matrix(marble_canyon)) %>%
 ```{r}
 raster_resolution <- 50
 submarine_canyon <- raster::raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "submarine_canyon.tif"))
-res_subm <- get_zeta(submarine_canyon, raster_resolution, mode = "fourier") %>% dplyr::mutate_all(signifNA)
+res_subm <- get_zeta(submarine_canyon, raster_resolution, .mode = "radial") %>% dplyr::mutate_all(signifNA)
 ```
 
 Submarine Canyon landscape has 
@@ -288,10 +272,6 @@ The landscape was rotated so that in this original frame of reference,
 $\theta_x =$ `r res_subm$theta.x`$^\circ$ and
 $\theta_y =$ `r (res_subm$theta.y)`$^\circ$.
 (In the rotated frame of reference, $\theta_x' = 0^\circ$ and $\theta_y' = 90^\circ$.)
-The segmented regression on the power spectrum identifies scalings with slope $\beta_1 =$ `r res_subm$beta1`, and $\beta_2 =$ `r res_subm$beta2`, before and after a cut-off lengthscale of $1/f_c =$ `r (res_subm$inv.fc)` m, respectively.
-As $\beta = 2H + d$, and $d = 2$, the Hurst coefficients $H$ corresponding to $\beta_1$ and $\beta_2$ are 
-`r ((abs(res_subm$beta1) - 2)/2)`, and
-`r ((abs(res_subm$beta2) - 2)/2)`, respectively.
 Before a cut-off lengthscale of
 `r res_subm$rc` m,
 the roughness exponents in the $x$-- and $y$--directions are
@@ -331,12 +311,12 @@ The following table summarizes the metrics for the three landscapes.
 res <- rbind(res_gabi, res_yose, res_modo, res_mrbl, res_subm) %>% 
   dplyr::select(-c("w", "xi", "alpha1", "alpha2"))
 rownames(res) <- c("Gabilan Mesa", "Yosemite Valley", "Modoc Plateau", "Marble Canyon", "Submarine Canyon")
+res
+colnames(res)
 ```
 
 ```{r, echo = FALSE}
 cnames <- c(
-  "$\\beta_1$",
-  "$\\beta_2$",
   "$\\alpha_{1,x}$",
   "$\\alpha_{1,y}$",
   "$\\zeta_1$",
@@ -345,7 +325,8 @@ cnames <- c(
   "$\\zeta_2$",
   "$\\theta_x$",
   "$\\theta_y$",
-  "$1/f_c$",
+  "$\\tilde{\\alpha}_1$",
+  "$\\textrm{MAD}{\\alpha}_1$",
   "$r_c$",
   "$\\xi_x$",
   "$\\xi_y$",

@@ -99,7 +99,7 @@ RMS_roughness <- function(row, dr){
 #' @param limlen `numeric` the minimum length of data
 #' @export
 #' @keywords zeta
-get_hhcf_ <- function(mat, dr, margin = 1, limlen = 30){
+get_hhcf_ <- function(mat, dr, margin = 1, limlen = 30, average = FALSE){
 	hhcf <- plyr::alply(mat, .margins = margin, .fun = function(row){
 		ind <- which(!is.na(row))
 		if (length(ind) > limlen) {
@@ -128,5 +128,11 @@ get_hhcf_ <- function(mat, dr, margin = 1, limlen = 30){
 	hhcf <- do.call(rbind, hhcf) # one hhcf per line
 	# hhcf <- apply(hhcf, MARGIN = 2, FUN = mean, na.rm = TRUE)
 	hhcf <- data.frame(hhcf)
+	if(average){
+		hhcf <- apply(as.matrix(hhcf), MARGIN = 2, FUN = mean, na.rm = TRUE)
+		hhcf <- matrix(c(hhcf), nrow = 1)
+		xi <- mean(xi, na.rm = TRUE)
+		w <- mean(w, na.rm = TRUE)
+	}
 	return(list(hhcf = hhcf, autocorr_len = xi, rms = w))
 }

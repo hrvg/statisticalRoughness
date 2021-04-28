@@ -32,7 +32,8 @@ In consequence, a great introduction to this code is reading @Perron2008 paper i
 First, we load a raster corresponding to one of the two examples from @Perron2008, the one located near Gabilan Mesa in California. 
 
 ```{r}
-library("statisticalRoughness")
+# library("statisticalRoughness")
+devtools::load_all()
 library("rayshader")
 library("raster")
 gabilan_mesa <- raster(file.path(system.file("extdata/rasters/", package = "statisticalRoughness"), "gabilan_mesa.tif"))
@@ -89,7 +90,8 @@ beta
 ```
 
 ```{r, echo = FALSE}
-spectrum_plot(binned_power_spectrum, FT2D) + ggplot2::geom_vline(xintercept = 1/180) + ggplot2::geom_vline(xintercept = beta$fc, lty = 2)
+spectrum_plot(binned_power_spectrum, FT2D)
+ # + ggplot2::geom_vline(xintercept = 1/180) + ggplot2::geom_vline(xintercept = beta$fc, lty = 2)
 ```
 
 # References
