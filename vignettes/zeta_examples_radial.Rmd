@@ -84,6 +84,9 @@ Consequently, the anisotropy exponent is $\zeta_2 =$ `r res_gabi$zeta2`.
 The figure below showcases the landscape in its original form (left) and smoothed with a Gaussian kernel of  `r res_gabi$rc %/% raster_resolution` standard deviations to match the value of $r_c$ (right).
 
 ```{r, echo = FALSE}
+ext <- raster::extent(gabilan_mesa)
+circle <- sf::st_sfc(sf::st_buffer(sf::st_point(c(ext[1]+(ext[2]-ext[1])/2, ext[3]+(ext[4]-ext[3])/2)), mean(dim(gabilan_mesa)[1:2]) * mean(raster::res(gabilan_mesa)) / 2), crs = sf::st_crs(gabilan_mesa)) %>% as("Spatial")
+gabilan_mesa <- raster::mask(gabilan_mesa %>% raster::trim(), circle)
 par(mfrow = c(1,2))
 matrix_for_rayshader(raster::as.matrix(gabilan_mesa)) %>%
 	sphere_shade(texture = "imhof4") %>%
@@ -134,6 +137,9 @@ Consequently, the anisotropy exponent is $\zeta_2 =$ `r res_yose$zeta2`.
 The figure below showcases the landscape in its original form (left) and smoothed with a Gaussian kernel of  `r res_yose$rc %/% raster_resolution` standard deviations to match the value of $r_c$ (right).
 
 ```{r, echo = FALSE}
+ext <- raster::extent(yosemite)
+circle <- sf::st_sfc(sf::st_buffer(sf::st_point(c(ext[1]+(ext[2]-ext[1])/2, ext[3]+(ext[4]-ext[3])/2)), mean(dim(yosemite)[1:2]) * mean(raster::res(yosemite)) / 2), crs = sf::st_crs(yosemite)) %>% as("Spatial")
+yosemite <- raster::mask(yosemite %>% raster::trim(), circle)
 par(mfrow = c(1,2))
 matrix_for_rayshader(raster::as.matrix(yosemite)) %>%
 	sphere_shade(texture = "imhof4") %>%
