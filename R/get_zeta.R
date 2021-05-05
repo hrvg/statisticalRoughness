@@ -62,7 +62,7 @@ get_kruskal_flag <- function(alpha_x, alpha_y, var){
 #' @return a `data.frame`
 #' @export
 #' @keywords zeta
-get_zeta <- function(rstr, raster_resolution, .mode = "radial", angle_step = 1, nbin = 20, .Hann = TRUE, .quantile_prob = c(0.99), .prob = .999, full = FALSE){
+get_zeta <- function(rstr, raster_resolution, .mode = "radial", angle_step = 5, nbin = 20, .Hann = TRUE, .quantile_prob = c(0.99), .prob = .999, full = FALSE){
 	if(.mode == "fourier"){
 		res <- get_zeta_fourier(rstr, raster_resolution, nbin, .Hann, .quantile_prob, .prob, full)
 	} else if(.mode == "radial"){
