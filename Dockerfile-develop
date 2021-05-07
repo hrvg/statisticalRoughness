@@ -1,0 +1,4 @@
+FROM hrvg/cquestr:latest
+COPY . /home/docker/
+RUN cd /home/docker/ && \
+	R -e "withr::with_libpaths(Sys.getenv('R_LIBS_USER'), devtools::install_deps(dependencies = TRUE, build = FALSE))"

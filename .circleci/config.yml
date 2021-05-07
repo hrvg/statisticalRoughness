@@ -1,57 +1,61 @@
 version: 2.1
 
+executors:
+  docker-publisher:
+    docker:
+      - image: circleci/buildpack-deps:stretch
+  docker-latest:
+    docker:
+      - image: hrvg/statisticalRoughness:latest
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASS
+  docker-develop:
+    docker:
+      - image: hrvg/statisticalRoughness:develop
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASS
+
 orbs:
   gh-pages: sugarshin/gh-pages@0.0.6
 
 jobs:
-  build_test_deploy: # name of your job
-    machine: # executor type
-      image: ubuntu-2004:202010-01 # # recommended linux image - includes Ubuntu 20.04, docker 19.03.13, docker-compose 1.27.4
-
+  docker-build-publish-latest:
+    executor: docker-publisher
     steps:
       - checkout
+      - setup_remote_docker
+      - run:
+          name: Build Docker image
+          command: |
+            docker build -t $IMAGE_NAME:latest .
+      - run:
+          name: Publish Docker Image to Docker Hub
+          command: |
+            echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            docker push $IMAGE_NAME:latest
+  docker-build-publish-develop:
+    executor: docker-publisher
+    steps:
+      - checkout
+      - setup_remote_docker
       - run: 
-          name: Install GIS libraries
+          name: Docker login
           command: |
-            sudo add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable
-            sudo apt-get -q update
-            sudo apt-get -y install libgdal-dev libgeos-dev libproj-dev 
-      - run: 
-          name: Install required libraries for R packages
-          command: |
-            sudo apt-get -y install libharfbuzz-dev libfribidi-dev
-            sudo apt-get -y install libmagick++-dev
-            sudo apt-get -y install libglu1-mesa-dev freeglut3-dev mesa-common-dev
-            sudo apt-get -y install libudunits2-dev
-            sudo apt-get -y install libjq-dev
-            sudo apt-get -y install libv8-dev
-      - run: 
-          name: Install required libraries to build R package
-          command: |
-            sudo apt-get -y install git libssl-dev texlive-latex-base texlive-fonts-recommended libcurl4-openssl-dev libxml2-dev
-            sudo apt-get -y install pandoc pandoc-citeproc
+            echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
       - run:
-          name: Install R
+          name: Build Docker image
           command: |
-            sudo apt-get -y install r-base
-            sudo apt-get -y install r-cran-rgl
+            docker build -t $IMAGE_NAME:develop -f "Dockerfile-develop" .
       - run:
-          name: Create local library folder
+          name: Publish Docker Image to Docker Hub
           command: |
-            R -e "dir.create(path = Sys.getenv('R_LIBS_USER'), showWarnings = FALSE, recursive = TRUE)"
-      - restore_cache:
-          keys: 
-          - cache-{{ checksum "DESCRIPTION" }}
-      - run:
-          name: Install devtools and Roxygen
-          command: R -e "install.packages(c('devtools', 'roxygen2'), lib = Sys.getenv('R_LIBS_USER'))"
-      - run:
-          name: Install package dependencies
-          command: R -e "withr::with_libpaths(Sys.getenv('R_LIBS_USER'), devtools::install_deps(dep = TRUE, build = FALSE))"
-      - save_cache:
-          key: cache-{{ checksum "DESCRIPTION" }}
-          paths:
-            - ~/R   
+            docker push $IMAGE_NAME:develop
+  r-build-latest:
+    executor: docker-latest
+    steps:
+      - checkout
       - run:
           name: Build package
           command: R CMD build .
@@ -59,68 +63,17 @@ jobs:
           name: Check package
           command: R CMD check *tar.gz
       - run:
-          name: Install pkgdown
-          command: R -e "install.packages(c('pkgdown'), lib = Sys.getenv('R_LIBS_USER'))"
+          name: Calculate code coverage
+          command: R -e "covr::codecov()"
       - run:
           name: Build docs
           command: R -e "pkgdown::build_site()"
-      - run:  
-          name: Install covr
-          command: R -e "install.packages(c('covr'), lib = Sys.getenv('R_LIBS_USER'))"
-      - run:  
-          name: Calculate code coverage
-          command: R -e "covr::codecov()"
       - gh-pages/deploy:
           build-dir: docs
-
-  build_test: # name of your job
-    machine: # executor type
-      image: ubuntu-2004:202010-01 # # recommended linux image - includes Ubuntu 20.04, docker 19.03.13, docker-compose 1.27.4
-
+  r-build-develop:
+    executor: docker-develop
     steps:
       - checkout
-      - run: 
-          name: Install GIS libraries
-          command: |
-            sudo add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable
-            sudo apt-get -q update
-            sudo apt-get -y install libgdal-dev libgeos-dev libproj-dev 
-      - run: 
-          name: Install required libraries for R packages
-          command: |
-            sudo apt-get -y install libharfbuzz-dev libfribidi-dev
-            sudo apt-get -y install libmagick++-dev
-            sudo apt-get -y install libglu1-mesa-dev freeglut3-dev mesa-common-dev
-            sudo apt-get -y install libudunits2-dev
-            sudo apt-get -y install libjq-dev
-            sudo apt-get -y install libv8-dev
-      - run: 
-          name: Install required libraries to build R package
-          command: |
-            sudo apt-get -y install git libssl-dev texlive-latex-base texlive-fonts-recommended libcurl4-openssl-dev libxml2-dev
-            sudo apt-get -y install pandoc pandoc-citeproc
-      - run:
-          name: Install R
-          command: |
-            sudo apt-get -y install r-base
-            sudo apt-get -y install r-cran-rgl
-      - run:
-          name: Create local library folder
-          command: |
-            R -e "dir.create(path = Sys.getenv('R_LIBS_USER'), showWarnings = FALSE, recursive = TRUE)"
-      - restore_cache:
-          keys: 
-          - cache-{{ checksum "DESCRIPTION" }}
-      - run:
-          name: Install devtools and Roxygen
-          command: R -e "install.packages(c('devtools', 'roxygen2'), lib = Sys.getenv('R_LIBS_USER'))"
-      - run:
-          name: Install package dependencies
-          command: R -e "withr::with_libpaths(Sys.getenv('R_LIBS_USER'), devtools::install_deps(dep = TRUE, build = FALSE))"
-      - save_cache:
-          key: cache-{{ checksum "DESCRIPTION" }}
-          paths:
-            - ~/R   
       - run:
           name: Build package
           command: R CMD build .
@@ -128,31 +81,63 @@ jobs:
           name: Check package
           command: R CMD check *tar.gz
       - run:
-          name: Install pkgdown
-          command: R -e "install.packages(c('pkgdown'), lib = Sys.getenv('R_LIBS_USER'))"
-      - run:
-          name: Build docs
-          command: R -e "pkgdown::build_site()"
-      - run:  
-          name: Install covr
-          command: R -e "install.packages(c('covr'), lib = Sys.getenv('R_LIBS_USER'))"
-      - run:  
           name: Calculate code coverage
           command: R -e "covr::codecov()"
+  r-unit-test:
+    executor: docker-develop
+    steps:
+      - checkout
+      - run:
+          name: Unit tests
+          command: |
+            R -e "devtools::test(stop_on_failure = TRUE)"
 
 workflows:
-  conditional_deploy:
+  build-main:
     jobs:
-      - build_test_deploy:
+      - docker-build-publish-latest:
+          context:
+            - docker-credentials
           filters:
             branches:
-              only:
-                - master
-                - main
-      - build_test:              
+              only: main
+      - r-build-latest:
+          context:
+            - docker-credentials
+          requires: 
+            - docker-build-publish-latest
           filters:
             branches:
-              only:
+              only: main
+  build-develop:
+    jobs:
+      - docker-build-publish-develop:
+          context:
+            - docker-credentials
+          filters:
+            branches:
+              only: develop
+      - r-build-develop:
+          context:
+            - docker-credentials
+          requires: 
+            - docker-build-publish-develop
+          filters:
+            branches:
+              only: 
                 - develop
+      - r-unit-test:
+          context:
+            - docker-credentials
+          filters:
+            branches:
+              only: 
+                - /^feature-.*/
+                - /^experiment-.*/
+      - r-build-develop:
+          context:
+            - docker-credentials
+          filters:
+            branches:
+              only: 
                 - /^release-.*/
-

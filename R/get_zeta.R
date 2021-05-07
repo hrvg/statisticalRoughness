@@ -182,6 +182,11 @@ get_zeta_radial <- function(rstr, raster_resolution, angle_step, full){
 	rstr <- raster::mask(rstr, circle)
 	radial_res <- get_radial_angle(rstr, raster_resolution, angle_step)
 	rotation_angle <- radial_res$theta_perp
+	if(is.na(rotation_angle)){
+		res <- matrix(NA, nrow = 1, ncol = 21) %>% as.data.frame()
+		colnames(res) <- c("alpha1", "alpha1.x", "alpha1.y", "zeta1", "alpha2", "alpha2.x", "alpha2.y", "zeta2", "theta.x", "theta.y", "alpha1_median", "alpha1_mad", "alpha1_mean", "alpha1_sd","rc", "xi", "xi.x", "xi.y", "w", "w.x", "w.y")
+		return(res)
+	}
 	rotated_raster <- rotate_raster(rstr, rotation_angle)
 	hhcf_x <- get_hhcf_(rotated_raster, raster_resolution, margin = 1)
 	hhcf_y <- get_hhcf_(rotated_raster, raster_resolution, margin = 2)
@@ -226,7 +231,9 @@ get_zeta_radial <- function(rstr, raster_resolution, angle_step, full){
 			alpha1 = mean(c(.data$alpha1.x, .data$alpha1.y)),
 			alpha2 = mean(c(.data$alpha2.x, .data$alpha2.y)),
 			alpha1_median = radial_res$alpha1_median,
-			alpha1_mad = radial_res$alpha1_mad
+			alpha1_mad = radial_res$alpha1_mad,
+			alpha1_mean = radial_res$alpha1_mean,
+			alpha1_sd = radial_res$alpha1_sd
 		) %>%
 		dplyr::select(
 			.data$alpha1,
@@ -241,6 +248,8 @@ get_zeta_radial <- function(rstr, raster_resolution, angle_step, full){
 			.data$theta.y,
 			.data$alpha1_median,
 			.data$alpha1_mad,
+			.data$alpha1_mean,
+			.data$alpha1_sd,
 			.data$rc,
 			.data$xi,
 			.data$xi.x,

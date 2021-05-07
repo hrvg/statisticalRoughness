@@ -333,6 +333,8 @@ cnames <- c(
   "$\\theta_y$",
   "$\\tilde{\\alpha}_1$",
   "$\\textrm{MAD}{\\alpha}_1$",
+  "$\\bar{\\alpha}_1$",
+  "$\\sigma_{{\\alpha}_1}$",
   "$r_c$",
   "$\\xi_x$",
   "$\\xi_y$",

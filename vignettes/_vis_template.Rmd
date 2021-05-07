@@ -31,7 +31,7 @@ rstr <- raster::raster(file.path(system.file("extdata/big_rasters/", package = "
 
 Lmax <- min(head(dim(rstr), 2))
 spatial_scales <- get_all_R_L(Lmax, 6, len = 6)$allL %>% head(-1)
-spatial_scales <- spatial_scales[spatial_scales >= 30]
+spatial_scales <- spatial_scales[spatial_scales >= LIMIT_SCALE]
 
 zeta_results$spatial_scales <- tail(spatial_scales, length(zeta_results$raster_list)) * 10
 zeta_results$spatial_scales

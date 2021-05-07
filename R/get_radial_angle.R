@@ -30,14 +30,18 @@ get_radial_angle <- function(rstr, raster_resolution, angle_step){
 		return(res)
 	}
 	alpha1 <- res %>% dplyr::select(dplyr::contains("alpha1.")) %>% as.matrix() %>% c()
+	if(all(is.na(alpha1))) return(list(alpha1_median = NA, alpha1_mad = NA, theta_perp = NA))
 	alpha1_median <- stats::median(alpha1, na.rm = TRUE)
+	alpha1_mean <- mean(alpha1, na.rm = TRUE)
 	alpha1_mad <- stats::mad(alpha1, constant = 1, na.rm = TRUE)
+	alpha1_sd <- stats::sd(alpha1, na.rm = TRUE)
 	theta <- res %>% dplyr::select(dplyr::contains("alpha1.")) %>% colnames() %>% gsub("alpha1.", "", .) %>% as.numeric()
 	theta <- theta[!is.na(alpha1)]
 	alpha1 <- alpha1[!is.na(alpha1)]
-	ww <- alpha1
+	if(length(alpha1) < 2) return(list(alpha1_median = NA, alpha1_mad = NA, theta_perp = NA))
+	ww <- scales::rescale(alpha1)
 	ww <- ww / sum(ww)
-	dens <- density(theta, weights = ww, bw = 2 * angle_step)
+	dens <- density(theta, weights = ww, bw = "SJ")
 	theta_perp <- dens$x[which.max(dens$y)] %% 180
-	return(list(alpha1_median = alpha1_median, alpha1_mad = alpha1_mad, theta_perp = theta_perp))
+	return(list(alpha1_median = alpha1_median, alpha1_mad = alpha1_mad, alpha1_mean = alpha1_mean, alpha1_sd = alpha1_sd, theta_perp = theta_perp))
 }

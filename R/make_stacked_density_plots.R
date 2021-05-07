@@ -18,7 +18,7 @@ make_stacked_density_plot <- function(raster_list, band_id = 1, var_name = "vari
 		df <- data.frame(values = raster_list[[i]][[1]][,,band_id] %>% c())
 		# df <- data.frame(values = raster::getValues(as(raster_list[[i]], "Raster")[[band_id]]))
 		p <- ggplot2::ggplot(df, ggplot2::aes(x = values)) + 
-			ggplot2::geom_density(ggplot2::aes(y = ..density..))
+			ggplot2::geom_density(ggplot2::aes(y = ..density..), bw = "SJ")
 		if (logscale){
 			p <- p + ggplot2::scale_x_log10(
 				breaks = scales::trans_breaks(n = 3, 'log10', function(x) 10^x),

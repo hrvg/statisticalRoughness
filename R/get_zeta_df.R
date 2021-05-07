@@ -49,8 +49,8 @@ get_zeta_df <- function(DEM, tiles, raster_resolution, vertical_accuracy = 1.8, 
 				zeta_df <- matrix(NA, nrow = 1, ncol = 20) %>% as.data.frame()
 				colnames(zeta_df) <- c("beta1", "beta2", "alpha1", "alpha1.x", "alpha1.y", "zeta1", "alpha2", "alpha2.x", "alpha2.y", "zeta2", "theta.x", "theta.y", "inv.fc", "rc", "xi", "xi.x", "xi.y", "w", "w.x", "w.y")
 			} else if (mode == "radial"){
-				zeta_df <- matrix(NA, nrow = 1, ncol = 19) %>% as.data.frame()
-				colnames(zeta_df) <- c("alpha1", "alpha1.x", "alpha1.y", "zeta1", "alpha2", "alpha2.x", "alpha2.y", "zeta2", "theta.x", "theta.y", "alpha1_median", "alpha1_mad", "rc", "xi", "xi.x", "xi.y", "w", "w.x", "w.y")
+				zeta_df <- matrix(NA, nrow = 1, ncol = 21) %>% as.data.frame()
+				colnames(zeta_df) <- c("alpha1", "alpha1.x", "alpha1.y", "zeta1", "alpha2", "alpha2.x", "alpha2.y", "zeta2", "theta.x", "theta.y", "alpha1_median", "alpha1_mad", "alpha1_mean", "alpha1_sd", "rc", "xi", "xi.x", "xi.y", "w", "w.x", "w.y")
 			}
 		}
 		zeta_df
