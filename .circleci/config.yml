@@ -6,13 +6,13 @@ executors:
       - image: circleci/buildpack-deps:stretch
   docker-latest:
     docker:
-      - image: hrvg/statisticalRoughness:latest
+      - image: hrvg/statisticalroughness:latest
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASS
   docker-develop:
     docker:
-      - image: hrvg/statisticalRoughness:develop
+      - image: hrvg/statisticalroughness:develop
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASS
