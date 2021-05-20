@@ -1,11 +1,11 @@
 ---
-title: "Example of anisotropic landscapes"
+title: "Example of anisotropic landscapes (radial)"
 author:
 - name: Hervé Guillon
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Example of anisotropic landscapes}
+  %\VignetteIndexEntry{Example of anisotropic landscapes (radial)}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 bibliography: bibliography.bib
