@@ -12,7 +12,7 @@ for (.name in region_names){
 	if(!dir.exists(file.path(out_dir))) dir.create(out_dir)
 
 	Lmax <- min(head(dim(rstr), 2))
-	spatial_scales <- get_all_R_L(Lmax, 6, len = 6)$allL %>% head(-1) 
+	spatial_scales <- get_all_R_L(Lmax, 5, len = 5)$allL %>% head(-1) 
 	spatial_scales <- spatial_scales[spatial_scales >= 30] 
 
 	for (n in rev(spatial_scales)){

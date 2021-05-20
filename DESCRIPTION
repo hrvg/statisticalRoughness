@@ -53,7 +53,6 @@ Imports:
     scales,
     segmented,
     sp,
-    spatstat,
     stars,
     terra,
     tmap,

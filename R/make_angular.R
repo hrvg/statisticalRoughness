@@ -6,13 +6,14 @@
 #' @export
 #' @keywords postprocessing
 make_angular <- function(raster_list, target_id, mode = "half"){
-	if(!mode %in% c("half", "full")) stop("make_angular: `mode` should be `half` or `full`.")
+	if(!mode %in% c("half", "full", "sin2", "cos")) stop("make_angular: `mode` should be `half` or `full`.")
 	transformed_raster_list <- lapply(seq_along(raster_list), function(n, .mode = mode){
 		s <- raster_list[[n]] %>% as("Raster")
 		transformed_values <- raster::getValues(s[[target_id]])
-		# transformed_values <-  sapply(transformed_values, function(x) pracma::sind(x)^2)
 		if (mode == "half") transformed_values <-  sapply(transformed_values, function(x) x %% 180)
 		if (mode == "full") transformed_values <-  sapply(transformed_values, function(x) x %% 360)
+		if (mode == "sin2") transformed_values <-  sapply(transformed_values, function(x) pracma::sind(x)^2)
+		if (mode == "cos") transformed_values <-  sapply(transformed_values, function(x) pracma::cosd(x))
 		# transformed_values <-  sapply(transformed_values, function(x) pracma::sind((x %% 180)))
 		# transformed_values <-  sapply(transformed_values, function(x) ifelse(x > 180, x - 180, x))
 		# transformed_values[!is.finite(transformed_values)] <- NA
