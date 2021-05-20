@@ -39,9 +39,10 @@ get_radial_angle <- function(rstr, raster_resolution, angle_step){
 	theta <- theta[!is.na(alpha1)]
 	alpha1 <- alpha1[!is.na(alpha1)]
 	if(length(alpha1) < 2) return(list(alpha1_median = NA, alpha1_mad = NA, theta_perp = NA))
-	ww <- scales::rescale(alpha1)
+	ww <- scales::rescale(1 / alpha1)
 	ww <- ww / sum(ww)
 	dens <- density(theta, weights = ww, bw = "SJ")
-	theta_perp <- dens$x[which.max(dens$y)] %% 180
+	theta_par <- dens$x[which.max(dens$y)]
+	theta_perp <- (theta_par - 90) %% 180
 	return(list(alpha1_median = alpha1_median, alpha1_mad = alpha1_mad, alpha1_mean = alpha1_mean, alpha1_sd = alpha1_sd, theta_perp = theta_perp))
 }
