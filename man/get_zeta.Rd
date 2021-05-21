@@ -7,6 +7,8 @@
 get_zeta(
   rstr,
   raster_resolution,
+  .mode = "radial",
+  angle_step = 5,
   nbin = 20,
   .Hann = TRUE,
   .quantile_prob = c(0.99),

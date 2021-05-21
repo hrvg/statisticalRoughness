@@ -4,7 +4,7 @@
 \alias{get_hhcf_}
 \title{This wrapper function derives the one-dimensional \code{HHCF()} for all columns or rows of a matrix}
 \usage{
-get_hhcf_(mat, dr, margin = 1, limlen = 30)
+get_hhcf_(mat, dr, margin = 1, limlen = 30, average = FALSE)
 }
 \arguments{
 \item{mat}{a \code{matrix}}

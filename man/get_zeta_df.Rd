@@ -4,7 +4,13 @@
 \alias{get_zeta_df}
 \title{Get the value of the anisotropy exponent and associated metrics for a tile of elevation}
 \usage{
-get_zeta_df(DEM, tiles, raster_resolution, vertical_accuracy = 1.87)
+get_zeta_df(
+  DEM,
+  tiles,
+  raster_resolution,
+  vertical_accuracy = 1.8,
+  mode = "radial"
+)
 }
 \arguments{
 \item{DEM}{an elevation raster}
