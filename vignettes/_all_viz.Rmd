@@ -27,9 +27,9 @@ knitr::opts_chunk$set(
 This vignette showcases the functions used to visualize and process the results of the tiled workflow.
 
 ```{r}
-CLAMP_RASTER <- FALSE
+CLAMP_RASTER <- TRUE
 MASKING <- FALSE
-REDUCE_NOISE <- TRUE
+REDUCE_NOISE <- FALSE
 PERP_PAR <- FALSE
 CORRELATION <- TRUE
 LIMIT_SCALE <- 30
@@ -48,8 +48,8 @@ devtools::load_all()
 
 ```{r}
 # region_names <- c("fort_bragg", "yosemite", "gabilan_mesa", "modoc")
-region_names <- c("gabilan_mesa", "yosemite")
-# region_names <- c("california")
+# region_names <- c("gabilan_mesa", "yosemite")
+region_names <- c("california")
 # region_names <- c("yosemite")
 .name <- region_names[1]
 results_directory <- file.path(system.file(paste0("extdata/zeta_results/", .name), package = "statisticalRoughness"))
@@ -61,11 +61,11 @@ In our case, the spatial scales are wrong as the creation of the tiles followed 
 We modify the `spatial_scales` to match this process.
 
 ```{r}
-rstr <- raster::raster(file.path(system.file("extdata/big_rasters/", package = "statisticalRoughness"), paste0(.name, ".tif")))
-Lmax <- min(head(dim(rstr), 2))
-spatial_scales <- get_all_R_L(Lmax, 5, len = 5)$allL %>% head(-1)
-spatial_scales <- spatial_scales[spatial_scales >= LIMIT_SCALE]
-# spatial_scales <- get_all_R_L(1e4, 5, len = 32)$allL[16]
+# rstr <- raster::raster(file.path(system.file("extdata/big_rasters/", package = "statisticalRoughness"), paste0(.name, ".tif")))
+# Lmax <- min(head(dim(rstr), 2))
+# spatial_scales <- get_all_R_L(Lmax, 5, len = 5)$allL %>% head(-1)
+# spatial_scales <- spatial_scales[spatial_scales >= LIMIT_SCALE]
+spatial_scales <- get_all_R_L(1e4, 5, len = 32)$allL[c(6, 10, 16)]
 zeta_results$spatial_scales <- spatial_scales * 10
 zeta_results$spatial_scales
 ```
