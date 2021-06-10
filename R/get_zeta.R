@@ -192,8 +192,8 @@ get_zeta_radial <- function(rstr, raster_resolution, angle_step, full){
 	hhcf_y <- get_hhcf_(rotated_raster, raster_resolution, margin = 2)
 	w_x <- mean(hhcf_x$rms, na.rm = TRUE)
 	w_y <- mean(hhcf_y$rms, na.rm = TRUE)
-	theta_x <- rotation_angle %% 360
-	theta_y <- (theta_x + 90) %% 360
+	theta_x <- rotation_angle
+	theta_y <- (theta_x + 90)
 	alpha_x <- get_all_alpha_(hhcf_x, raster_resolution) 
 	alpha_y <- get_all_alpha_(hhcf_y, raster_resolution)
 	xi_x <- mean(hhcf_x$autocorr_len, na.rm = TRUE)
