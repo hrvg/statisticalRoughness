@@ -93,7 +93,7 @@ get_theta_from_theta <- function(raster_list, theta_x, theta_y){
   return(transformed_raster_list)
 }
 
-# if ("theta.x" %in% .selected) sliced_clamped_raster  <- sliced_clamped_raster  %>% make_angular(match("theta.x", .selected), mode = "sin")
+# if ("theta.x" %in% .selected) sliced_clamped_raster  <- sliced_clamped_raster  %>% make_angular(match("theta.x", .selected), mode = "sin2")
 # sliced_clamped_raster <- get_theta_from_theta(sliced_clamped_raster, match("theta.x", .selected), match("theta.y", .selected))
 ```
 
@@ -147,7 +147,7 @@ cat(unlist(res), sep = '\n')
 ## Distribution plots {.tabset}
 
 ```{r}
-ind <- four_values_check(sliced_clamped_raster)
+ind <- four_values_check(sliced_clamped_raster, .selected)
 sliced_clamped_raster <- sliced_clamped_raster[ind]
 spatial_scales <- zeta_results$spatial_scales[ind]
 ind
@@ -231,5 +231,5 @@ crossscale_correlations(
 	raster_list = sliced_clamped_raster,
 	selected = .selected,
 	spatial_scales = spatial_scales,
-	corr_type = "spearman")$graphics_df
+	corr_type = "pearson")
 ```

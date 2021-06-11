@@ -32,6 +32,7 @@ Imports:
     kableExtra,
     leafem,
     leaflet,
+    leaflet.extras,
     magick,
     magrittr,
     MASS,

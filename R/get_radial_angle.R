@@ -36,7 +36,11 @@ get_radial_angle <- function(rstr, raster_resolution, angle_step, niter = 64){
 			return(res)
 		}
 		alpha1 <- res %>% dplyr::select(dplyr::contains("alpha1.")) %>% as.matrix() %>% c()
-		if(all(is.na(alpha1))) return(list(alpha1_median = NA, alpha1_mad = NA, theta_perp = NA))
+		if(all(is.na(alpha1))) {
+			return(
+				data.frame(alpha1_median = NA, alpha1_mad = NA, alpha1_mean = NA, alpha1_sd = NA, theta_perp = NA)
+			)
+		}
 		alpha1_median <- stats::median(alpha1, na.rm = TRUE)
 		alpha1_mean <- mean(alpha1, na.rm = TRUE)
 		alpha1_mad <- stats::mad(alpha1, constant = 1, na.rm = TRUE)
@@ -44,7 +48,11 @@ get_radial_angle <- function(rstr, raster_resolution, angle_step, niter = 64){
 		theta <- res %>% dplyr::select(dplyr::contains("alpha1.")) %>% colnames() %>% gsub("alpha1.", "", .) %>% as.numeric()
 		theta <- theta[!is.na(alpha1)]
 		alpha1 <- alpha1[!is.na(alpha1)]
-		if(length(alpha1) < 2) return(list(alpha1_median = NA, alpha1_mad = NA, theta_perp = NA))
+		if(length(alpha1) < 2){
+			return(
+				data.frame(alpha1_median = NA, alpha1_mad = NA, alpha1_mean = NA, alpha1_sd = NA, theta_perp = NA)
+			)
+		} 
 		ww <- scales::rescale(alpha1)
 		ww <- ww / sum(ww)
 		dens <- density(theta, weights = ww, bw = "SJ-dpi", kernel = "gaussian", n = 512)
@@ -58,6 +66,9 @@ get_radial_angle <- function(rstr, raster_resolution, angle_step, niter = 64){
 			theta_perp = theta_perp
 		)
 	}
-	res <- random_res %>% dplyr::summarise(dplyr::across(dplyr::everything(), modeest::parzen, bw = "SJ-dpi", kernel = "gaussian")) %>% as.list()
+	res <- random_res %>% 
+		na.omit() %>% 
+		dplyr::summarise(dplyr::across(dplyr::everything(), modeest::parzen, bw = "SJ-dpi", kernel = "gaussian")) %>% 
+		as.list()
 	return(res)
 }

@@ -38,10 +38,23 @@ make_leaflet_map <- function(clamped, ttl = "values", n_class = 10, circular = F
 	}
 	ma <- ma %>% 
 		leaflet::addLegend(pal = cols, values = clamped$values, title = ttl) %>%
-		leaflet::hideGroup(utils::tail(groups, -1)) %>%
-		leaflet::addProviderTiles(leaflet::providers$Stamen.TerrainBackground, group = "Terrain Background") %>%
-		leaflet::addLayersControl(baseGroups = c("Terrain Background"),
-	    overlayGroups = groups,
-	    options = leaflet::layersControlOptions(collapsed = FALSE))
+		leaflet::addProviderTiles(
+	      leaflet::providers$Stamen.TerrainBackground,
+	      group = "Stamen.TerrainBackground",
+	      options = leaflet::providerTileOptions(maxZoom = 22)
+	    ) %>%
+	    leaflet::addProviderTiles(
+	      leaflet::providers$Esri.WorldImagery,
+	      group = "Esri.WorldImagery",
+	      options = leaflet::providerTileOptions(maxZoom = 22)
+	    ) %>%
+		leaflet.extras::addResetMapButton() %>%
+		leaflet.extras::addFullscreenControl(position = "topleft", pseudoFullscreen = FALSE) %>%
+		leaflet::addLayersControl(
+			baseGroups = c("Stamen.TerrainBackground", "Esri.WorldImagery"),
+		    overlayGroups = groups,
+		    options = leaflet::layersControlOptions(collapsed = FALSE)
+		) %>%
+		leaflet::hideGroup(utils::tail(groups, -1))
 	return(ma)
 }

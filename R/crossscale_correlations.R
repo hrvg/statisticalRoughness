@@ -22,7 +22,12 @@ crossscale_correlations <- function(raster_list = NULL, selected = NULL, spatial
 	if(! corr_type %in% c("spearman", "pearson")) stop("`corr_type should be either 'spearman' or 'pearson'.")
 
 	list_values <- lapply(raster_list, function(s){
-		df <- as.data.frame(s) %>% dplyr::select(-c("x", "y")) %>% dplyr::group_by(.data$band) %>% dplyr::group_map(~.)
+		df <- s %>% 
+			stars::st_set_dimensions("band", values = seq_along(selected)) %>%
+			as.data.frame() %>% 
+			dplyr::select(-c("x", "y")) %>% 
+			dplyr::group_by(.data$band) %>% 
+			dplyr::group_map(~.)
 		df <- do.call(cbind, df)
 		names(df) <- selected
 		return(df)
