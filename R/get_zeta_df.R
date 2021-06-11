@@ -26,15 +26,15 @@ get_zeta_df <- function(DEM, tiles, raster_resolution, vertical_accuracy = 1.8, 
 
 	# setting up parallelization
 	registerDoFuture()
-	if (length(tiles) < availableCores() - 2){
-		plan(sequential)
-	} else {
+	# if (length(tiles) < availableCores() - 2){
+	# 	plan(sequential)
+	# } else {
 		if(.Platform$OS.type == "unix"){
 			plan(multicore, workers = availableCores() - 2)
 		} else {
 			plan(multisession, workers = availableCores() - 2)
 		}
-	}
+	# }
 
 	# main
 	i <- NULL

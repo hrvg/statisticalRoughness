@@ -33,8 +33,8 @@ if (region == "california"){
 } else {
   rstr <- raster::raster(file.path(system.file("extdata/big_rasters/", package = "statisticalRoughness"), paste0(.name, ".tif")))
   Lmax <- min(head(dim(rstr), 2))
-  spatial_scales <- get_all_R_L(Lmax, 5, len = 10)$allL %>% head(-1)
-  spatial_scales <- spatial_scales[spatial_scales >= LIMIT_SCALE]
+  spatial_scales <- get_all_R_L(Lmax, 5, len = 10)$allL %>% head(-1) 
+  spatial_scales <- spatial_scales[spatial_scales > LIMIT_SCALE] 
 }
 
 zeta_results$spatial_scales <- spatial_scales * 10
