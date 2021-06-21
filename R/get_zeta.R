@@ -52,6 +52,9 @@ get_kruskal_flag <- function(alpha_x, alpha_y, var){
 #' Wrapper function to derive the anisotropy exponent from a non-rotated raster
 #' @param rstr `Raster` object
 #' @param raster_resolution `numeric` the resolution of `rstr` in meters
+#' @param .mode `character` either "radial" or "fourier"
+#' @param angle_step `numeric`, angular step
+#' @param niter `numeric`, number of random rotations
 #' @param nbin `numeric`, the number of bins
 #' @param .Hann `logical`, if `TRUE` performs a Hann windowing, default to `TRUE`, passed to `fft2D()`
 #' @param .quantile_prob vector of quantile probabilities, default to `c(0.9999)`, passed to `filter_spectral_power_matrix()`
@@ -62,7 +65,7 @@ get_kruskal_flag <- function(alpha_x, alpha_y, var){
 #' @return a `data.frame`
 #' @export
 #' @keywords zeta
-get_zeta <- function(rstr, raster_resolution, .mode = "radial", angle_step = 5, nbin = 20, .Hann = TRUE, .quantile_prob = c(0.99), .prob = .999, full = FALSE){
+get_zeta <- function(rstr, raster_resolution, .mode = "radial", angle_step = 5, niter = 50, nbin = 20, .Hann = TRUE, .quantile_prob = c(0.99), .prob = .999, full = FALSE){
 	if(.mode == "fourier"){
 		res <- get_zeta_fourier(rstr, raster_resolution, nbin, .Hann, .quantile_prob, .prob, full)
 	} else if(.mode == "radial"){
@@ -165,22 +168,20 @@ get_zeta_fourier <- function(rstr, raster_resolution, nbin, .Hann, .quantile_pro
 #' Wrapper function to derive the anisotropy exponent from a non-rotated raster
 #' @param rstr `Raster` object
 #' @param raster_resolution `numeric` the resolution of `rstr` in meters
-#' @param nbin `numeric`, the number of bins
-#' @param .Hann `logical`, if `TRUE` performs a Hann windowing, default to `TRUE`, passed to `fft2D()`
-#' @param .quantile_prob vector of quantile probabilities, default to `c(0.9999)`, passed to `filter_spectral_power_matrix()`
-#' @param .prob, `numeric` the value of the probabilities passed to `quantile()`, passed to `filter_alpha()`
+#' @param angle_step `numeric`, angular step
 #' @param full, `logical` if `TRUE` all results are returned, else, the default, results of interest are returned
+#' @param niter `numeric`, number of random rotations
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #' @return a `data.frame`
 #' @export
 #' @keywords zeta
-get_zeta_radial <- function(rstr, raster_resolution, angle_step, full){
+get_zeta_radial <- function(rstr, raster_resolution, angle_step, full, niter){
 	rstr <- rstr %>% raster::trim()
 	ext <- raster::extent(rstr)
 	circle <- sf::st_sfc(sf::st_buffer(sf::st_point(c(ext[1]+(ext[2]-ext[1])/2, ext[3]+(ext[4]-ext[3])/2)), mean(dim(rstr)[1:2]) * mean(raster::res(rstr)) / 2), crs = sf::st_crs(rstr)) %>% as("Spatial")
 	rstr <- raster::mask(rstr, circle)
-	radial_res <- get_radial_angle(rstr, raster_resolution, angle_step)
+	radial_res <- get_radial_angle(rstr, raster_resolution, angle_step, niter)
 	rotation_angle <- radial_res$theta_perp
 	if(is.na(rotation_angle)){
 		res <- matrix(NA, nrow = 1, ncol = 21) %>% as.data.frame()
