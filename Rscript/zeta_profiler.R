@@ -17,6 +17,9 @@ dem_dir <- file.path(dem_dir, paste0(fname_sans_ext, "_tiles/"))
 rstr <- raster::raster(file.path(root_dir, dem_dir, paste0(fname_sans_ext, "_tile_", n, ".tif")))
 raster_resolution <- 10
 
+vertical_accuracy = 1.8
+mode = "radial"
+
 Hurst_dir <- "out/run127"
 if(root_dir != "/home/hguillon") Hurst_dir <- paste0("exploitation/", Hurst_dir) 
 Hurst_dir <- file.path(root_dir, Hurst_dir)
@@ -30,15 +33,31 @@ if(!dir.exists(out_dir)) dir.create(out_dir)
 Hurst_raster <- raster::stack(file.path(Hurst_dir, paste0("Hurst_raster_", n, "_",l , ".tif")))
 tiles <- Hurst_raster[[2]]
 
-fpath <- file.path(out_dir, paste0("zeta_raster_", n, "_", l, ".tif"))
-if (!file.exists(fpath)){
-	zeta_df <- get_zeta_df(
-	  rstr, tiles, 
-	  raster_resolution, vertical_accuracy = 1.87
-	)
-	zeta_raster <- get_zeta_raster(
-	  rstr, tiles, 
-	  .zeta_df = zeta_df, raster_resolution, vertical_accuracy = 1.87
-	)
-	raster::writeRaster(zeta_raster, fpath)
+# coercion
+DEM <- rstr
+if (class(tiles) == "RasterLayer") tiles <- raster::rasterToPolygons(tiles, dissolve = FALSE)
+DEM <- raster::extend(DEM, tiles)
+
+# spatial check
+if (length(tiles) > raster::ncell(DEM)) stop("There are more tiles than cells in your raster.")
+
+i <- seq_along(tiles) %>% sample(1)
+
+registerDoFuture()
+	# if (length(tiles) < availableCores() - 2){
+	# 	plan(sequential)
+	# } else {
+if(.Platform$OS.type == "unix"){
+	plan(multicore, workers = availableCores() - 2)
+} else {
+	plan(multisession, workers = availableCores() - 2)
 }
+
+cropped_DEM <- raster::crop(DEM, tiles[i, ])
+cropped_DEM_values <- raster::getValues(cropped_DEM)
+pct_non_na <- sum(is.finite(cropped_DEM_values)) / raster::ncell(cropped_DEM)
+if ((pct_non_na > 1/3) & !(stats::IQR(stats::na.omit(cropped_DEM_values)) < vertical_accuracy)){ 
+	zeta_df <- get_zeta(cropped_DEM, raster_resolution, .mode = mode)
+}
+
+print(zeta_df)

@@ -11,21 +11,33 @@
 get_radial_angle <- function(rstr, raster_resolution, angle_step, niter){
 	angles <- seq(0, 90 - angle_step, angle_step)
 	random_angles <- sample(seq(360), niter)
-	random_res <- foreach(random_angle = random_angles, .combine = rbind) %do% {
+	random_res <- foreach(random_angle = random_angles, .combine = rbind) %dopar% {
 		.rstr <- rstr %>% rotate_raster(-random_angle) %>% raster::raster() 
 		res <- foreach(rotation_angle = angles, .combine = cbind) %do% {
 			rotated_raster <- rotate_raster(.rstr, -rotation_angle) # rotating counter-clockwise of theta > 0
 			mid_row <- nrow(rotated_raster) %/% 2
 			mid_col <- ncol(rotated_raster) %/% 2
-			hhcf_x <- get_hhcf_(rotated_raster[c(mid_row - 1, mid_row, mid_row + 1),], raster_resolution, margin = 1, average = TRUE)
-			hhcf_y <- get_hhcf_(rotated_raster[, c(mid_col - 1, mid_col, mid_col + 1)], raster_resolution, margin = 2, average = TRUE)
+			hhcf_x <- get_hhcf_(
+				rotated_raster[mid_row, ] %>% matrix(nrow = 1),
+				raster_resolution,
+				margin = 1,
+				average = FALSE
+			)
+			hhcf_y <- get_hhcf_(
+				rotated_raster[, mid_col] %>% matrix(ncol = 1),
+				raster_resolution,
+				margin = 2,
+				average = FALSE
+			)
 			theta_x <- rotation_angle
 			theta_y <- (theta_x + 90)
-			alpha_x <- get_all_alpha_(hhcf_x, raster_resolution) 
-			alpha_y <- get_all_alpha_(hhcf_y, raster_resolution) 
+			alpha_x <- get_alpha_(hhcf_x$hhcf[1, ], raster_resolution, hhcf_x$autocorr_len)
+			colnames(alpha_x) <-  c("rc", "alpha1", "alpha2", "rmax", "alpha.r2")
+			alpha_y <- get_alpha_(hhcf_y$hhcf[1, ], raster_resolution, hhcf_y$autocorr_len)
+			colnames(alpha_y) <-  c("rc", "alpha1", "alpha2", "rmax", "alpha.r2")
 			colnames(alpha_x) <- paste0(colnames(alpha_x), ".x")
 			colnames(alpha_y) <- paste0(colnames(alpha_y), ".y")
-			res <- dplyr::bind_cols(alpha_x, alpha_y)
+			res <- dplyr::bind_cols(alpha_x %>% as.data.frame(), alpha_y %>% as.data.frame())
 			res <- res %>%
 				dplyr::select(
 					.data$alpha1.x,
