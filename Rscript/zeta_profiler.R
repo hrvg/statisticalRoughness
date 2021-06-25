@@ -33,6 +33,8 @@ if(!dir.exists(out_dir)) dir.create(out_dir)
 Hurst_raster <- raster::stack(file.path(Hurst_dir, paste0("Hurst_raster_", n, "_",l , ".tif")))
 tiles <- Hurst_raster[[2]]
 
+# 
+
 # coercion
 DEM <- rstr
 if (class(tiles) == "RasterLayer") tiles <- raster::rasterToPolygons(tiles, dissolve = FALSE)
@@ -48,9 +50,9 @@ registerDoFuture()
 	# 	plan(sequential)
 	# } else {
 if(.Platform$OS.type == "unix"){
-	plan(multicore, workers = availableCores() - 2)
+	plan(multicore, workers = availableCores())
 } else {
-	plan(multisession, workers = availableCores() - 2)
+	plan(multisession, workers = availableCores())
 }
 
 cropped_DEM <- raster::crop(DEM, tiles[i, ])

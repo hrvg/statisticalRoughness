@@ -69,7 +69,7 @@ get_zeta <- function(rstr, raster_resolution, .mode = "radial", angle_step = 5, 
 	if(.mode == "fourier"){
 		res <- get_zeta_fourier(rstr, raster_resolution, nbin, .Hann, .quantile_prob, .prob, full)
 	} else if(.mode == "radial"){
-		res <- get_zeta_radial(rstr, raster_resolution, angle_step, full, niter)
+		res <- get_zeta_radial(rstr, raster_resolution, angle_step, niter, full)
 	}
 	return(res)
 }
@@ -169,14 +169,14 @@ get_zeta_fourier <- function(rstr, raster_resolution, nbin, .Hann, .quantile_pro
 #' @param rstr `Raster` object
 #' @param raster_resolution `numeric` the resolution of `rstr` in meters
 #' @param angle_step `numeric`, angular step
-#' @param full, `logical` if `TRUE` all results are returned, else, the default, results of interest are returned
 #' @param niter `numeric`, number of random rotations
+#' @param full, `logical` if `TRUE` all results are returned, else, the default, results of interest are returned
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #' @return a `data.frame`
 #' @export
 #' @keywords zeta
-get_zeta_radial <- function(rstr, raster_resolution, angle_step, full, niter){
+get_zeta_radial <- function(rstr, raster_resolution, angle_step, niter, full){
 	rstr <- rstr %>% raster::trim()
 	ext <- raster::extent(rstr)
 	circle <- sf::st_sfc(sf::st_buffer(sf::st_point(c(ext[1]+(ext[2]-ext[1])/2, ext[3]+(ext[4]-ext[3])/2)), mean(dim(rstr)[1:2]) * mean(raster::res(rstr)) / 2), crs = sf::st_crs(rstr)) %>% as("Spatial")

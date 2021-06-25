@@ -11,9 +11,9 @@
 get_radial_angle <- function(rstr, raster_resolution, angle_step, niter){
 	angles <- seq(0, 90 - angle_step, angle_step)
 	random_angles <- sample(seq(360), niter)
-	random_res <- foreach(random_angle = random_angles, .combine = rbind) %dopar% {
+	random_res <- foreach(random_angle = random_angles, .combine = rbind, .inorder = FALSE) %dopar% {
 		.rstr <- rstr %>% rotate_raster(-random_angle) %>% raster::raster() 
-		res <- foreach(rotation_angle = angles, .combine = cbind) %do% {
+		res <- foreach(rotation_angle = angles, .combine = cbind, .inorder = FALSE) %do% {
 			rotated_raster <- rotate_raster(.rstr, -rotation_angle) # rotating counter-clockwise of theta > 0
 			mid_row <- nrow(rotated_raster) %/% 2
 			mid_col <- ncol(rotated_raster) %/% 2

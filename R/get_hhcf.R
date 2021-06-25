@@ -102,7 +102,7 @@ RMS_roughness <- function(row, dr){
 get_hhcf_ <- function(mat, dr, margin = 1, limlen = 30, average = FALSE){
 	# hhcf <- plyr::alply(mat, .margins = margin, .fun = function(row){
 	if (margin == 2) mat <- t(mat)
-	hhcf <- lapply(seq_along(nrow(mat)), function(j) {
+	hhcf <- lapply(seq(nrow(mat)), function(j) {
 		row <- mat[j, ]
 		ind <- which(!is.na(row))
 		if (length(ind) > limlen) {
