@@ -4,22 +4,18 @@
 \alias{get_zeta_radial}
 \title{Wrapper function to derive the anisotropy exponent from a non-rotated raster}
 \usage{
-get_zeta_radial(rstr, raster_resolution, angle_step, full)
+get_zeta_radial(rstr, raster_resolution, angle_step, niter, full)
 }
 \arguments{
 \item{rstr}{\code{Raster} object}
 
 \item{raster_resolution}{\code{numeric} the resolution of \code{rstr} in meters}
 
+\item{angle_step}{\code{numeric}, angular step}
+
+\item{niter}{\code{numeric}, number of random rotations}
+
 \item{full, }{\code{logical} if \code{TRUE} all results are returned, else, the default, results of interest are returned}
-
-\item{nbin}{\code{numeric}, the number of bins}
-
-\item{.Hann}{\code{logical}, if \code{TRUE} performs a Hann windowing, default to \code{TRUE}, passed to \code{fft2D()}}
-
-\item{.quantile_prob}{vector of quantile probabilities, default to \code{c(0.9999)}, passed to \code{filter_spectral_power_matrix()}}
-
-\item{.prob, }{\code{numeric} the value of the probabilities passed to \code{quantile()}, passed to \code{filter_alpha()}}
 }
 \value{
 a \code{data.frame}

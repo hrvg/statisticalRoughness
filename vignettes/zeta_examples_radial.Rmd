@@ -32,7 +32,7 @@ devtools::load_all()
 library("rayshader")
 
 ANGLE_STEP <- 5
-NITER <- 32
+NITER <- 64
 
 view_rotated_raster <- function(rstr, raster_resolution = 9.015, nbin = 50, .Hann = TRUE, .quantile_prob = c(0.99)){
 	rstr <- rstr %>% detrend_dem() 

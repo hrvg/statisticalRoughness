@@ -9,6 +9,7 @@ get_zeta(
   raster_resolution,
   .mode = "radial",
   angle_step = 5,
+  niter = 64,
   nbin = 20,
   .Hann = TRUE,
   .quantile_prob = c(0.99),
@@ -20,6 +21,12 @@ get_zeta(
 \item{rstr}{\code{Raster} object}
 
 \item{raster_resolution}{\code{numeric} the resolution of \code{rstr} in meters}
+
+\item{.mode}{\code{character} either "radial" or "fourier"}
+
+\item{angle_step}{\code{numeric}, angular step}
+
+\item{niter}{\code{numeric}, number of random rotations}
 
 \item{nbin}{\code{numeric}, the number of bins}
 

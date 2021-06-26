@@ -4,7 +4,7 @@
 \alias{get_radial_angle}
 \title{Wrapper function to derive the anisotropy exponent from a non-rotated raster}
 \usage{
-get_radial_angle(rstr, raster_resolution, angle_step)
+get_radial_angle(rstr, raster_resolution, angle_step, niter)
 }
 \arguments{
 \item{rstr}{\code{Raster} object}
@@ -12,6 +12,8 @@ get_radial_angle(rstr, raster_resolution, angle_step)
 \item{raster_resolution}{\code{numeric} the resolution of \code{rstr} in meters}
 
 \item{angle_step}{\code{numeric}, angular step}
+
+\item{niter}{\code{numeric}, number of random rotations}
 }
 \value{
 a \code{data.frame}

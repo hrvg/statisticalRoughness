@@ -4,10 +4,12 @@
 \alias{four_values_check}
 \title{Check that at least four values of the raster stack are not \code{NA} for each element of \code{raster_list}}
 \usage{
-four_values_check(raster_list)
+four_values_check(raster_list, selected)
 }
 \arguments{
 \item{raster_list}{a \code{list} of \code{stars} objects}
+
+\item{selected}{\code{character}, the selected attributes}
 }
 \value{
 \code{logical}

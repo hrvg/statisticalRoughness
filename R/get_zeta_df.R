@@ -25,15 +25,15 @@ get_zeta_df <- function(DEM, tiles, raster_resolution, vertical_accuracy = 1.8, 
 	if (length(tiles) > raster::ncell(DEM)) stop("There are more tiles than cells in your raster.")
 
 	# setting up parallelization
-	registerDoFuture()
+	# registerDoFuture()
 	# if (length(tiles) < availableCores() - 2){
 	# 	plan(sequential)
 	# } else {
-		if(.Platform$OS.type == "unix"){
-			plan(multicore, workers = availableCores() - 2)
-		} else {
-			plan(multisession, workers = availableCores() - 2)
-		}
+		# if(.Platform$OS.type == "unix"){
+		# 	plan(multicore, workers = availableCores() - 2)
+		# } else {
+		# 	plan(multisession, workers = availableCores() - 2)
+		# }
 	# }
 
 	# main
@@ -57,6 +57,6 @@ get_zeta_df <- function(DEM, tiles, raster_resolution, vertical_accuracy = 1.8, 
 	}
 	# rownames(zeta_dfs) <- NULL
 	# stopping parallelization
-	plan(sequential)
+	# plan(sequential)
 	return(zeta_dfs)
 }

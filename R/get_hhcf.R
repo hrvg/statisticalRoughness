@@ -97,25 +97,24 @@ RMS_roughness <- function(row, dr){
 #' @param dr `numeric`, spacing of the values along the axis
 #' @param margin indicate the direction, 1 = row, 2 = column, passed to `apply`'s `MARGIN`
 #' @param limlen `numeric` the minimum length of data
+#' @importFrom stats .lm.fit
+#' @importFrom utils head
+#' @importFrom rlist list.remove
 #' @export
 #' @keywords zeta
 get_hhcf_ <- function(mat, dr, margin = 1, limlen = 30, average = FALSE){
-	# hhcf <- plyr::alply(mat, .margins = margin, .fun = function(row){
 	if (margin == 2) mat <- t(mat)
 	hhcf <- lapply(seq(nrow(mat)), function(j) {
-		row <- mat[j, ]
-		ind <- which(!is.na(row))
-		if (length(ind) > limlen) {
+		row <- mat[j, ] %>% stats::na.omit()
+		if (length(row) > limlen) {
 			x <- seq_along(row) * dr
-			len <- length(row)
-			# fit <- lm(row ~ x)
-			fit <- stats::.lm.fit(cbind(rep(1,length(x[ind])), x[ind]), row[ind])
-			row[ind] <- fit$residuals
-			ACV <- stats::acf(row, plot = FALSE, type = "covariance", demean = FALSE, lag.max = length(row) - 1, na.action = stats::na.pass)
-			W <- ACV$acf[1]
-			HHCF <- sqrt(2 * W - 2 * ACV$acf)[-1]
-			ACF <- ACV$acf / W
-			xi <- ACV$lag[utils::head(which(ACF <= 1 / exp(1)), 1)]
+			fit <- .lm.fit(cbind(rep(1,length(x)), x), row)
+			row <- fit$residuals
+			ACV <- acv_fft(row)
+			W <- ACV[1]
+			HHCF <- sqrt(2 * W - 2 * ACV)[-1]
+			ACF <- ACV / W
+			xi <- head(which(ACF <= 1 / exp(1)), 1)
 			return(list(hhcf = HHCF, w = sqrt(W), xi = xi))
 		} else {
 			return(list(hhcf = NA, w = NA, xi = NA))
@@ -123,22 +122,18 @@ get_hhcf_ <- function(mat, dr, margin = 1, limlen = 30, average = FALSE){
 	})
 	ind <- which(is.na(hhcf))
 	if (length(ind) > 1) {
-		hhcf <- rlist::list.remove(hhcf, ind)
+		hhcf <- list.remove(hhcf, ind)
 	}
 	w <- sapply(hhcf, function(elmt) ifelse(length(elmt$w) != 0, elmt$w, NA)) %>% unname()
 	xi <- sapply(hhcf, function(elmt) ifelse(length(elmt$xi) != 0, elmt$xi, NA)) %>% unlist() %>% unname()
 	xi <- xi * dr
 	hhcf <- lapply(hhcf, function(elmt) elmt$hhcf)
 	hhcf <- do.call(rbind, hhcf) # one hhcf per line
-	# hhcf <- apply(hhcf, MARGIN = 2, FUN = mean, na.rm = TRUE)
 	if(average){
 		hhcf <- apply(hhcf, MARGIN = 2, FUN = mean, na.rm = TRUE)
 		hhcf <- matrix(c(hhcf), nrow = 1)
 		xi <- mean(xi, na.rm = TRUE)
 		w <- mean(w, na.rm = TRUE)
 	} 
-	# else {
-		# hhcf <- data.frame(hhcf)
-	# }
 	return(list(hhcf = hhcf, autocorr_len = xi, rms = w))
 }

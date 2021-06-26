@@ -19,6 +19,7 @@ Imports:
     doFuture,
     doRNG,
     dplyr,
+    fftwtools,
     foreach,
     future,
     gdalUtils,

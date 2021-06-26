@@ -201,81 +201,55 @@ get_all_alpha_ <- function(hhcf, dr){
 #' @param xi `numeric`, auto-correlation length
 #' @param do_plot `logical`, plot the fit, default to `FALSE`
 #' @importFrom methods is
+#' @importFrom stats na.omit
+#' @importFrom stats splinefun
+#' @importFrom stats .lm.fit
+#' @importFrom utils head
+#' @importFrom utils tail
 #' @export
 #' @keywords zeta
 get_alpha_ <- function(row, dr, xi, do_plot = FALSE){
-	if (length(stats::na.omit(log10(unlist(row)))) < 30 | is.na(xi)){
+	if (length(na.omit(log10(unlist(row)))) < 30 | is.na(xi)){
 		return(matrix(rep(NA, 5), nrow = 1))
 	}
-	df <- data.frame(dr = seq_along(row) * dr, hhcf = unlist(row))
-	# binned_hhcf <- bin(log10(df$dr), log10(df$hhcf), 60)
-	# if (nrow(stats::na.omit(binned_hhcf)) < 30){
-	# 	return(data.frame(alpha1 = NA, alpha2 = NA, rc = NA, rmax = NA))
-	# }
-	# df_bin <- data.frame(dr = 10^binned_hhcf[, 1], hhcf = 10^binned_hhcf[, 2])
-
-	hhcf_fun1 <- stats::splinefun(x = log10(df$dr), y = log10(df$hhcf))
-	d_hhcf_dr <- hhcf_fun1(log10(df$dr), deriv = 1)
+	df <- matrix(c(seq_along(row) * dr, unlist(row)), ncol = 2)
+	hhcf_fun1 <- splinefun(x = log10(df[, 1]), y = log10(df[, 2]))
+	d_hhcf_dr <- hhcf_fun1(log10(df[, 1]), deriv = 1)
 
 	ind_neg <- which(d_hhcf_dr < 0)
 	if (length(ind_neg) < 1){
 		return(matrix(rep(NA, 5), nrow = 1))
 	} else {
-		df_filtered <- df[1:(ind_neg %>% utils::head(1)), ]
+		df_filtered <- df[1:(ind_neg %>% head(2) %>% tail(1)), ]
 		if (nrow(df_filtered) < 10){
 			return(matrix(rep(NA, 5), nrow = 1))
 		}
 
-		x <- log10(df_filtered$dr)[which(df_filtered$dr <= xi)]
-		y <- log10(df_filtered$hhcf)[which(df_filtered$dr <= xi)]
+		x <- log10(df_filtered[, 1])[which(df_filtered[, 1] <= xi)]
+		y <- log10(df_filtered[, 2])[which(df_filtered[, 1] <= xi)]
 		tss <- sum((y - mean(y))^2)
-		fit1 <- tryCatch(stats::.lm.fit(cbind(rep(1,length(x)), x), y), error = function(e) e, warning = function(w) w)
+		fit1 <- tryCatch(.lm.fit(cbind(rep(1,length(x)), x), y), error = function(e) e, warning = function(w) w)
 		if(is(fit1, "warning") | is(fit1, "error")){
 			return(matrix(rep(NA, 5), nrow = 1))
 		}
 		r2 <- ifelse(tss == 0, 1, 1 - sum(fit1$residuals^2) / tss)
 
-		x <- log10(df_filtered$dr)[which(df_filtered$dr > xi)]
-		y <- log10(df_filtered$hhcf)[which(df_filtered$dr > xi)]
-		fit2 <- tryCatch(stats::.lm.fit(cbind(rep(1,length(x)), x), y), error = function(e) e, warning = function(w) w)
+		x <- log10(df_filtered[, 1])[which(df_filtered[, 1] > xi)]
+		y <- log10(df_filtered[, 2])[which(df_filtered[, 1] > xi)]
+		fit2 <- tryCatch(.lm.fit(cbind(rep(1,length(x)), x), y), error = function(e) e, warning = function(w) w)
 		if(is(fit2, "warning") | is(fit2, "error")){
 			return(matrix(rep(NA, 5), nrow = 1))
 		}
 
-		# segmented.fit <- tryCatch(segmented::segmented(lm(y ~ x, weights = 1 / x), fixed.psi = log10(xi)), error = function(e) e, warning = function(w) w)
-		# if(is(segmented.fit, "warning") | is(segmented.fit, "error")){
-		# 	return(data.frame(alpha1 = NA, alpha2 = NA, rc = NA, rmax = NA, alpha.r2 = NA))
-		# }
 		alpha <- matrix(c(xi, fit1$coefficients[2], fit2$coefficients[2], xi, r2), nrow = 1)
 		if(alpha[1, 5] < 0.95 | alpha[1, 2] == 0){
 			alpha <- matrix(rep(NA, 5), nrow = 1)
 		}
 
-		# min_dr <- stats::stats::na.omit(df_bin) %>% dplyr::pull(.data$dr) %>% min()
-		# df_bin <- df %>% dplyr::filter(.data$dr < min_dr)
-		# df_bin <- dplyr::bind_rows(df %>% dplyr::filter(.data$dr < min_dr), stats::na.omit(df_bin))
-
-		# binned_hhcf <- bin(log10(df_filtered$dr), log10(df_filtered$hhcf), 30)
-		# if (nrow(stats::na.omit(binned_hhcf)) < 5){
-		# 	return(data.frame(alpha1 = NA, alpha2 = NA, rc = NA, rmax = NA, alpha.r2 = NA))
-		# }
-		# df_bin <- data.frame(dr = 10^binned_hhcf[, 1], hhcf = 10^binned_hhcf[, 2]) %>% stats::na.omit()
-
-		# hhcf_fun2 <- stats::splinefun(x = log10(df_bin$dr), y = log10(df_bin$hhcf))
-		# dd_hhcf_dr <- hhcf_fun2(log10(df_bin$dr), deriv = 2)
-
-		# ind_neg <- which(dd_hhcf_dr < 0)
-		# if (length(ind_neg) < 1){
-		# 	return(data.frame(alpha1 = NA, alpha2 = NA, rc = NA, rmax = NA))
-		# } else {
-		# 	rc <- df_bin$dr[ind_neg %>% utils::head(1)]
-		# 	alpha_1 <- hhcf_fun1(log10(df_filtered$dr)[which(df_filtered$dr <= rc)], deriv = 1) %>% median()
-		# 	alpha_2 <- hhcf_fun1(log10(df_filtered$dr)[which(df_filtered$dr >= rc)], deriv = 1) %>% median()
 		if(do_plot){
-			p <- alpha_plot(df, df_filtered, alpha[1, 1])
+			p <- alpha_plot(df %>% as.data.frame(), df_filtered %>% as.data.frame(), alpha[1, 1])
 			print(p)
 		} 
-			# return(data.frame(alpha1 = alpha_1, alpha2 = alpha_2, rc = rc, rmax = max(df_filtered$dr, na.rm = TRUE)))
 		return(alpha)
 	}
 }
