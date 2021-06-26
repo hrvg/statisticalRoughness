@@ -26,5 +26,5 @@ test_that("get_all_R_L returns the right number of requested factors", {
 })
 
 test_that("get_all_R_L throws an error when not enough factors returned", {
-  expect_error(get_all_R_L(24, 3), 'Number of factors return is lower than requested.')
+  expect_error(get_all_R_L(24, 3), "Number of factors return is lower than requested.")
 })

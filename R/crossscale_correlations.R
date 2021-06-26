@@ -8,67 +8,67 @@
 #' @importFrom rlang .data
 #' @export
 #' @keywords postprocessing
-crossscale_correlations <- function(raster_list = NULL, selected = NULL, spatial_scales = NULL, corr_type = "spearman", clamp_raster = FALSE){
-	# checks and tests
-	.x <- NULL
-	if(class(raster_list) != "list") stop("`raster_list` is not a `list`.")
-	if(!length(raster_list) >= 1) stop("`raster_list` is empty.")
-	if(!all(sapply(raster_list, function(obj) any(class(obj) %in% c("RasterStack", "stars", "stars_proxy"))))) stop("`raster_list` does not contain only `stars` or `Raster` objects.")
-	if(class(selected) != "character") stop("`selected` is not a `character`.")
-	if(!class(spatial_scales) %in% c("integer", "numeric")) stop("`spatial_scales` is not `integer` or `numeric`.")
-	if(length(unique(sapply(raster_list, function(obj) dim(obj)[3]))) != 1) stop("Not all rasters have the same number of bands.")
-	if(length(raster_list) != length(spatial_scales)) stop("`raster_list` and `spatial_scales` have different lengths.")
-	if(!length(selected) >= 2) stop("At least two attributes should be selected.")
-	if(! corr_type %in% c("spearman", "pearson")) stop("`corr_type should be either 'spearman' or 'pearson'.")
+crossscale_correlations <- function(raster_list = NULL, selected = NULL, spatial_scales = NULL, corr_type = "spearman", clamp_raster = FALSE) {
+  # checks and tests
+  .x <- NULL
+  if (class(raster_list) != "list") stop("`raster_list` is not a `list`.")
+  if (!length(raster_list) >= 1) stop("`raster_list` is empty.")
+  if (!all(sapply(raster_list, function(obj) any(class(obj) %in% c("RasterStack", "stars", "stars_proxy"))))) stop("`raster_list` does not contain only `stars` or `Raster` objects.")
+  if (class(selected) != "character") stop("`selected` is not a `character`.")
+  if (!class(spatial_scales) %in% c("integer", "numeric")) stop("`spatial_scales` is not `integer` or `numeric`.")
+  if (length(unique(sapply(raster_list, function(obj) dim(obj)[3]))) != 1) stop("Not all rasters have the same number of bands.")
+  if (length(raster_list) != length(spatial_scales)) stop("`raster_list` and `spatial_scales` have different lengths.")
+  if (!length(selected) >= 2) stop("At least two attributes should be selected.")
+  if (!corr_type %in% c("spearman", "pearson")) stop("`corr_type should be either 'spearman' or 'pearson'.")
 
-	list_values <- lapply(raster_list, function(s){
-		df <- s %>% 
-			stars::st_set_dimensions("band", values = seq_along(selected)) %>%
-			as.data.frame() %>% 
-			dplyr::select(-c("x", "y")) %>% 
-			dplyr::group_by(.data$band) %>% 
-			dplyr::group_map(~.)
-		df <- do.call(cbind, df)
-		names(df) <- selected
-		return(df)
-	})
-	list_correlations <- lapply(list_values, function(df){
-		# df <- stats::na.omit(df) # NA handled pairwise by Hmisc::rcorr
-		corr <- Hmisc::rcorr(as.matrix(df), type = corr_type)$r 
-		corr[lower.tri(corr, diag = TRUE)] <- NA
-		as.data.frame(corr)
-	})
-	list_graphics <- lapply(seq_along(list_correlations), function(i){
-		list_correlations[[i]] %>%
-		dplyr::add_rownames() %>% 
-		reshape2::melt(id.names = .data$rowname) %>% 
-		stats::na.omit() %>%
-		dplyr::rename(var1 = .data$rowname, var2 = .data$variable) %>%
-		dplyr::mutate(scale = spatial_scales[[i]])
-	})
-	graphics_df <- do.call(rbind, list_graphics) %>% dplyr::arrange(.data$var1, .data$var2)
-	graphics_df <- graphics_df %>% 
-	    dplyr::filter(!((.data$var1 == "median_Pe" | .data$var2 == "median_Pe") & .data$scale > 1e4)) %>% 
-	    dplyr::filter(!((.data$var1 == "geol_diversity" | .data$var2 == "geol_diversity") & .data$scale < 1e4)) 
+  list_values <- lapply(raster_list, function(s) {
+    df <- s %>%
+      stars::st_set_dimensions("band", values = seq_along(selected)) %>%
+      as.data.frame() %>%
+      dplyr::select(-c("x", "y")) %>%
+      dplyr::group_by(.data$band) %>%
+      dplyr::group_map(~.)
+    df <- do.call(cbind, df)
+    names(df) <- selected
+    return(df)
+  })
+  list_correlations <- lapply(list_values, function(df) {
+    # df <- stats::na.omit(df) # NA handled pairwise by Hmisc::rcorr
+    corr <- Hmisc::rcorr(as.matrix(df), type = corr_type)$r
+    corr[lower.tri(corr, diag = TRUE)] <- NA
+    as.data.frame(corr)
+  })
+  list_graphics <- lapply(seq_along(list_correlations), function(i) {
+    list_correlations[[i]] %>%
+      dplyr::add_rownames() %>%
+      reshape2::melt(id.names = .data$rowname) %>%
+      stats::na.omit() %>%
+      dplyr::rename(var1 = .data$rowname, var2 = .data$variable) %>%
+      dplyr::mutate(scale = spatial_scales[[i]])
+  })
+  graphics_df <- do.call(rbind, list_graphics) %>% dplyr::arrange(.data$var1, .data$var2)
+  graphics_df <- graphics_df %>%
+    dplyr::filter(!((.data$var1 == "median_Pe" | .data$var2 == "median_Pe") & .data$scale > 1e4)) %>%
+    dplyr::filter(!((.data$var1 == "geol_diversity" | .data$var2 == "geol_diversity") & .data$scale < 1e4))
 
-	p <- ggplot2::ggplot(graphics_df, ggplot2::aes(x = .data$scale, y = .data$value)) +
-		ggplot2::scale_x_log10(
-				breaks = scales::trans_breaks(n=3, 'log10', function(x) 10^x),
-	            labels = scales::trans_format('log10', scales::math_format(10^.x))
-	            	) +
-		ggplot2::stat_smooth(fill = NA, alpha = .3) +
-		ggplot2::guides(colour = FALSE) +
-	    ggplot2::stat_smooth(lwd = 1, colour = 'black', alpha = .9) +
-		ggplot2::facet_wrap(.data$var1 ~ .data$var2) +
-		ggplot2::geom_point(alpha = 1) +
-		ggpubr::theme_pubr() +
-		ggplot2::ylim(c(min(graphics_df$value), max(graphics_df$value))) +
-		ggplot2::labs(x = "spatial scale (m)", y = paste(corr_type, "correlation"), title = "cross-scale correlations")
-	p <- p + ggforce::facet_wrap_paginate(.data$var1 ~ .data$var2, nrow = 2, ncol = 2)
-		p <- lapply(seq(ggforce::n_pages(p)), function(i) p + ggforce::facet_wrap_paginate(.data$var1 ~ .data$var2, nrow = 2, ncol = 2, scales = "free", page = i))
-	if(clamp_raster){
-		return(list(p = p, rasters = raster_list, graphics_df = graphics_df))
-	} else {
-		return(list(p = p, graphics_df = graphics_df))
-	}
+  p <- ggplot2::ggplot(graphics_df, ggplot2::aes(x = .data$scale, y = .data$value)) +
+    ggplot2::scale_x_log10(
+      breaks = scales::trans_breaks(n = 3, "log10", function(x) 10^x),
+      labels = scales::trans_format("log10", scales::math_format(10^.x))
+    ) +
+    ggplot2::stat_smooth(fill = NA, alpha = .3) +
+    ggplot2::guides(colour = FALSE) +
+    ggplot2::stat_smooth(lwd = 1, colour = "black", alpha = .9) +
+    ggplot2::facet_wrap(.data$var1 ~ .data$var2) +
+    ggplot2::geom_point(alpha = 1) +
+    ggpubr::theme_pubr() +
+    ggplot2::ylim(c(min(graphics_df$value), max(graphics_df$value))) +
+    ggplot2::labs(x = "spatial scale (m)", y = paste(corr_type, "correlation"), title = "cross-scale correlations")
+  p <- p + ggforce::facet_wrap_paginate(.data$var1 ~ .data$var2, nrow = 2, ncol = 2)
+  p <- lapply(seq(ggforce::n_pages(p)), function(i) p + ggforce::facet_wrap_paginate(.data$var1 ~ .data$var2, nrow = 2, ncol = 2, scales = "free", page = i))
+  if (clamp_raster) {
+    return(list(p = p, rasters = raster_list, graphics_df = graphics_df))
+  } else {
+    return(list(p = p, graphics_df = graphics_df))
+  }
 }

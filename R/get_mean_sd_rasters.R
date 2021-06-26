@@ -7,10 +7,10 @@
 #' @importFrom stats sd
 #' @export
 #' @keywords Hurst
-get_mean_sd_rasters <- function(dem, L, R){
-	mean_sd_rasters <- lapply(R, function(r) {
-		terra::aggregate(dem, fact = r, fun = sd, na.rm = TRUE) %>% 
-		terra::aggregate(fact = L / r, fun = mean, na.rm = TRUE)
-	})
-	return(mean_sd_rasters)
+get_mean_sd_rasters <- function(dem, L, R) {
+  mean_sd_rasters <- lapply(R, function(r) {
+    terra::aggregate(dem, fact = r, fun = sd, na.rm = TRUE) %>%
+      terra::aggregate(fact = L / r, fun = mean, na.rm = TRUE)
+  })
+  return(mean_sd_rasters)
 }
