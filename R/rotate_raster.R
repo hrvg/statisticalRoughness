@@ -107,7 +107,7 @@ get_fourier_angle <- function(filtered_spectral_power_matrix, FT2D, bandwidth = 
 
 #' Rotates the detrended DEM according to the main direction of the Fourier spectrum
 #' @param rstr a `RasterLayer`
-#' @param ang_fourier `numeric`, angle of the main component of the 2D Fourier spectrum; the rotation is counter-clockwise
+#' @param ang_fourier `numeric`, angle of the main component of the 2D Fourier spectrum; the rotation is clockwise
 #' @return a `matrix` corresponding to the DEM rotated in the main direction of the Fourier spectrum
 #' @export
 #' @keywords rotate_raster
@@ -128,6 +128,7 @@ rotate_raster <- function(rstr, ang_fourier) {
   # 	raster::reclassify(matrix(c(-Inf, 0, NA))) %>%
   # 	raster::calc(fun = function(x) x - 1e4) %>%
   # 	raster::as.matrix()
+  ang_fourier <- - ang_fourier %% 360
   rstr <- rstr %>%
     raster::as.matrix() %>%
     rotateImage(ang_fourier, method = "bilinear") # default to counter-clockwise rotation

@@ -45,6 +45,7 @@ Imports:
     plotly,
     plyr,
     pracma,
+    progressr,
     raster,
     rayshader,
     reshape2,

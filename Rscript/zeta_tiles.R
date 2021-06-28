@@ -1,6 +1,9 @@
 devtools::load_all()
 library(tictoc)
 
+progressr::handlers(global = TRUE)
+progressr::handlers("progress")
+
 region_names <- c("fort_bragg", "yosemite", "gabilan_mesa", "modoc")
 region_names <- c("gabilan_mesa", "yosemite")
 
@@ -13,7 +16,7 @@ for (.name in region_names){
 
 	Lmax <- min(head(dim(rstr), 2))
 	spatial_scales <- get_all_R_L(Lmax, 5, len = 10)$allL %>% head(-1) 
-	spatial_scales <- spatial_scales[spatial_scales > 40] 
+	spatial_scales <- spatial_scales[spatial_scales > 40 & spatial_scales < 100] 
 
 	for (n in rev(spatial_scales)){
 		tic()

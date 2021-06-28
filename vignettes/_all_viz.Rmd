@@ -28,10 +28,10 @@ This vignette showcases the functions used to visualize and process the results 
 
 ```{r}
 CLAMP_RASTER <- TRUE
-MASKING <- TRUE
-REDUCE_NOISE <- TRUE
+MASKING <- FALSE
+REDUCE_NOISE <- FALSE
 PERP_PAR <- FALSE
-CORRELATION <- TRUE
+CORRELATION <- FALSE
 LIMIT_SCALE <- 40
 ```
 
@@ -48,7 +48,7 @@ devtools::load_all()
 
 ```{r}
 # region_names <- c("fort_bragg", "yosemite", "gabilan_mesa", "modoc")
-region_names <- c("gabilan_mesa", "yosemite")
+region_names <- c("gabilan_mesa")
 # region_names <- c("california")
 .name <- region_names[1]
 results_directory <- file.path(system.file(paste0("extdata/zeta_results/", .name), package = "statisticalRoughness"))
@@ -66,7 +66,7 @@ if(.name == "california"){
   rstr <- raster::raster(file.path(system.file("extdata/big_rasters/", package = "statisticalRoughness"), paste0(.name, ".tif")))
   Lmax <- min(head(dim(rstr), 2))
   spatial_scales <- get_all_R_L(Lmax, 5, len = 10)$allL %>% head(-1) 
-  spatial_scales <- spatial_scales[spatial_scales > LIMIT_SCALE] 
+  spatial_scales <- spatial_scales[spatial_scales > LIMIT_SCALE & spatial_scales < 100] 
 }
 
 zeta_results$spatial_scales <- spatial_scales * 10

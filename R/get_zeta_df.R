@@ -25,20 +25,22 @@ get_zeta_df <- function(DEM, tiles, raster_resolution, vertical_accuracy = 1.8, 
   if (length(tiles) > raster::ncell(DEM)) stop("There are more tiles than cells in your raster.")
 
   # setting up parallelization
-  # registerDoFuture()
-  # if (length(tiles) < availableCores() - 2){
-  # 	plan(sequential)
-  # } else {
-  # if(.Platform$OS.type == "unix"){
-  # 	plan(multicore, workers = availableCores() - 2)
-  # } else {
-  # 	plan(multisession, workers = availableCores() - 2)
-  # }
-  # }
+  registerDoFuture()
+  n_cores <- availableCores()
+  if (length(tiles) < n_cores){
+  	plan(sequential)
+  } else {
+    if(.Platform$OS.type == "unix"){
+    	plan(multicore, workers = n_cores)
+    } else {
+    	plan(multisession, workers = n_cores)
+    }
+  }
 
   # main
   i <- NULL
-  zeta_dfs <- foreach(i = seq_along(tiles), .combine = rbind, .inorder = TRUE) %do% {
+  p <- progressr::progressor(along = tiles)
+  zeta_dfs <- foreach(i = seq_along(tiles), .combine = rbind, .inorder = TRUE) %dorng% {
     cropped_DEM <- raster::crop(DEM, tiles[i, ])
     cropped_DEM_values <- raster::getValues(cropped_DEM)
     pct_non_na <- sum(is.finite(cropped_DEM_values)) / raster::ncell(cropped_DEM)
@@ -53,10 +55,11 @@ get_zeta_df <- function(DEM, tiles, raster_resolution, vertical_accuracy = 1.8, 
         colnames(zeta_df) <- c("alpha1", "alpha1.x", "alpha1.y", "zeta1", "alpha2", "alpha2.x", "alpha2.y", "zeta2", "theta.x", "theta.y", "alpha1_median", "alpha1_mad", "alpha1_mean", "alpha1_sd", "rc", "xi", "xi.x", "xi.y", "w", "w.x", "w.y")
       }
     }
+    p(sprintf("i=%g", i))
     zeta_df
   }
   # rownames(zeta_dfs) <- NULL
   # stopping parallelization
-  # plan(sequential)
+  plan(sequential)
   return(zeta_dfs)
 }

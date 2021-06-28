@@ -68,19 +68,11 @@ get_kruskal_flag <- function(alpha_x, alpha_y, var) {
 #' @export
 #' @keywords zeta
 get_zeta <- function(rstr, raster_resolution, .mode = "radial", angle_step = 5, niter = 64, nbin = 20, .Hann = TRUE, .quantile_prob = c(0.99), .prob = .999, full = FALSE) {
-  # setting up parallelization
-  registerDoFuture()
-  if (.Platform$OS.type == "unix") {
-    plan(multicore, workers = availableCores())
-  } else {
-    plan(multisession, workers = availableCores())
-  }
   if (.mode == "fourier") {
     res <- get_zeta_fourier(rstr, raster_resolution, nbin, .Hann, .quantile_prob, .prob, full)
   } else if (.mode == "radial") {
     res <- get_zeta_radial(rstr, raster_resolution, angle_step, niter, full)
   }
-  plan(sequential)
   return(res)
 }
 

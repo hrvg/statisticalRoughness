@@ -105,16 +105,17 @@ RMS_roughness <- function(row, dr) {
 get_hhcf_ <- function(mat, dr, margin = 1, limlen = 30, average = FALSE) {
   if (margin == 2) mat <- t(mat)
   hhcf <- lapply(seq(nrow(mat)), function(j) {
-    row <- mat[j, ] %>% stats::na.omit()
-    if (length(row) > limlen) {
+    row <- mat[j, ]
+    ind <- which(!is.na(row))
+    if (length(ind) > limlen) {
       x <- seq_along(row) * dr
-      fit <- .lm.fit(cbind(rep(1, length(x)), x), row)
-      row <- fit$residuals
-      ACV <- acv_fft(row)
-      W <- ACV[1]
-      HHCF <- sqrt(2 * W - 2 * ACV)[-1]
-      ACF <- ACV / W
-      xi <- head(which(ACF <= 1 / exp(1)), 1)
+      fit <- stats::.lm.fit(cbind(rep(1,length(x[ind])), x[ind]), row[ind])
+      row[ind] <- fit$residuals
+      ACV <- stats::acf(row, plot = FALSE, type = "covariance", demean = FALSE, lag.max = length(row) - 1, na.action = stats::na.pass)
+      W <- ACV$acf[1]
+      HHCF <- sqrt(2 * W - 2 * ACV$acf)[-1]
+      ACF <- ACV$acf / W
+      xi <- ACV$lag[utils::head(which(ACF <= 1 / exp(1)), 1)]
       return(list(hhcf = HHCF, w = sqrt(W), xi = xi))
     } else {
       return(list(hhcf = NA, w = NA, xi = NA))

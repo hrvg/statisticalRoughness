@@ -11,12 +11,12 @@
 get_radial_angle <- function(rstr, raster_resolution, angle_step, niter) {
   angles <- seq(0, 90 - angle_step, angle_step)
   random_angles <- sample(seq(360), niter)
-  random_res <- foreach(random_angle = random_angles, .combine = rbind, .inorder = FALSE) %dorng% {
+  random_res <- foreach(random_angle = random_angles, .combine = rbind, .inorder = FALSE) %do% {
     .rstr <- rstr %>%
-      rotate_raster(random_angle) %>%
+      rotate_raster(- random_angle) %>%
       raster::raster()
     res <- foreach(rotation_angle = angles, .combine = cbind, .inorder = FALSE) %do% {
-      rotated_raster <- rotate_raster(.rstr, rotation_angle)
+      rotated_raster <- rotate_raster(.rstr, - rotation_angle)
       mid_row <- nrow(rotated_raster) %/% 2
       mid_col <- ncol(rotated_raster) %/% 2
       hhcf_x <- get_hhcf_(
