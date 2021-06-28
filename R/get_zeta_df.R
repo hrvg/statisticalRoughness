@@ -39,7 +39,6 @@ get_zeta_df <- function(DEM, tiles, raster_resolution, vertical_accuracy = 1.8, 
 
   # main
   i <- NULL
-  p <- progressr::progressor(along = tiles)
   zeta_dfs <- foreach(i = seq_along(tiles), .combine = rbind, .inorder = TRUE) %dorng% {
     cropped_DEM <- raster::crop(DEM, tiles[i, ])
     cropped_DEM_values <- raster::getValues(cropped_DEM)
@@ -55,7 +54,6 @@ get_zeta_df <- function(DEM, tiles, raster_resolution, vertical_accuracy = 1.8, 
         colnames(zeta_df) <- c("alpha1", "alpha1.x", "alpha1.y", "zeta1", "alpha2", "alpha2.x", "alpha2.y", "zeta2", "theta.x", "theta.y", "alpha1_median", "alpha1_mad", "alpha1_mean", "alpha1_sd", "rc", "xi", "xi.x", "xi.y", "w", "w.x", "w.y")
       }
     }
-    p(sprintf("i=%g", i))
     zeta_df
   }
   # rownames(zeta_dfs) <- NULL

@@ -1,9 +1,6 @@
 devtools::load_all()
 library(tictoc)
 
-progressr::handlers(global = TRUE)
-progressr::handlers("progress")
-
 region_names <- c("fort_bragg", "yosemite", "gabilan_mesa", "modoc")
 region_names <- c("gabilan_mesa", "yosemite")
 
