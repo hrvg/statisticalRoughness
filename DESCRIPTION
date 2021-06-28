@@ -42,6 +42,7 @@ Imports:
     microbenchmark,
     modeest,
     mrbsizeR,
+    OpenImageR,
     plotly,
     plyr,
     pracma,
