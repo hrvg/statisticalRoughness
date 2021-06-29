@@ -11,7 +11,7 @@
 get_radial_angle <- function(rstr, raster_resolution, angle_step, niter) {
   angles <- seq(0, 90 - angle_step, angle_step)
   random_angles <- sample(seq(360), niter)
-  random_res <- foreach(random_angle = random_angles, .combine = rbind, .inorder = FALSE) %dorng% {
+  random_res <- foreach(random_angle = random_angles, .combine = rbind, .inorder = FALSE) %do% {
     .rstr <- rstr %>%
       rotate_raster(- random_angle) %>%
       raster::raster()

@@ -10,7 +10,7 @@
 #' @import foreach
 #' @export
 #' @keywords zeta
-get_zeta_df <- function(DEM, tiles, raster_resolution, vertical_accuracy = 1.8, mode = "radial") {
+get_zeta_df <- function(DEM, tiles, raster_resolution, vertical_accuracy = 1.87, mode = "radial") {
   # class check
   if (!class(DEM) == "RasterLayer") stop("invalid class: DEM is not of class 'RasterLayer'")
   if (!class(tiles) %in% c("RasterLayer", "SpatialPolygonsDataFrame")) stop("invalid class: tiles is not of class 'RasterLayer' or 'SpatialPolygonsDataFrame'")
@@ -26,7 +26,7 @@ get_zeta_df <- function(DEM, tiles, raster_resolution, vertical_accuracy = 1.8, 
 
   # setting up parallelization
   registerDoFuture()
-  n_cores <- availableCores()
+  n_cores <- availableCores() - 2
   if (length(tiles) < n_cores){
   	plan(sequential)
   } else {
@@ -39,7 +39,7 @@ get_zeta_df <- function(DEM, tiles, raster_resolution, vertical_accuracy = 1.8, 
 
   # main
   i <- NULL
-  zeta_dfs <- foreach(i = seq_along(tiles), .combine = rbind, .inorder = TRUE) %do% {
+  zeta_dfs <- foreach(i = seq_along(tiles), .combine = rbind, .inorder = TRUE) %dorng% {
     cropped_DEM <- raster::crop(DEM, tiles[i, ])
     cropped_DEM_values <- raster::getValues(cropped_DEM)
     pct_non_na <- sum(is.finite(cropped_DEM_values)) / raster::ncell(cropped_DEM)
