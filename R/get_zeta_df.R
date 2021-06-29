@@ -39,7 +39,7 @@ get_zeta_df <- function(DEM, tiles, raster_resolution, vertical_accuracy = 1.8, 
 
   # main
   i <- NULL
-  zeta_dfs <- foreach(i = seq_along(tiles), .combine = rbind, .inorder = TRUE) %dorng% {
+  zeta_dfs <- foreach(i = seq_along(tiles), .combine = rbind, .inorder = TRUE) %do% {
     cropped_DEM <- raster::crop(DEM, tiles[i, ])
     cropped_DEM_values <- raster::getValues(cropped_DEM)
     pct_non_na <- sum(is.finite(cropped_DEM_values)) / raster::ncell(cropped_DEM)
