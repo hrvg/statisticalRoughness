@@ -87,9 +87,14 @@ get_radial_angle <- function(rstr, raster_resolution, angle_step, niter) {
       theta_perp = theta_perp
     )
   }
-  res <- random_res %>%
-    na.omit() %>%
+  res <- random_res %>% na.omit()
+  if (nrow(res) < 2) {
+    res <- rep(NA, ncol(random_res)) %>% as.list()
+    names(res) <- colnames(random_res)
+  } else {
+    res <- res %>%
     dplyr::summarise(dplyr::across(dplyr::everything(), modeest::parzen, bw = "SJ-dpi", kernel = "gaussian")) %>%
     as.list()
+  }
   return(res)
 }
